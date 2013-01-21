@@ -1,5 +1,6 @@
 package be.kuleuven.agent;
 
+
 /**
  * Request from the communication component to the Agent
  * 
@@ -28,4 +29,7 @@ public class EventRequest {
 		return payload;
 	}
 	
+	public String toString() {
+		return "REQUEST: id: " + this.id + ", payload: " + this.payload; 
+	}
 }

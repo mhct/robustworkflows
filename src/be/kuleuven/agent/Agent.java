@@ -6,7 +6,8 @@ public class Agent implements Runnable {
 
 	private static final Logger logger = Logger.getLogger(Agent.class.getName());
 	private Thread runner;
-	private EventRequestQueue requestsQueue;
+	private EventRequestQueueReader requestsQueue;
+	private EventResponseQueuePublisher responseQueue;
 	
 	public void run() {
 		System.out.println("Running");
@@ -14,7 +15,12 @@ public class Agent implements Runnable {
 		for(;;) {
 			try {
 				Thread.sleep(3000);
-				logger.info("fetched request: " + requestsQueue.fetchRequest());
+				
+				EventRequest er = requestsQueue.fetchRequest();
+				if(er != null) {
+					logger.info("fetched request: " + er.toString());
+					responseQueue.add(EventResponse.from(er));
+				}
 		
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -22,8 +28,9 @@ public class Agent implements Runnable {
 		}
 	}
 
-	private Agent(String name, EventRequestQueue requestsQueue) {
+	private Agent(String name, EventRequestQueueReader requestsQueue, EventResponseQueuePublisher responseQueue) {
 		this.requestsQueue = requestsQueue;
+		this.responseQueue = responseQueue;
 		runner = new Thread(this, name);
 	}
 	
@@ -37,8 +44,8 @@ public class Agent implements Runnable {
 		runner.interrupt();
 	}
 
-	public static Agent newInstance(String name, EventRequestQueue requestsQueue) {
-		Agent agent = new Agent(name, requestsQueue);
+	public static Agent newInstance(String name, EventRequestQueueReader requestsQueue, EventResponseQueuePublisher responseQueue) {
+		Agent agent = new Agent(name, requestsQueue, responseQueue);
 		return agent;
 	}
 }

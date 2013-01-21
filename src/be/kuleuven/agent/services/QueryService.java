@@ -19,7 +19,7 @@ public class QueryService {
 	}
 	
 	private void addRequest(Long id, Long payload) {
-		AgentLoader.getQueue().addRequest(id, payload);
+		AgentLoader.add(id, payload);
 	}
 }
 

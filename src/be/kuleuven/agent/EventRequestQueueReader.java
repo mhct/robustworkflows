@@ -1,6 +1,6 @@
 package be.kuleuven.agent;
 
-public interface EventRequestQueue {
+public interface EventRequestQueueReader {
 
 	public EventRequest fetchRequest();
 

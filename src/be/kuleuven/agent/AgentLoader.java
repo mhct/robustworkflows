@@ -20,7 +20,7 @@ import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 
 
-public class AgentLoader implements EventRequestQueue, EventRequestQueuePublisher {
+public class AgentLoader implements EventRequestQueueReader, EventResponseQueueReader, EventRequestQueuePublisher, EventResponseQueuePublisher {
 	
 	private static final Logger logger = Logger.getLogger(AgentLoader.class.getName());
 	
@@ -33,19 +33,23 @@ public class AgentLoader implements EventRequestQueue, EventRequestQueuePublishe
 
 	private static AgentLoader agentLoaderInstance;
 	
-	private static final List<EventRequest> requestsQueue = Lists.newArrayList();
+	private final List<EventRequest> requestsQueue = Lists.newArrayList();
+	private final List<EventResponse> responseQueue = Lists.newArrayList();
 	
 	private Agent agent;
 	private HttpServer server;
+
+	private CommInitiator commInitiator;
 	
 	private AgentLoader() throws IOException {
 		server = startServer();
-		agent = Agent.newInstance(AGENT_NAME, (EventRequestQueue) this);
-		
+		agent = Agent.newInstance(AGENT_NAME, (EventRequestQueueReader) this, (EventResponseQueuePublisher) this);
+		commInitiator = CommInitiator.newInstance(AGENT_NAME, (EventResponseQueueReader) this, (EventRequestQueuePublisher) this);
 	}
 	
-	public void start() {
+	private void start() {
 		agent.start();
+		commInitiator.start();
 		
 		try {
 			System.in.read();
@@ -83,18 +87,6 @@ public class AgentLoader implements EventRequestQueue, EventRequestQueuePublishe
 		return GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
 	}
 	
-	/**
-	 * Loads a complete agent including the communicaiton infrastructure
-	 * @param args
-	 * Environment Variables
-	 * IP
-	 * PORT
-	 * @throws IOException 
-	 */
-	public static void main(String[] args) throws IOException {
-		agentLoaderInstance = new AgentLoader();
-		agentLoaderInstance.start();
-	}
 
 	public synchronized void addRequest(Long id, Long payload) {
 		requestsQueue.add(EventRequest.newInstance(id, payload));
@@ -108,12 +100,36 @@ public class AgentLoader implements EventRequestQueue, EventRequestQueuePublishe
 		}
 	}
 
-	public static EventRequestQueuePublisher getQueue() {
-		return (EventRequestQueuePublisher) agentLoaderInstance;
-	}
+//	private static EventRequestQueuePublisher getQueue() {
+//		return (EventRequestQueuePublisher) agentLoaderInstance;
+//	}
 	
 	public static void add(Long id, Long payload) {
 		agentLoaderInstance.addRequest(id, payload);
 	}
 
+	/**
+	 * Loads a complete agent including the communicaiton infrastructure
+	 * @param args
+	 * Environment Variables
+	 * IP
+	 * PORT
+	 * @throws IOException 
+	 */
+	public static void main(String[] args) throws IOException {
+		agentLoaderInstance = new AgentLoader();
+		agentLoaderInstance.start();
+	}
+
+	public synchronized void add(EventResponse er) {
+		responseQueue.add(er);
+	}
+
+	public synchronized EventResponse fetchEvent() {
+		if( responseQueue.isEmpty() ) {
+			return null;
+		} else {
+			return responseQueue.remove(0);
+		}
+	}
 }
