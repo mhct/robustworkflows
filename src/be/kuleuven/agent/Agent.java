@@ -19,6 +19,7 @@ public class Agent implements Runnable {
 				EventRequest er = requestsQueue.fetchRequest();
 				if(er != null) {
 					logger.info("fetched request: " + er.toString());
+					handleRequest(er);
 					responseQueue.add(EventResponse.from(er));
 				}
 		
@@ -28,7 +29,11 @@ public class Agent implements Runnable {
 		}
 	}
 
-	private Agent(String name, EventRequestQueueReader requestsQueue, EventResponseQueuePublisher responseQueue) {
+	private void handleRequest(EventRequest er) {
+		throw new RuntimeException("This method has to be instatiated by a subclass");
+	}
+
+	Agent(String name, EventRequestQueueReader requestsQueue, EventResponseQueuePublisher responseQueue) {
 		this.requestsQueue = requestsQueue;
 		this.responseQueue = responseQueue;
 		runner = new Thread(this, name);
