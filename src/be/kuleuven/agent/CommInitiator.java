@@ -2,7 +2,10 @@ package be.kuleuven.agent;
 
 import java.util.logging.Logger;
 
+import javax.ws.rs.core.MediaType;
+
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.json.JSONConfiguration;
@@ -22,12 +25,12 @@ public class CommInitiator implements Runnable {
 
 	private EventResponseQueueReader sourceQueue;
 	private EventRequestQueuePublisher pubQueue;
-	private Client wsclient;
+	private Client client;
 
 	public CommInitiator(String name, Client wsclient, EventResponseQueueReader responseQueue, EventRequestQueuePublisher pubQueue) {
 		logger.info("Created CommInitiator");
 	
-		this.wsclient = wsclient;
+		this.client = wsclient;
 		this.sourceQueue = responseQueue;
 		this.pubQueue = pubQueue;
 		runner = new Thread(this, name);
@@ -40,7 +43,9 @@ public class CommInitiator implements Runnable {
 				Thread.sleep(100);
 				EventResponse er = sourceQueue.fetchEvent();
 				if(er != null) {
-					logger.info("received a request... should start contacting neighbors" + er);
+					logger.info("contacting other agent...");
+					WebResource r = client.resource("http://" + er.getDestination()+"/quote/ma/");
+					String response = r.accept(MediaType.APPLICATION_JSON_TYPE).post(String.class, er.getPayload().toString());
 					
 				}
 				

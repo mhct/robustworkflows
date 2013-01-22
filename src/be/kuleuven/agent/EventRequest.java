@@ -8,28 +8,28 @@ package be.kuleuven.agent;
  *
  */
 public class EventRequest {
-	private Long id;
-	private Long payload; //payload could even be a java method, or a command
+	private final String originUri;
+	private final EventPayload payload;
 	
-	private EventRequest(Long id, Long payload) {
-		this.id = id;
+	private EventRequest(String originUri, EventPayload payload) {
+		this.originUri = originUri;
 		this.payload = payload;
 	}
 
-	public static EventRequest newInstance(Long id, Long payload) {
-		EventRequest instance = new EventRequest(id, payload);
+	public static EventRequest newInstance(String originUri, EventPayload payload) {
+		EventRequest instance = new EventRequest(originUri, payload);
 		return instance;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public Long getPayload() {
+	public EventPayload getPayload() {
 		return payload;
 	}
 	
+	public String getOriginUri() {
+		return originUri;
+	}
+	
 	public String toString() {
-		return "REQUEST: id: " + this.id + ", payload: " + this.payload; 
+		return "REQUEST: origin: " + originUri + ", payload: " + this.payload; 
 	}
 }

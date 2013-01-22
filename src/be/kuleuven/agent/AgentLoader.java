@@ -43,7 +43,7 @@ public class AgentLoader implements EventRequestQueueReader, EventResponseQueueR
 	
 	private AgentLoader() throws IOException {
 		server = startServer();
-		agent = Agent.newInstance(AGENT_NAME, (EventRequestQueueReader) this, (EventResponseQueuePublisher) this);
+		agent = AssemblyAgent.newInstance(AGENT_NAME, (EventRequestQueueReader) this, (EventResponseQueuePublisher) this, 0, 0, 129);
 		commInitiator = CommInitiator.newInstance(AGENT_NAME, (EventResponseQueueReader) this, (EventRequestQueuePublisher) this);
 	}
 	
@@ -88,8 +88,8 @@ public class AgentLoader implements EventRequestQueueReader, EventResponseQueueR
 	}
 	
 
-	public synchronized void addRequest(Long id, Long payload) {
-		requestsQueue.add(EventRequest.newInstance(id, payload));
+	public synchronized void addRequest(String originUri, EventPayload payload) {
+		requestsQueue.add(EventRequest.newInstance(originUri, payload));
 	}
 
 	public synchronized EventRequest fetchRequest() {
@@ -104,8 +104,8 @@ public class AgentLoader implements EventRequestQueueReader, EventResponseQueueR
 //		return (EventRequestQueuePublisher) agentLoaderInstance;
 //	}
 	
-	public static void add(Long id, Long payload) {
-		agentLoaderInstance.addRequest(id, payload);
+	public static void add(String originUri, EventPayload payload) {
+		agentLoaderInstance.addRequest(originUri, payload);
 	}
 
 	/**

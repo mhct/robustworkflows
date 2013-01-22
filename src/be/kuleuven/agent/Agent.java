@@ -1,5 +1,6 @@
 package be.kuleuven.agent;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Agent implements Runnable {
@@ -9,7 +10,7 @@ public class Agent implements Runnable {
 	private EventRequestQueueReader requestsQueue;
 	private EventResponseQueuePublisher responseQueue;
 	
-	public void run() {
+	public final void run() {
 		System.out.println("Running");
 
 		for(;;) {
@@ -20,7 +21,6 @@ public class Agent implements Runnable {
 				if(er != null) {
 					logger.info("fetched request: " + er.toString());
 					handleRequest(er);
-					responseQueue.add(EventResponse.from(er));
 				}
 		
 			} catch (InterruptedException e) {
@@ -29,11 +29,20 @@ public class Agent implements Runnable {
 		}
 	}
 
-	private void handleRequest(EventRequest er) {
+	void handleRequest(EventRequest er) {
 		throw new RuntimeException("This method has to be instatiated by a subclass");
+	}
+	
+	final void addResponse(EventResponse er) {
+		logger.finest("Adding EventResponse to EventReponseQueue. EventResponse: " + er);
+		responseQueue.add(er);
 	}
 
 	Agent(String name, EventRequestQueueReader requestsQueue, EventResponseQueuePublisher responseQueue) {
+		if(name == null || requestsQueue == null || responseQueue == null) {
+			throw new IllegalArgumentException("name, requestQueue, responseQueue can not be null");
+		}
+		
 		this.requestsQueue = requestsQueue;
 		this.responseQueue = responseQueue;
 		runner = new Thread(this, name);

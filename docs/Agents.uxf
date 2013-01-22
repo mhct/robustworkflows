@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="11.5">
+<diagram program="umlet" version="11.4">
   <zoom_level>10</zoom_level>
   <element>
     <type>com.umlet.element.Class</type>
@@ -13,7 +13,8 @@
 --
 - inputParts: Integer
 - outputParts: Integer
-- maximumProductionRate: Integer</panel_attributes>
+- maximumProductionRate: Integer
+- pricePerUnit: Integer</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
