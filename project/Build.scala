@@ -29,6 +29,9 @@ object HelloKernelBuild extends Build {
   
   lazy val defaultSettings = buildSettings ++ Seq(
     resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/",
+
+    resolvers += "gephi2-snapshop" at "http://nexus.gephi.org/nexus/content/repositories/snapshots/",
+    resolvers += "gephi2-release" at "http://nexus.gephi.org/nexus/content/repositories/releases/",
  
     // compile options
     scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked"),

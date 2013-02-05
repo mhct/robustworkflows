@@ -48,8 +48,28 @@
    		<artifactId>mockito-all</artifactId>
    		<version>1.9.5</version>
    	</dependency>
+   	<dependency>
+   		<groupId>org.mongodb</groupId>
+   		<artifactId>mongo-java-driver</artifactId>
+   		<version>2.10.1</version>
+   	</dependency>
+   	<dependency>
+         <groupId>org.gephi</groupId>
+         <artifactId>gephi-toolkit</artifactId>
+         <version>0.8.2</version>
+      </dependency>
   </dependencies>
    <repositories>
+        <repository>
+         <id>gephi-snapshots</id>
+         <name>Gephi Snapshots</name>
+         <url>http://nexus.gephi.org/nexus/content/repositories/snapshots/</url>
+      </repository>
+      <repository>
+         <id>gephi-releases</id>
+         <name>Gephi Releases</name>
+         <url>http://nexus.gephi.org/nexus/content/repositories/releases/</url>
+      </repository>
         <repository>
             <id>typesafe</id>
             <name>Typesafe Repository</name>

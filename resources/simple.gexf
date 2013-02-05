@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2" xmlns:viz="http://www.gexf.net/1.2draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
+  <meta lastmodifieddate="2013-02-01">
+    <creator>Gephi 0.8</creator>
+    <description></description>
+  </meta>
+  <graph defaultedgetype="directed" timeformat="double" mode="dynamic">
+    <nodes>
+      <node id="60">
+        <attvalues></attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-1527.6184" y="739.17017" z="0.0"></viz:position>
+        <viz:color r="179" g="0" b="0"></viz:color>
+      </node>
+      <node id="61">
+        <attvalues></attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-1500.4265" y="452.74173" z="0.0"></viz:position>
+        <viz:color r="179" g="0" b="0"></viz:color>
+      </node>
+      <node id="62">
+        <attvalues></attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-1213.4711" y="443.5021" z="0.0"></viz:position>
+        <viz:color r="227" g="93" b="59"></viz:color>
+      </node>
+      <node id="63">
+        <attvalues></attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-1231.9503" y="754.5695" z="0.0"></viz:position>
+        <viz:color r="179" g="0" b="0"></viz:color>
+      </node>
+      <node id="64">
+        <attvalues></attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-914.72314" y="606.73553" z="0.0"></viz:position>
+        <viz:color r="254" g="240" b="217"></viz:color>
+      </node>
+    </nodes>
+    <edges>
+      <edge source="60" target="61" weight="2.0">
+        <attvalues>
+          <attvalue for="weight" value="2.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="60" target="63">
+        <viz:color r="255" g="0" b="0"></viz:color>
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="61" target="62" weight="2.0">
+        <attvalues>
+          <attvalue for="weight" value="2.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="61" target="63" weight="2.0">
+        <viz:color r="255" g="0" b="0"></viz:color>
+        <attvalues>
+          <attvalue for="weight" value="2.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="62" target="64" weight="3.0">
+        <attvalues>
+          <attvalue for="weight" value="3.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="63" target="62" weight="3.0">
+        <attvalues>
+          <attvalue for="weight" value="3.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="63" target="64">
+        <viz:color r="255" g="0" b="0"></viz:color>
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+    </edges>
+  </graph>
+</gexf>
