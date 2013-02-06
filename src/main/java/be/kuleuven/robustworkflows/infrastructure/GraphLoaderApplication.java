@@ -14,6 +14,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 import akka.kernel.Bootable;
+import be.kuleuven.robustworkflows.infrastructure.configuration.GephiGraphImporter;
 
 import com.google.common.collect.Lists;
 import com.mongodb.DB;
@@ -21,7 +22,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.MongoClient;
 import com.typesafe.config.ConfigFactory;
 
-public class ActorGraphLoaderApplication implements Bootable {
+public class GraphLoaderApplication implements Bootable {
 	
 	private static final String DEFAULT_SYSTEM_IP = "127.0.0.1";
 	private static final String DEFAULT_SYSTEM_PORT = "28800";
@@ -29,7 +30,7 @@ public class ActorGraphLoaderApplication implements Bootable {
 	private static final String DEFAULT_DB_SERVER_IP = "127.0.0.1"; //put this name on a config file
 	private static final Integer DEFAULT_DB_SERVER_PORT = 27017;
 	private static final String DEFAULT_DB_NAME = "workflows"; //put this name on a config file
-	private static final String DEFAULT_NETWORK_MODEL = "/simple.gexf"; //put this name on a config file
+	private static final String DEFAULT_NETWORK_MODEL = "/simple1.gexf"; //put this name on a config file
 
 	private static final Configuration config = new EnvironmentConfiguration();
 	private static final String systemPort = config.getString("SYSTEM_PORT", DEFAULT_SYSTEM_PORT);
@@ -92,13 +93,13 @@ public class ActorGraphLoaderApplication implements Bootable {
 		return sorcerersPaths;
 	}
 
-	public ActorGraphLoaderApplication() {
+	public GraphLoaderApplication() {
 		this.system = ActorSystem.create(SYSTEM_NAME, ConfigFactory.parseString("akka.remote.netty.hostname=\""+systemIp+"\"\nakka.remote.netty.port=\""+ systemPort + "\"").withFallback(ConfigFactory.load()));
 		this.networkModel = GephiGraphImporter.loadDirectedGraphFrom(NETWORK_MODEL);
 	}
 	
 	public static void main(String[] args) throws IOException {
-		ActorGraphLoaderApplication app = new ActorGraphLoaderApplication();
+		GraphLoaderApplication app = new GraphLoaderApplication();
 		app.startup();
 		System.in.read();
 		app.shutdown();

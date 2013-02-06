@@ -1,5 +1,6 @@
 package be.kuleuven.robustworkflows.infrastructure;
 
+import be.kuleuven.robustworkflows.infrastructure.messages.ActorDeployRef;
 import be.kuleuven.robustworkflows.infrastructure.messages.DeployActorMsg;
 
 import com.mongodb.BasicDBObject;
@@ -44,7 +45,12 @@ public class SorcererActor extends UntypedActor {
 			final DeployActorMsg msg = DeployActorMsg.valueOf(message);
 			ActorRef childActor = getContext().actorOf(msg.getProps(), msg.getName());
 			
-			getSender().tell(childActor, getSelf());
+			//reply to graphLoader with a reference of the newly created actor
+			if(childActor == null) {
+				System.out.println("PROBLEM: childActor is null");
+			}
+			
+			getSender().tell(new ActorDeployRef(childActor, msg.getName()), getSelf());
 		} else {
 			log.debug("Not handling message" + message);
 			unhandled(message);
