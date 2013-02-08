@@ -14,6 +14,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 import akka.kernel.Bootable;
+import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 import be.kuleuven.robustworkflows.infrastructure.configuration.GephiGraphImporter;
 
 import com.google.common.collect.Lists;
@@ -30,7 +31,7 @@ public class GraphLoaderApplication implements Bootable {
 	private static final String DEFAULT_DB_SERVER_IP = "127.0.0.1"; //put this name on a config file
 	private static final Integer DEFAULT_DB_SERVER_PORT = 27017;
 	private static final String DEFAULT_DB_NAME = "workflows"; //put this name on a config file
-	private static final String DEFAULT_NETWORK_MODEL = "/simple1.gexf"; //put this name on a config file
+	private static final String DEFAULT_NETWORK_MODEL = "/simple500.gexf"; //put this name on a config file
 
 	private static final Configuration config = new EnvironmentConfiguration();
 	private static final String systemPort = config.getString("SYSTEM_PORT", DEFAULT_SYSTEM_PORT);
@@ -62,14 +63,15 @@ public class GraphLoaderApplication implements Bootable {
 			final DB db = mongoClient.getDB(DB_NAME);
 
 			mongoClient = new MongoClient(DB_SERVER_IP, DB_SERVER_PORT);
-
+			final AgentFactory agentFactory = AgentFactory.getInstance();
+			
 			graphLoaderActor = system.actorOf(new Props(new UntypedActorFactory() {
 				
 				private static final long serialVersionUID = 2013020501L;
 				
 				@Override
 				public Actor create() throws Exception {
-					return new GraphLoaderActor(getSorcerersPaths(db), networkModel);
+					return new GraphLoaderActor(getSorcerersPaths(db), networkModel, agentFactory);
 				}
 			}), "Gandalf");
 			

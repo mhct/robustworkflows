@@ -45,7 +45,6 @@ public class SorcererActor extends UntypedActor {
 			final DeployActorMsg msg = DeployActorMsg.valueOf(message);
 			ActorRef childActor = getContext().actorOf(msg.getProps(), msg.getName());
 			
-			//reply to graphLoader with a reference of the newly created actor
 			if(childActor == null) {
 				System.out.println("PROBLEM: childActor is null");
 			}

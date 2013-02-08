@@ -9,21 +9,14 @@ import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
-
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import akka.pattern.Patterns;
-import akka.remote.RemoteActorRef;
-import akka.util.Timeout;
+import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 import be.kuleuven.robustworkflows.infrastructure.messages.ActorDeployRef;
 import be.kuleuven.robustworkflows.infrastructure.messages.DeployActorMsg;
-import be.kuleuven.robustworkflows.model.FactoryActor;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -37,9 +30,12 @@ public class GraphLoaderActor extends UntypedActor {
 	private final DirectedGraph networkModel;
 	private final RandomDataGenerator random;
 	private int deployedActors = 0;
+	private final AgentFactory agentFactory;
 	
-	public GraphLoaderActor(List<String> sorcerersPaths, DirectedGraph networkModel) {
-		log.debug("LLLLLLLLLLLLLLLLLLLLLLLLOADED GraphLoaderActor");
+	public GraphLoaderActor(List<String> sorcerersPaths, DirectedGraph networkModel, AgentFactory agentFactory) {
+
+		log.debug("LLOADED GraphLoaderActor");
+		this.agentFactory = agentFactory;
 		if (sorcerersPaths == null || sorcerersPaths.size() == 0 || networkModel == null) {
 			throw new IllegalArgumentException("Sorcerers Path can not be null");
 		}
@@ -55,33 +51,14 @@ public class GraphLoaderActor extends UntypedActor {
 		if (message.equals("start")) {
 			log.info("GraphLoaderActor Started");
 			
-			//TODO redo adding the right places. The goal now is to check the load of a distributed system
-			//load Sorcerers
-//			DeployActorMsg msg = new DeployActorMsg(new Props(FactoryActor.class), "factory1");
-//			for(ActorRef ref: sorcerers) {
-//				ref.tell(msg, getSelf());
-//			}
-			
-			final ActorRef sorcerer = getRandomSorcerer();
-			loadActorsGraph(sorcerer);
+			loadActorsGraph();
 			
 		} else if (ActorDeployRef.class.isInstance(message)) {
 			ActorDeployRef ref = (ActorDeployRef) message;
-			System.out.println("!!!!!!!! Received msg from: " + ref.getNodeName());
-			System.out.println("!!!!!!!! Ref: " + ref.getRef().getClass());
-			ref.getRef().tell(getSelf(), getSelf());
-			System.out.println("!!!!!!!! SENT reference to remote actore");
-			
-			// to complete network graph model
-			Node temp = networkModel.getNode(ref.getNodeName());
-			System.out.println("Node: " + temp);
-//			System.out.println("Node: " + temp.getAttributes().getValue("NodeType"));
 			
 			networkModel.getNode(ref.getNodeName()).getAttributes().setValue("ActorRef", ref.getRef().path().toString());
 			actors.put(ref.getNodeName(), ref.getRef());
-//			ActorRef sourceTmp = (RemoteActorRef) networkModel.getNode(ref.getNodeName()).getAttributes().getValue("ActorRef");
-//			System.out.println("sourceTMp: " + networkModel.getNode(ref.getNodeName()).getAttributes().getValue("ActorRef"));
-			
+
 			//ADD REFERENCES TO REMOTE ACTORS
 			deployedActors++;
 			if (networkModel.getNodeCount() == deployedActors) {
@@ -146,33 +123,13 @@ public class GraphLoaderActor extends UntypedActor {
 	 * @throws Exception in the case it is not possible to load one of the actors
 	 * 
 	 */
-	private void loadActorsGraph(ActorRef sorcerer) throws Exception {
-		
-		Timeout timeout = new Timeout(Duration.create(5, "seconds"));
-	
-		if (sorcerer == null) {
-			throw new IllegalArgumentException("Sorcerer can not be null");
-		}
-		
+	private void loadActorsGraph() throws Exception {
 		
 		//load actors remotely corresponding to each NodeType
-		//TODO use a chain of responsibility with handlers for each NodeType
 		for(Node n: networkModel.getNodes()) {
 			log.debug("node: " + n.getId());
-
-			//blocking operations
-//			Future<Object> future = Patterns.ask(sorcerer, new DeployActorMsg(new Props(FactoryActor.class), n.getNodeData().getId()), timeout); //blocking operation
-//			ActorRef result = (ActorRef) Await.result(future, timeout.duration());
-			sorcerer.tell(new DeployActorMsg(new Props(FactoryActor.class), n.getNodeData().getId()), getSelf()); //blocking operation
-//			n.getAttributes().setValue("ActorRef", result);
+			ActorRef sorcerer = getRandomSorcerer();
+			sorcerer.tell(new DeployActorMsg(new Props(agentFactory.handle(n.getAttributes().getValue("NodeType"))), n.getNodeData().getId()), getSelf()); //blocking operation
 		}
-		 
-//		connect the actors by sending references to each other
-//		for(Edge e: networkModel.getEdges()) {
-//			log.info("e: " +e.getId() + " :  "+ e.getSource().getId() + " -> " + e.getTarget().getId());
-//			Future<Object> future = Patterns.ask((ActorRef)e.getTarget().getAttributes().getValue("ActorRef"),
-//												(ActorRef)e.getSource().getAttributes().getValue("ActorRef"), timeout);
-//			log.info("Result: " + (String) Await.result(future, timeout.duration()));
-//		}
 	}
 }
