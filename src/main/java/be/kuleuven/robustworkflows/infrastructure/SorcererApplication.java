@@ -6,6 +6,8 @@ import java.net.UnknownHostException;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
 
+import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
+
 import com.mongodb.MongoClient;
 import com.typesafe.config.ConfigFactory;
 
@@ -65,13 +67,15 @@ public class SorcererApplication implements Bootable {
 			e.printStackTrace();
 		}
 		
+		final AgentFactory agentFactory = AgentFactory.getInstance();
+		
 		sorcererActor = system.actorOf(new Props(new UntypedActorFactory() {
 			
 			private static final long serialVersionUID = 2013020101L;
 
 			@Override
 			public Actor create() throws Exception {
-				return new SorcererActor(mongoClient, DB_NAME);
+				return new SorcererActor(mongoClient, DB_NAME, agentFactory);
 			}
 		}), SORCERER_NAME);
 		

@@ -1,7 +1,6 @@
 package be.kuleuven.robustworkflows.infrastructure.configuration;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.GraphController;
@@ -22,7 +21,13 @@ import org.openide.util.Lookup;
  */
 public class GephiGraphImporter {
 	
-	public static void insertDataToWorkspace(File rawGraph, Workspace workspace) {
+	/**
+	 * Loads data from graph file and inserts it on the given workspace
+	 * 
+	 * @param rawGraph File containing the raw graph data
+	 * @param workspace workspace that will receive the graph model which represents the raw graph data
+	 */
+	private static void insertDataToWorkspace(File rawGraph, Workspace workspace) {
 		
 		ImportController importController = Lookup.getDefault().lookup(ImportController.class);        
 		Container container;
@@ -30,14 +35,20 @@ public class GephiGraphImporter {
 		   container = importController.importFile(rawGraph);
 		   container.getLoader().setEdgeDefault(EdgeDefault.DIRECTED);   //Force DIRECTED
 		   container.setAllowAutoNode(false);  //Doncreate missing nodes
-		} catch (Exception ex) {
-		   ex.printStackTrace();
+		} catch (Exception e) {
+		   e.printStackTrace();
 		   return;
 		}
 		//Append imported data to GraphAPI
 		importController.process(container, new DefaultProcessor(), workspace);
 	}
 	
+	/**
+	 * Gets a graph representation of a graph model
+	 * 
+	 * @param workspace containing the graph model
+	 * @return a DirectedGraph of the model contained in the given workspace
+	 */
 	private static DirectedGraph getGraph(Workspace workspace) {
 		 GraphModel gm = Lookup.getDefault().lookup(GraphController.class).getModel(workspace);
 		 
@@ -52,33 +63,23 @@ public class GephiGraphImporter {
 	}
 
 	/**
-	 * Loads a DirectedGraph from a Gephi file
+	 * FactoryMethod, Loads a DirectedGraph from a Gephi file
 	 * 
 	 * @param gephiFile
 	 * @return
 	 */
-	public static DirectedGraph loadDirectedGraphFrom(String gephiFile) {
+	public static DirectedGraph loadDirectedGraphFrom(final File gephiFile) {
+		if (gephiFile == null) {
+			throw new IllegalArgumentException("File for GRAPH can not be null or empty");
+		}
+		
 		try {
-			final File rawGraph = new File(GephiGraphImporter.class.getResource(gephiFile).toURI());
 			final Workspace workspace = loadWorkspace();
-			
-			insertDataToWorkspace(rawGraph, workspace);
-			
+			insertDataToWorkspace(gephiFile, workspace);
 			return getGraph(workspace);
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException("Invalid Path");
+			
 		} catch (NullPointerException e) {
-			throw new IllegalArgumentException("File path for GRAPH can not be null or empty");
+			throw new IllegalArgumentException("File for GRAPH can not be null or empty");
 		}
 	}
-	
-	//	public void iterate() {
-//		 for(Node n: graph.getNodes()) {
-//			 System.out.println("node: " + n.getId());
-//		 }
-//		 
-//		 for(Edge e: graph.getEdges()) {
-//			 System.out.println("e: " +e.getId() + " :  "+ e.getSource().getId() + " -> " + e.getTarget().getId());
-//		 }
-//	}
 }

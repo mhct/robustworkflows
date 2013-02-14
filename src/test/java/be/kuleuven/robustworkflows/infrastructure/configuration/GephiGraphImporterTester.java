@@ -1,8 +1,9 @@
 package be.kuleuven.robustworkflows.infrastructure.configuration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
-import java.net.URL;
+import java.io.File;
+import java.net.URISyntaxException;
 
 import org.gephi.graph.api.Attributes;
 import org.gephi.graph.api.DirectedGraph;
@@ -16,6 +17,16 @@ public class GephiGraphImporterTester {
 
 	private String graphPath;
 
+	private static File loadFileFromPath(String filename) {
+		File ret = null;
+		try {
+			ret = new File(GephiGraphImporterTester.class.getResource(filename).toURI());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
 	@Before
 	public void getGraphPath() {
 //		System.out.println("/" + getClass().getName().replaceAll("\\.", "/") + "/data/simple1.gexf");
@@ -32,12 +43,12 @@ public class GephiGraphImporterTester {
 
 	@Test
 	public void testLoadDirectedGraphFrom() {
-		assertNotNull(GephiGraphImporter.loadDirectedGraphFrom(graphPath));
+		assertNotNull(GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath(graphPath)));
 	}
 
 	@Test
 	public void testLoadDirectedGraph() {
-		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(graphPath);
+		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath(graphPath));
 		
 		Node n = graph.getNode("60");
 		Attributes a = n.getAttributes();
@@ -52,6 +63,12 @@ public class GephiGraphImporterTester {
 		}
 		
 		System.out.println("ACtorRef: " + graph.getNode(6).getAttributes().getValue("ActorRef"));
+	}
+	
+//	@Test
+	public static void main(String[] args) {
+		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("/scenario1/internet_routers-22july06.gml"));
+		System.out.println(graph.getNodeCount());
 	}
 
 }

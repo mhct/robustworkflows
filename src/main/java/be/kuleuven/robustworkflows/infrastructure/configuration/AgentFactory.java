@@ -2,6 +2,8 @@ package be.kuleuven.robustworkflows.infrastructure.configuration;
 
 import akka.actor.Actor;
 
+import com.mongodb.DB;
+
 /**
  * Factory responsible for instantiating Model classes. That is, this factory instantiates
  * classes belonging to the emulation MODEL. Normally Agents
@@ -12,14 +14,36 @@ import akka.actor.Actor;
 public class AgentFactory {
 	
 	private AgentHandlerChain chain = null;
+
+	/**
+	 * Creates instances of classes given by rawType
+	 * 
+	 * @param rawType
+	 * @param db
+	 * @return
+	 */
+	public Actor handleInstance(Object rawType, DB db) {
+		if (rawType == null || db == null) {
+			throw new RuntimeException("rawType, db can not be null");
+		}
+		
+		String agentType = (String) rawType;
+		return chain.handle(agentType).createInstance(db);
+	}
 	
+	/**
+	 * Describes WHICH types of actor it should be createad given a specified rawType
+	 * 
+	 * @param rawType
+	 * @return
+	 */
 	public Class<? extends Actor> handle(Object rawType) {
 		if (rawType == null) {
 			throw new RuntimeException("rawType can not be null");
 		}
 		
 		String agentType = (String) rawType;
-		return chain.handle(agentType); 
+		return chain.handle(agentType).factoryOf();
 	}
 	
 	private void addHandler(AgentHandlerChain handler) {
@@ -72,9 +96,10 @@ abstract class AgentHandlerChain {
 	 * @param name the name of the class that should be loaded
 	 * @return a class of the proper type
 	 */
-	public Class<? extends Actor> handle(String name) {
+	public AgentHandlerChain handle(String name) {
 		if (canHandle(name)) {
-			return handleIt(name);
+//			return handleIt(name);
+			return this;
 		} else if (next != null) {
 			return next.handle(name);
 		} else {
@@ -105,14 +130,19 @@ abstract class AgentHandlerChain {
 	 * @param name
 	 * @return
 	 */
-	Class<? extends Actor> handleIt(String name) {
-		
-		if (canHandle(name)) {
-			return factoryOf;
-		} else {
-			return null;
-		}
+//	Class<? extends Actor> handleIt(String name) {
+//		
+//		if (canHandle(name)) {
+//			return factoryOf;
+//		} else {
+//			return null;
+//		}
+//	}
+	Class<? extends Actor> factoryOf() {
+		return factoryOf;
 	}
+	
+	abstract public Actor createInstance(DB db);
 	
 }
 

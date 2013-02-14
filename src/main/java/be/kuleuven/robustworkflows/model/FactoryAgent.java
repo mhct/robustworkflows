@@ -2,21 +2,24 @@ package be.kuleuven.robustworkflows.model;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 
-public class FactoryAgent extends UntypedActor {
+import com.mongodb.DB;
+
+public class FactoryAgent extends UntypedActor implements EventDB {
 	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
 	private List<ActorRef> neigbhor;
-	
-	public FactoryAgent() {
+	private DB db;
+
+	public FactoryAgent(DB db, List<ActorRef> neighbors) {
 		log.info("FactoryActor started");
-		neigbhor = Lists.newArrayList();
+		
+		this.db = db;
+		this.neigbhor = neighbors;
 	}
 	
 	@Override
@@ -26,6 +29,11 @@ public class FactoryAgent extends UntypedActor {
 			log.debug("Adding neighbor to neighborlist" + message);
 			neigbhor.add((ActorRef) message);
 		}
+	}
+
+	@Override
+	public void setDB(DB db) {
+		this.db = db;
 	}
 
 }

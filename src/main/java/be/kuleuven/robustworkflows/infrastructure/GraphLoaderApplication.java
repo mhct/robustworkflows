@@ -1,6 +1,8 @@
 package be.kuleuven.robustworkflows.infrastructure;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -31,7 +33,8 @@ public class GraphLoaderApplication implements Bootable {
 	private static final String DEFAULT_DB_SERVER_IP = "127.0.0.1"; //put this name on a config file
 	private static final Integer DEFAULT_DB_SERVER_PORT = 27017;
 	private static final String DEFAULT_DB_NAME = "workflows"; //put this name on a config file
-	private static final String DEFAULT_NETWORK_MODEL = "/simple500.gexf"; //put this name on a config file
+//	private static final String DEFAULT_NETWORK_MODEL = "/simple500.gexf"; //put this name on a config file
+	private static final String DEFAULT_NETWORK_MODEL = "/scenario1/internet_routers-22july06.gml"; //put this name on a config file
 
 	private static final Configuration config = new EnvironmentConfiguration();
 	private static final String systemPort = config.getString("SYSTEM_PORT", DEFAULT_SYSTEM_PORT);
@@ -97,7 +100,11 @@ public class GraphLoaderApplication implements Bootable {
 
 	public GraphLoaderApplication() {
 		this.system = ActorSystem.create(SYSTEM_NAME, ConfigFactory.parseString("akka.remote.netty.hostname=\""+systemIp+"\"\nakka.remote.netty.port=\""+ systemPort + "\"").withFallback(ConfigFactory.load()));
-		this.networkModel = GephiGraphImporter.loadDirectedGraphFrom(NETWORK_MODEL);
+		try {
+			this.networkModel = GephiGraphImporter.loadDirectedGraphFrom(new File(getClass().getResource(NETWORK_MODEL).toURI()));
+		} catch (URISyntaxException e) {
+			throw new RuntimeException("Invalid path of network model file: " + NETWORK_MODEL);
+		}
 	}
 	
 	public static void main(String[] args) throws IOException {

@@ -129,7 +129,8 @@ public class GraphLoaderActor extends UntypedActor {
 		for(Node n: networkModel.getNodes()) {
 			log.debug("node: " + n.getId());
 			ActorRef sorcerer = getRandomSorcerer();
-			sorcerer.tell(new DeployActorMsg(new Props(agentFactory.handle(n.getAttributes().getValue("NodeType"))), n.getNodeData().getId()), getSelf()); //blocking operation
+//			sorcerer.tell(new DeployActorMsg(new Props(agentFactory.handle(n.getAttributes().getValue("NodeType"))), n.getNodeData().getId()), getSelf()); //blocking operation
+			sorcerer.tell(new DeployActorMsg("Factory", n.getNodeData().getId()), getSelf()); //blocking operation
 		}
 	}
 }
