@@ -2,6 +2,9 @@ package be.kuleuven.robustworkflows.model;
 
 import java.util.List;
 
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomDataGenerator;
+
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
@@ -19,12 +22,16 @@ import com.mongodb.DBObject;
  *
  */
 public class FactoryAgent extends UntypedActor {
-	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
+	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+	
+	private static final int SEED_SORCERER_SELECTION = 989777878; //just a fixed seed
+
+	private final RandomDataGenerator random; 
 	private final List<ActorRef> neigbhor;
 	private final DB db;
+	private double avgComputationTime;
 
-	private double computationTime;
 
 	@Override
 	public void preStart() {
@@ -41,14 +48,16 @@ public class FactoryAgent extends UntypedActor {
 		
 		this.db = db;
 		this.neigbhor = neighbors;
+		this.random = new RandomDataGenerator(new MersenneTwister(SEED_SORCERER_SELECTION));
 	}
 	
-	public FactoryAgent(DB db, List<ActorRef> neighbors, double computationTime) {
+	public FactoryAgent(DB db, List<ActorRef> neighbors, double avgComputationTime) {
 		log.info("FactoryActor started");
 		
 		this.db = db;
 		this.neigbhor = neighbors;
-		this.computationTime = computationTime;
+		this.avgComputationTime = avgComputationTime;
+		this.random = new RandomDataGenerator(new MersenneTwister(SEED_SORCERER_SELECTION));
 	}
 	
 	@Override
@@ -57,8 +66,8 @@ public class FactoryAgent extends UntypedActor {
 		if(ActorRef.class.isInstance(message)) {
 			log.debug("Adding neighbor to neighborlist" + message);
 			neigbhor.add((ActorRef) message);
-		} else if (ExplorationAnt.class.isInstance(message)) {
-			
+		} else if (ServiceRequestExploration.class.isInstance(message)) {
+			sender().tell(QoSData.getInstance(random.nextPoisson(avgComputationTime)), self());
 		} else {
 			unhandled(message);
 		}

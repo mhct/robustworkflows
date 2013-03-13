@@ -3,20 +3,17 @@ package be.kuleuven.robustworkflows.infrastructure;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.EnvironmentConfiguration;
-
-import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
-
-import com.mongodb.MongoClient;
-import com.typesafe.config.ConfigFactory;
-
 import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 import akka.kernel.Bootable;
+import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
+
+import com.mongodb.MongoClient;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 /**
  * The Sorcerer is responsible for instantiating a SorcererActor
@@ -31,24 +28,15 @@ import akka.kernel.Bootable;
  */
 public class SorcererApplication implements Bootable {
 	
-	private static final String DEFAULT_SYSTEM_IP = "127.0.0.1";
-	private static final String DEFAULT_SYSTEM_PORT = "29900";
-	private static final String DEFAULT_SORCERER_NAME = "bilbo";
-	private static final String SYSTEM_NAME = "RobustWorkflows";
-	private static final String DEFAULT_DB_SERVER_IP = "127.0.0.1";
-	private static final Integer DEFAULT_DB_SERVER_PORT = 27017;
-	private static final String DEFAULT_DB_NAME = "workflows";
+	private static final Config config = ConfigFactory.load().getConfig("sorcerer");
+
+	private static final String SYSTEM_NAME = config.getString("system-name");
+	private static final String DB_SERVER_IP = config.getString("db-server-ip");
+	private static final Integer DB_SERVER_PORT = config.getInt("db-server-port");
+	private static final String DB_NAME = config.getString("db-name");
+	private static final String SORCERER_NAME = config.getString("sorcerer-name");
 	
-	private static final Configuration config = new EnvironmentConfiguration();
-	private static final String SYSTEM_PORT = config.getString("SYSTEM_PORT", DEFAULT_SYSTEM_PORT);
-	private static final String SYSTEM_IP = config.getString("SYSTEM_IP", DEFAULT_SYSTEM_IP);
-	private static final String SORCERER_NAME = config.getString("SORCERER_NAME", DEFAULT_SORCERER_NAME);
-	private static final String DB_SERVER_IP = config.getString("DB_SERVER_IP", DEFAULT_DB_SERVER_IP);
-	private static final Integer DB_SERVER_PORT = config.getInteger("DB_SERVER_IP", DEFAULT_DB_SERVER_PORT);
-	private static final String DB_NAME = config.getString("DB_NAME", DEFAULT_DB_NAME);
-	
-	
-	private final ActorSystem system = ActorSystem.create(SYSTEM_NAME, ConfigFactory.parseString("akka.remote.netty.hostname=\""+SYSTEM_IP+"\"\nakka.remote.netty.port=\""+ SYSTEM_PORT + "\"").withFallback(ConfigFactory.load()));
+	private final ActorSystem system = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
 	
 	private MongoClient mongoClient;
 	private ActorRef sorcererActor;

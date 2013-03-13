@@ -23,7 +23,12 @@
     </dependencySets>
     <files>
         <file>
-            <source>resources/start</source>
+            <source>resources/startSorcerer</source>
+            <outputDirectory>/bin</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+        <file>
+            <source>resources/startGraphLoaderApp</source>
             <outputDirectory>/bin</outputDirectory>
             <fileMode>744</fileMode>
         </file>

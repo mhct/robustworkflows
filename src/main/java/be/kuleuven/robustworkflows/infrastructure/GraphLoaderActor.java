@@ -34,7 +34,7 @@ public class GraphLoaderActor extends UntypedActor {
 	
 	public GraphLoaderActor(List<String> sorcerersPaths, DirectedGraph networkModel, AgentFactory agentFactory) {
 
-		log.debug("LLOADED GraphLoaderActor");
+		log.debug("LOADED GraphLoaderActor");
 		this.agentFactory = agentFactory;
 		if (sorcerersPaths == null || sorcerersPaths.size() == 0 || networkModel == null) {
 			throw new IllegalArgumentException("Sorcerers Path can not be null");
@@ -96,7 +96,7 @@ public class GraphLoaderActor extends UntypedActor {
 		}
 		
 		if (ret.size() == 0) {
-			throw new RuntimeException("No available sorcerer were found");
+			throw new RuntimeException("No available sorcerer was found");
 		}
 		
 		return ret;

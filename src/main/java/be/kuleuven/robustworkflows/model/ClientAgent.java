@@ -3,26 +3,37 @@ package be.kuleuven.robustworkflows.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
-import com.mongodb.DB;
+import scala.concurrent.duration.FiniteDuration;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 
-public class ClientAgent extends UntypedActor {
-	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+import com.mongodb.DB;
 
-	private final List<ActorRef> neigbhor;
+/**
+ * 
+ * @author mario
+ *
+ */
+public class ClientAgent extends UntypedActor implements ClientAgentProxy {
+	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+	
+	private final List<ActorRef> neighbors;
 
 	private final DB db;
+
+	private ClientAgentState currentState;
 	
 	public ClientAgent(DB db, ArrayList<ActorRef> arrayList) {
 		log.info("C L I E N T started");
 		
-		this.neigbhor = arrayList;
+		this.neighbors = arrayList;
 		this.db = db;
+		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
+//		context().system().scheduler().scheduleOnce(FiniteDuration.fromNanos(arg0), arg1, arg2);
+		//TODO check how to use the scheduler akka
 	}
 	
 	@Override
@@ -30,8 +41,29 @@ public class ClientAgent extends UntypedActor {
 		//Add reference to current actor
 		if(ActorRef.class.isInstance(message)) {
 			log.debug("Adding neighbor to neighborlist" + message);
-			neigbhor.add((ActorRef) message);
+			neighbors.add((ActorRef) message);
+		} else {
+			currentState.onReceive(message, sender());
 		}
 	}
 
+	/**
+	 * Broadcasts a message to all neighbors
+	 * 
+	 * @param msg
+	 */
+	public void broadcastToNeighbors(Object msg) {
+		for (ActorRef neighbor: neighbors) {
+			neighbor.tell(msg, self());
+		}
+	}
+	
+	public void setState(ClientAgentState state) {
+		this.currentState = state;
+	}
+	
+	protected void addNeighbor(ActorRef actor) {
+		neighbors.add(actor);
+	}
+	
 }
