@@ -32,7 +32,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		this.neighbors = arrayList;
 		this.db = db;
 		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
-//		context().system().scheduler().scheduleOnce(FiniteDuration.fromNanos(arg0), arg1, arg2);
+		context().system().scheduler().scheduleOnce(Duration., arg1, arg2);
 		//TODO check how to use the scheduler akka
 	}
 	
