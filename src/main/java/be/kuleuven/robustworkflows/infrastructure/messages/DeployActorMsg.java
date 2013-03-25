@@ -56,6 +56,13 @@ public class DeployActorMsg implements Serializable {
 	public String getName() {
 		return name;
 	}
+
+	@Override
+	public String toString() {
+		return "DeployActorMsg [name=" + name + ", agentType=" + agentType
+				+ "]";
+	}
+	
 	
 	/**
 	 * {@link Deprecated}

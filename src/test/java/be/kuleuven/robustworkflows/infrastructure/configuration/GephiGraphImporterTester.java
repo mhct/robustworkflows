@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.UUID;
 
 import org.gephi.graph.api.Attributes;
 import org.gephi.graph.api.DirectedGraph;
@@ -24,6 +25,7 @@ public class GephiGraphImporterTester {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Abs: path" + ret.getAbsolutePath());
 		return ret;
 	}
 	
@@ -65,9 +67,14 @@ public class GephiGraphImporterTester {
 		System.out.println("ACtorRef: " + graph.getNode(6).getAttributes().getValue("ActorRef"));
 	}
 	
+	@Test(expected=IllegalArgumentException.class)
+	public void testNonExistingFile() {
+		GephiGraphImporter.loadDirectedGraphFrom(new File(UUID.randomUUID().toString().concat(".fakefile")));
+	}
 //	@Test
 	public static void main(String[] args) {
-		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("/scenario1/internet_routers-22july06.gml"));
+//		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("/scenario1/internet_routers-22july06.gml"));
+		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("/simple1.gexf"));
 		System.out.println(graph.getNodeCount());
 	}
 

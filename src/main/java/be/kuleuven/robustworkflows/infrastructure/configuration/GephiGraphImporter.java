@@ -28,11 +28,19 @@ public class GephiGraphImporter {
 	 * @param workspace workspace that will receive the graph model which represents the raw graph data
 	 */
 	private static void insertDataToWorkspace(File rawGraph, Workspace workspace) {
-		
+		if (rawGraph == null) {
+			System.out.println("there is a problem at the rawGraph");
+		} else {
+			System.out.println("canReadL: " + rawGraph.canRead());
+			System.out.println("abspath: " + rawGraph.getAbsolutePath());
+		}
 		ImportController importController = Lookup.getDefault().lookup(ImportController.class);        
 		Container container;
 		try {
 		   container = importController.importFile(rawGraph);
+		   if(container == null) {
+			   System.out.println("Container is null. problem");
+		   }
 		   container.getLoader().setEdgeDefault(EdgeDefault.DIRECTED);   //Force DIRECTED
 		   container.setAllowAutoNode(false);  //Doncreate missing nodes
 		} catch (Exception e) {
@@ -69,8 +77,8 @@ public class GephiGraphImporter {
 	 * @return
 	 */
 	public static DirectedGraph loadDirectedGraphFrom(final File gephiFile) {
-		if (gephiFile == null) {
-			throw new IllegalArgumentException("File for GRAPH can not be null or empty");
+		if (gephiFile == null || !gephiFile.exists()) {
+			throw new IllegalArgumentException("File for GRAPH can not be null, empty, or nonexistent.");
 		}
 		
 		try {

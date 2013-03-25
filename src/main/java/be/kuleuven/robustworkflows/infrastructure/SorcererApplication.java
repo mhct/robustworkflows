@@ -36,7 +36,7 @@ public class SorcererApplication implements Bootable {
 	private static final String DB_NAME = config.getString("db-name");
 	private static final String SORCERER_NAME = config.getString("sorcerer-name");
 	
-	private final ActorSystem system = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
+	private ActorSystem system;// = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
 	
 	private MongoClient mongoClient;
 	private ActorRef sorcererActor;
@@ -68,6 +68,10 @@ public class SorcererApplication implements Bootable {
 		}), SORCERER_NAME);
 		
 		sorcererActor.tell("start", system.deadLetters());
+	}
+	
+	public SorcererApplication() {
+		this.system = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
 	}
 	
 	public static void main(String[] args) throws IOException {

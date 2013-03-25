@@ -9,6 +9,7 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -29,32 +30,27 @@ public class FactoryAgent extends UntypedActor {
 
 	private final RandomDataGenerator random; 
 	private final List<ActorRef> neigbhor;
-	private final DB db;
 	private double avgComputationTime;
+	private InfrastructureStorage storage;
 
 
 	@Override
 	public void preStart() {
-		DBCollection coll = db.getCollection("factory_agents");
-		DBObject obj = new BasicDBObject();
-		obj.put("Current Time", System.currentTimeMillis());
-		obj.put("ActorName", getSelf().path().name());
-		
-		coll.insert(obj);
+		storage.persistFactoryAgentAddress(getSelf().path().name());
 	}
 	
 	public FactoryAgent(DB db, List<ActorRef> neighbors) {
 		log.info("FactoryActor started");
 		
-		this.db = db;
+		this.storage = new InfrastructureStorage(db);
 		this.neigbhor = neighbors;
 		this.random = new RandomDataGenerator(new MersenneTwister(SEED_SORCERER_SELECTION));
 	}
 	
 	public FactoryAgent(DB db, List<ActorRef> neighbors, double avgComputationTime) {
-		log.info("FactoryActor started");
+		log.info("FactoryAgent started");
 		
-		this.db = db;
+		this.storage = new InfrastructureStorage(db);
 		this.neigbhor = neighbors;
 		this.avgComputationTime = avgComputationTime;
 		this.random = new RandomDataGenerator(new MersenneTwister(SEED_SORCERER_SELECTION));

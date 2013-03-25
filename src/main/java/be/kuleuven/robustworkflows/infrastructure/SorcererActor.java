@@ -26,7 +26,8 @@ public class SorcererActor extends UntypedActor {
 	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	private final MongoClient mongoClient;
 	private final DB adminDB;
-	private final AgentFactory agentFactory; 
+	private final AgentFactory agentFactory;
+	private InfrastructureStorage storage; 
 	
 	public SorcererActor(MongoClient mongoClient, String dbName, AgentFactory agentFactory) {
 		log.debug("SorcererActor loaded");
@@ -35,14 +36,16 @@ public class SorcererActor extends UntypedActor {
 		this.mongoClient = mongoClient;
 		this.adminDB = mongoClient.getDB(dbName);
 		this.agentFactory = agentFactory;
+		this.storage = new InfrastructureStorage(adminDB);
 	}
 
 	@Override
 	public void onReceive(Object message) {
 		if(message.equals("start")) {
 			log.info("Sorcerer started" + getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
-			DBCollection collection = adminDB.getCollection("sorcerers");
-			collection.insert(new BasicDBObject("sorcererPath", getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress())));
+//			DBCollection collection = adminDB.getCollection("sorcerers");
+//			collection.insert(new BasicDBObject("sorcererPath", getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress())));
+			storage.persistSorcererAddress(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
 			
 		} else if (DeployActorMsg.class.isInstance(message)) {
 			log.debug("DeployActorMsg received" + message);

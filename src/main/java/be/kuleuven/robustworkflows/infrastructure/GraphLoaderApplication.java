@@ -2,6 +2,7 @@ package be.kuleuven.robustworkflows.infrastructure;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.List;
 
@@ -34,7 +35,8 @@ public class GraphLoaderApplication implements Bootable {
 	private static final String NETWORK_MODEL = config.getString("network-model");
 	
 	
-	private final ActorSystem system;// = ActorSystem.create(SYSTEM_NAME, ConfigFactory.parseString("akka.remote.netty.hostname=\""+systemIp+"\"\nakka.remote.netty.port=\""+ systemPort + "\"").withFallback(ConfigFactory.load()));
+//	private final ActorSystem system = ActorSystem.create(SYSTEM_NAME, ConfigFactory.parseString("akka.remote.netty.hostname=\""+systemIp+"\"\nakka.remote.netty.port=\""+ systemPort + "\"").withFallback(ConfigFactory.load()));
+	private final ActorSystem system;// = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
 	private MongoClient mongoClient;
 	private DirectedGraph networkModel;// = GephiGraphImporter.loadDirectedGraphFrom(NETWORK_MODEL);
 	
@@ -53,7 +55,8 @@ public class GraphLoaderApplication implements Bootable {
 		try {
 			mongoClient = new MongoClient(DB_SERVER_IP, DB_SERVER_PORT);
 			final DB db = mongoClient.getDB(DB_NAME);
-
+			final InfrastructureStorage storage = new InfrastructureStorage(db);
+			
 			mongoClient = new MongoClient(DB_SERVER_IP, DB_SERVER_PORT);
 			final AgentFactory agentFactory = AgentFactory.getInstance();
 			
@@ -63,7 +66,7 @@ public class GraphLoaderApplication implements Bootable {
 				
 				@Override
 				public Actor create() throws Exception {
-					return new GraphLoaderActor(getSorcerersPaths(db), networkModel, agentFactory);
+					return new GraphLoaderActor(storage, networkModel, agentFactory);
 				}
 			}), "Gandalf");
 			
@@ -74,24 +77,13 @@ public class GraphLoaderApplication implements Bootable {
 		}
 	}
 	
-	private List<String> getSorcerersPaths(DB db) {
-		List<String> sorcerersPaths = Lists.newArrayList();
-		
-		DBCursor cursor = db.getCollection("sorcerers").find();
-		while (cursor.hasNext()) {
-			String sorcererPath = (String) cursor.next().get("sorcererPath");
-			System.out.println("sorcererPath:" + sorcererPath);
-			sorcerersPaths.add(sorcererPath);
-		}
-		
-		return sorcerersPaths;
-	}
 
 	public GraphLoaderApplication() {
 		this.system = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
 		try {
 //			this.networkModel = GephiGraphImporter.loadDirectedGraphFrom(new File(getClass().getResource(NETWORK_MODEL).toURI()));
-			this.networkModel = GephiGraphImporter.loadDirectedGraphFrom(new File(NETWORK_MODEL));
+			File modelFile = new File(NETWORK_MODEL);
+			this.networkModel = GephiGraphImporter.loadDirectedGraphFrom(modelFile);
 //		} catch (URISyntaxException e) {
 		} catch (NullPointerException e) {
 			throw new RuntimeException("Invalid path of network model file: " + NETWORK_MODEL);

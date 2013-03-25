@@ -3,12 +3,11 @@ package be.kuleuven.robustworkflows.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import scala.concurrent.duration.FiniteDuration;
-
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 
 import com.mongodb.DB;
 
@@ -25,15 +24,21 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private final DB db;
 
 	private ClientAgentState currentState;
+
+	private InfrastructureStorage storage;
 	
 	public ClientAgent(DB db, ArrayList<ActorRef> arrayList) {
 		log.info("C L I E N T started");
 		
 		this.neighbors = arrayList;
 		this.db = db;
+		this.storage = new InfrastructureStorage(db);
 		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
-		context().system().scheduler().scheduleOnce(Duration., arg1, arg2);
-		//TODO check how to use the scheduler akka
+	}
+	
+	@Override
+	public void preStart() {
+		storage.persistClientAgentAddress(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
 	}
 	
 	@Override

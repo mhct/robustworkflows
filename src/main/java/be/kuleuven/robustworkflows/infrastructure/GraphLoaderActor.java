@@ -20,6 +20,7 @@ import be.kuleuven.robustworkflows.infrastructure.messages.DeployActorMsg;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mongodb.DBCursor;
 
 public class GraphLoaderActor extends UntypedActor {
 	
@@ -31,16 +32,18 @@ public class GraphLoaderActor extends UntypedActor {
 	private final RandomDataGenerator random;
 	private int deployedActors = 0;
 	private final AgentFactory agentFactory;
+	private InfrastructureStorage storage;
 	
-	public GraphLoaderActor(List<String> sorcerersPaths, DirectedGraph networkModel, AgentFactory agentFactory) {
+	public GraphLoaderActor(InfrastructureStorage storage, DirectedGraph networkModel, AgentFactory agentFactory) {
 
 		log.debug("LOADED GraphLoaderActor");
 		this.agentFactory = agentFactory;
-		if (sorcerersPaths == null || sorcerersPaths.size() == 0 || networkModel == null) {
+		if (storage == null || networkModel == null) {
 			throw new IllegalArgumentException("Sorcerers Path can not be null");
 		}
+		this.storage = storage;
 		random = new RandomDataGenerator(new MersenneTwister(SEED_SORCERER_SELECTION)); 
-		sorcerers = loadSorcerers(sorcerersPaths);
+		sorcerers = loadSorcerers(getSorcerersPaths(storage));
 		this.networkModel = networkModel;
 		this.actors = Maps.newTreeMap();
 	}
@@ -57,6 +60,7 @@ public class GraphLoaderActor extends UntypedActor {
 			ActorDeployRef ref = (ActorDeployRef) message;
 			
 			networkModel.getNode(ref.getNodeName()).getAttributes().setValue("ActorRef", ref.getRef().path().toString());
+			storage.persistActorAddress(ref.getRef().path().toString());
 			actors.put(ref.getNodeName(), ref.getRef());
 
 			//ADD REFERENCES TO REMOTE ACTORS
@@ -115,6 +119,21 @@ public class GraphLoaderActor extends UntypedActor {
 		} 
 		
 	}
+	
+	private List<String> getSorcerersPaths(InfrastructureStorage storage) {
+		List<String> sorcerersPaths = Lists.newArrayList();
+		
+//		DBCursor cursor = db.getCollection("sorcerers").find();
+		DBCursor cursor = storage.getSorcerers().find();
+		while (cursor.hasNext()) {
+			String sorcererPath = (String) cursor.next().get("sorcererPath");
+			System.out.println("sorcererPath:" + sorcererPath);
+			sorcerersPaths.add(sorcererPath);
+		}
+		
+		return sorcerersPaths;
+	}
+
 	
 	/**
 	 * loads actors on remote machines according to the structure defined in networkModel
