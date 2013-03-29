@@ -10,7 +10,6 @@ import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 
 import akka.actor.ActorRef;
-import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
@@ -31,13 +30,12 @@ public class GraphLoaderActor extends UntypedActor {
 	private final DirectedGraph networkModel;
 	private final RandomDataGenerator random;
 	private int deployedActors = 0;
-	private final AgentFactory agentFactory;
 	private InfrastructureStorage storage;
 	
 	public GraphLoaderActor(InfrastructureStorage storage, DirectedGraph networkModel, AgentFactory agentFactory) {
 
 		log.debug("LOADED GraphLoaderActor");
-		this.agentFactory = agentFactory;
+//		this.agentFactory = agentFactory;
 		if (storage == null || networkModel == null) {
 			throw new IllegalArgumentException("Sorcerers Path can not be null");
 		}

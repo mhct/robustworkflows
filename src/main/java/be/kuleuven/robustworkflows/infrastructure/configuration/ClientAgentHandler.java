@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import akka.actor.Actor;
 import akka.actor.ActorRef;
-import be.kuleuven.robustworkflows.model.ClientAgent;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgent;
 
 import com.mongodb.DB;
 

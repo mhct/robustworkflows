@@ -2,13 +2,7 @@ package be.kuleuven.robustworkflows.infrastructure.messages;
 
 import java.io.Serializable;
 
-import com.mongodb.DB;
-
-import be.kuleuven.robustworkflows.model.FactoryAgent;
-
-import akka.actor.Actor;
 import akka.actor.Props;
-import akka.actor.UntypedActorFactory;
 
 public class DeployActorMsg implements Serializable {
 

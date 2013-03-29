@@ -9,6 +9,7 @@ import java.util.List
 import akka.actor.ActorRef
 import akka.testkit.TestActorRef
 import akka.actor.ActorSystem
+import be.kuleuven.robustworkflows.model.factoryagent.FactoryAgent;
 
 class F_actoryAgentTest extends FunSuite {
 

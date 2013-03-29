@@ -1,4 +1,4 @@
-package be.kuleuven.robustworkflows.model;
+package be.kuleuven.robustworkflows.model.factoryagent;
 
 import java.util.List;
 
@@ -10,11 +10,10 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
+import be.kuleuven.robustworkflows.model.messages.QoSData;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 
 /**
  * Provides computational services to any clients

@@ -1,4 +1,4 @@
-package be.kuleuven.robustworkflows.model;
+package be.kuleuven.robustworkflows.model.messages;
 
 import akka.actor.ActorRef;
 

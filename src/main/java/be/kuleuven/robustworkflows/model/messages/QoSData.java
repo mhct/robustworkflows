@@ -1,4 +1,4 @@
-package be.kuleuven.robustworkflows.model;
+package be.kuleuven.robustworkflows.model.messages;
 
 /**
  * MESSAGE Containing information about the quality of service of a particular component service 
@@ -20,4 +20,11 @@ public class QoSData {
 	public long getComputationTime() {
 		return computationTime;
 	}
+
+	@Override
+	public String toString() {
+		return "QoSData [computationTime=" + computationTime + "]";
+	}
+	
+	
 }

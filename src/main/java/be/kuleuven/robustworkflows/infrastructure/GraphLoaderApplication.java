@@ -2,9 +2,7 @@ package be.kuleuven.robustworkflows.infrastructure;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.List;
 
 import org.gephi.graph.api.DirectedGraph;
 
@@ -17,9 +15,7 @@ import akka.kernel.Bootable;
 import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 import be.kuleuven.robustworkflows.infrastructure.configuration.GephiGraphImporter;
 
-import com.google.common.collect.Lists;
 import com.mongodb.DB;
-import com.mongodb.DBCursor;
 import com.mongodb.MongoClient;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;

@@ -11,9 +11,7 @@ import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 import be.kuleuven.robustworkflows.infrastructure.messages.ActorDeployRef;
 import be.kuleuven.robustworkflows.infrastructure.messages.DeployActorMsg;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
 
 /**
@@ -24,7 +22,6 @@ import com.mongodb.MongoClient;
  */
 public class SorcererActor extends UntypedActor {
 	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-	private final MongoClient mongoClient;
 	private final DB adminDB;
 	private final AgentFactory agentFactory;
 	private InfrastructureStorage storage; 
@@ -33,7 +30,7 @@ public class SorcererActor extends UntypedActor {
 		log.debug("SorcererActor loaded");
 		log.info("SorcererActor loaded R E A L L Y");
 		
-		this.mongoClient = mongoClient;
+//		this.mongoClient = mongoClient;
 		this.adminDB = mongoClient.getDB(dbName);
 		this.agentFactory = agentFactory;
 		this.storage = new InfrastructureStorage(adminDB);

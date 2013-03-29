@@ -1,11 +1,14 @@
 package be.kuleuven.robustworkflows.model;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.kernel.Bootable;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
+import bsh.Interpreter;
 
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
@@ -41,11 +44,12 @@ public class RobustWorkflowsLauncher implements Bootable {
 		}
 		db = mongoClient.getDB(DB_NAME);
 		storage = new InfrastructureStorage(db);
+		getClientAgent();
 //		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), getClientAgent(), system.dispatcher(), null);	
 	}
 	
 	//Assuming there is only one client agent
-	private ActorRef getClientAgent() {
+	public ActorRef getClientAgent() {
 		DBCursor cursor = storage.getActors().find();
 		String ref = "";
 		while (cursor.hasNext()) {	
@@ -54,5 +58,17 @@ public class RobustWorkflowsLauncher implements Bootable {
 		
 		System.out.println("ClientActor: " + ref);
 		return system.actorFor(ref);
+	}
+	
+	public ActorSystem getSystem() {
+		return system;
+	}
+	
+	public static void main(String[] args) throws IOException {
+//		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
+//		wf.startup();
+		Interpreter bsh = new Interpreter(new InputStreamReader(System.in), System.out, System.err, true);
+		bsh.run();
+//		wf.shutdown();
 	}
 }

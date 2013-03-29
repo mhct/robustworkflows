@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import be.kuleuven.robustworkflows.model.ClientAgent;
-import be.kuleuven.robustworkflows.model.FactoryAgent;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgent;
+import be.kuleuven.robustworkflows.model.factoryagent.FactoryAgent;
 
 public class AgentFactoryTest {
 

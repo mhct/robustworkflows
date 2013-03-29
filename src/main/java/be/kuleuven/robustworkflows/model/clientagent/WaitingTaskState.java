@@ -1,4 +1,4 @@
-package be.kuleuven.robustworkflows.model;
+package be.kuleuven.robustworkflows.model.clientagent;
 
 import akka.actor.ActorRef;
 
@@ -12,17 +12,17 @@ public class WaitingTaskState extends ClientAgentState {
 
 	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
-		if ("Compose".equals(message)) {
-			System.out.println("Received a compose message");
-			getClientAgentProxy().broadcastToNeighbors(ServiceRequestExploration.getInstance("A", 1, getClientAgentProxy().self())); //TODO add workflow to agent
+		if (RUN.equals(message)) {
+			persistEvent("WaitingTaskState: " + RUN);
+			
+		} else if ("Compose".equals(message)) {
+			persistEvent("Received a compose message");
 			setState(ExploringState.getInstance(getClientAgentProxy()));
+			
 		}
-		
 	}
 
 	public static ClientAgentState getInstance(ClientAgentProxy clientAgentProxy) {
 		return new WaitingTaskState(clientAgentProxy);
 	}
-
-
 }
