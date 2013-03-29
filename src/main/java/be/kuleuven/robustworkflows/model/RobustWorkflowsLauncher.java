@@ -3,6 +3,9 @@ package be.kuleuven.robustworkflows.model;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
+
+import scala.concurrent.duration.Duration;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -45,7 +48,16 @@ public class RobustWorkflowsLauncher implements Bootable {
 		db = mongoClient.getDB(DB_NAME);
 		storage = new InfrastructureStorage(db);
 		getClientAgent();
-//		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), getClientAgent(), system.dispatcher(), null);	
+		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), 
+				new Runnable() {
+
+					@Override
+					public void run() {
+						System.out.println("Enviando Compose Message");
+						getClientAgent().tell("Compose", system.deadLetters());
+					}
+			
+		}, system.dispatcher());	
 	}
 	
 	//Assuming there is only one client agent
@@ -65,10 +77,11 @@ public class RobustWorkflowsLauncher implements Bootable {
 	}
 	
 	public static void main(String[] args) throws IOException {
-//		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
-//		wf.startup();
-		Interpreter bsh = new Interpreter(new InputStreamReader(System.in), System.out, System.err, true);
-		bsh.run();
-//		wf.shutdown();
+		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
+		wf.startup();
+//		Interpreter bsh = new Interpreter(new InputStreamReader(System.in), System.out, System.err, true);
+//		bsh.run();
+		System.in.read();
+		wf.shutdown();
 	}
 }

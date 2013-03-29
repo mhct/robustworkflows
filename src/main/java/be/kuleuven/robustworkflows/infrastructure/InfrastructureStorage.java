@@ -31,6 +31,11 @@ public class InfrastructureStorage {
 		return db.getCollection("actors");
 	}
 
+	//@TODO move this to ModelStorage
+	public DBCollection getClientAgent() {
+		return db.getCollection("clientAgents");
+	}
+
 	public void persistClientAgentAddress(String address) {
 		db.getCollection("clientAgents").insert(new BasicDBObject("address", address));
 	}

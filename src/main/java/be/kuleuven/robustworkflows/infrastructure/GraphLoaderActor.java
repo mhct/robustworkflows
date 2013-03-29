@@ -2,12 +2,15 @@ package be.kuleuven.robustworkflows.infrastructure;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
+
+import scala.concurrent.duration.Duration;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
@@ -44,6 +47,18 @@ public class GraphLoaderActor extends UntypedActor {
 		sorcerers = loadSorcerers(getSorcerersPaths(storage));
 		this.networkModel = networkModel;
 		this.actors = Maps.newTreeMap();
+		
+		//once
+		context().system().scheduler().scheduleOnce(Duration.create(20, TimeUnit.SECONDS), 
+				new Runnable() {
+
+					@Override
+					public void run() {
+						System.out.println("Enviando Compose Message");
+						getClientAgent().tell("Compose", self());
+					}
+			
+		}, context().system().dispatcher());
 	}
 	
 	@Override
@@ -75,6 +90,16 @@ public class GraphLoaderActor extends UntypedActor {
 		
 	}
 	
+	public ActorRef getClientAgent() {
+		DBCursor cursor = storage.getClientAgent().find();
+		String ref = "";
+		while (cursor.hasNext()) {	
+			ref = (String) cursor.next().get("address");
+		}
+		
+		System.out.println("ClientActor: " + ref);
+		return context().system().actorFor(ref);
+	}
 	
 	/**
 	 * Creates a list of sorcerers actors available on remote machines

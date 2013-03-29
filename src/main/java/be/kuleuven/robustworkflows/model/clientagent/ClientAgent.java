@@ -47,16 +47,18 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	
 	@Override
 	public void preStart() {
-		storage.persistClientAgentAddress(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
+		log.debug("----->>>>" + self().path().toStringWithAddress(getContext().provider().getDefaultAddress()) + "<<<<<<<<-----");
+		storage.persistClientAgentAddress(self().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
 	}
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
 		//Add reference to current actor
 		if(ActorRef.class.isInstance(message)) {
-			log.debug("Adding neighbor to neighborlist" + message);
+			log.debug("\n\n\nAdding neighbor to neighborlist" + message);
 			neighbors.add((ActorRef) message);
 		} else {
+			log.debug("\n\n\nClientAgent, received Message" + message);
 			currentState.onReceive(message, sender());
 		}
 	}
@@ -84,6 +86,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 
 	@Override
 	public ModelStorage getModelStorage() {
+		log.debug("Getting Model Storage");
 		return modelStorage;
 	}
 
