@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2" xmlns:viz="http://www.gexf.net/1.2draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
+  <meta lastmodifieddate="2013-04-15">
+    <creator>Gephi 0.8</creator>
+    <description></description>
+  </meta>
+  <graph defaultedgetype="directed" timeformat="double" mode="dynamic">
+    <attributes class="node" mode="static">
+      <attribute id="NodeType" title="NodeType" type="string"></attribute>
+    </attributes>
+    <nodes>
+      <node id="1">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-958.0562" y="478.26172" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="2">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-899.80646" y="671.4059" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="3">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-737.3201" y="846.15533" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="4">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-501.25504" y="797.10284" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="5">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-289.71622" y="784.8397" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="6">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-65.914276" y="671.4059" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="7">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-81.24317" y="450.66968" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="8">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-194.67703" y="242.19664" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="9">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-458.33414" y="211.53883" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="10">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-850.75397" y="340.3016" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="11">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-620.8205" y="248.32819" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="12">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+        </attvalues>
+        <viz:size value="10.0"></viz:size>
+        <viz:position x="-519.6497" y="551.84045" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+    </nodes>
+    <edges>
+      <edge source="12" target="1">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="2">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="3">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="4">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="5">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="6">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="7">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="8">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="9">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="10">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+      <edge source="12" target="11">
+        <attvalues>
+          <attvalue for="weight" value="1.0"></attvalue>
+        </attvalues>
+      </edge>
+    </edges>
+  </graph>
+</gexf>

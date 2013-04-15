@@ -2,6 +2,7 @@ package be.kuleuven.robustworkflows.model.clientagent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;
@@ -13,6 +14,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
+import be.kuleuven.robustworkflows.model.messages.QoSData;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
 
 import com.mongodb.DB;
@@ -62,6 +64,10 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 			currentState.onReceive(message, sender());
 		}
 	}
+	
+	public void unhandledMessage(Object message) {
+		unhandled(message);
+	}
 
 	/**
 	 * Broadcasts a message to all neighbors
@@ -77,7 +83,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	public void setState(ClientAgentState state) {
 		this.currentState = state;
 //		this.currentState.run();
-		addExpirationTimer(1, "run");
+		addExpirationTimer(1, ClientAgentState.RUN); //this way I avoid having infinite calls for changing states after state
 	}
 	
 	protected void addNeighbor(ActorRef actor) {
@@ -102,9 +108,32 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		}, context().system().dispatcher());
 	}
 
+	
+	//TODO add abstraction to represent workflow
 	@Override
 	public ServiceRequestExploration getWorkflow() {
 		return ServiceRequestExploration.getInstance("A", 10, self());
+	}
+
+	/**
+	 * Selects the ActorRef with the lowest QoS
+	 * TODO change return type to proper abstraction
+	 *  
+	 */
+	@Override
+	public ActorRef evaluateComposition(Map<ActorRef, QoSData> replies) {
+		long min = Long.MAX_VALUE;
+		ActorRef currentWinner = null;
+		
+		for (Map.Entry<ActorRef, QoSData> e: replies.entrySet()) {
+			if (e.getValue().getComputationTime() <= min) {
+				min = e.getValue().getComputationTime();
+				currentWinner = e.getKey();
+			}
+		}
+		
+		assert currentWinner != null;
+		return currentWinner;
 	}
 	
 }

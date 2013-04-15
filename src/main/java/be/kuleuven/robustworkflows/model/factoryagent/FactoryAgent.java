@@ -1,17 +1,23 @@
 package be.kuleuven.robustworkflows.model.factoryagent;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
+
+import scala.concurrent.duration.Duration;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
+import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.messages.QoSData;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
 
 import com.mongodb.DB;
 
@@ -25,12 +31,17 @@ public class FactoryAgent extends UntypedActor {
 
 	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	
-	private static final int SEED_SORCERER_SELECTION = 989777878; //just a fixed seed
+//	private static final int SEED_SORCERER_SELECTION = 989777878; //just a fixed seed
+	private final int SEED_SORCERER_SELECTION = (int) Math.floor(Math.random() * 1000); //just a fixed seed
+
+	private static final String TIME_TO_WORK_FOR_REQUEST_FINISHED = "time_to_service_request";
 
 	private final RandomDataGenerator random; 
 	private final List<ActorRef> neigbhor;
-	private double avgComputationTime;
+	private double avgComputationTime = 120; //TODO add this value to the graph file and related AgentHandlers
 	private InfrastructureStorage storage;
+	private ActorRef servicingAgent = null;
+	private ModelStorage modelStorage;
 
 
 	@Override
@@ -42,6 +53,7 @@ public class FactoryAgent extends UntypedActor {
 		log.info("FactoryActor started");
 		
 		this.storage = new InfrastructureStorage(db);
+		this.modelStorage = new ModelStorage(db);
 		this.neigbhor = neighbors;
 		this.random = new RandomDataGenerator(new MersenneTwister(SEED_SORCERER_SELECTION));
 	}
@@ -63,10 +75,28 @@ public class FactoryAgent extends UntypedActor {
 			neigbhor.add((ActorRef) message);
 		} else if (ServiceRequestExploration.class.isInstance(message)) {
 			sender().tell(QoSData.getInstance(random.nextPoisson(avgComputationTime)), self());
+		} else if (ServiceRequest.class.isInstance(message)) {
+			modelStorage.persistEvent("FactoryAgent: " + self().path().name() + ", Engaging in Composition");
+			servicingAgent = sender();
+			addExpirationTimer(random.nextLong((long)(avgComputationTime - 300), (long)(avgComputationTime + 300)), FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED);
+		} else if (FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED.equals(message)) {
+			servicingAgent.tell(ServiceRequestFinished.getInstance(), self());
 		} else {
 			unhandled(message);
 		}
 		
 	}
+	
+	private void addExpirationTimer(long time, final String message) {
+		context().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 
+				new Runnable() {
+					@Override
+					public void run() {
+						self().tell(message, null);
+					}
+		}, context().system().dispatcher());
+	}
+
+
 
 }

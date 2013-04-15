@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 
 public abstract class ClientAgentState {
 	
-	final String RUN = "run";
+	static final String RUN = "run";
 	
 	private ClientAgentProxy clientAgentProxy;
 

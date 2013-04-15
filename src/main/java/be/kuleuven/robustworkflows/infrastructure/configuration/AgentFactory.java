@@ -32,7 +32,7 @@ public class AgentFactory {
 	}
 	
 	/**
-	 * Describes WHICH types of actor it should be createad given a specified rawType
+	 * Describes WHICH types of actor it should be created given a specified rawType
 	 * 
 	 * @param rawType
 	 * @return
