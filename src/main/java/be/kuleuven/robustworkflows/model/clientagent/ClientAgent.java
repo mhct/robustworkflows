@@ -14,6 +14,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
+import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.messages.QoSData;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
 
@@ -28,23 +29,19 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	
 	private final List<ActorRef> neighbors;
-
-//	private final DB db;
-
 	private ClientAgentState currentState;
-
 	private InfrastructureStorage storage;
-
 	private ModelStorage modelStorage;
+	private AntAPI antApi;
 	
 	public ClientAgent(DB db, ArrayList<ActorRef> arrayList) {
 		log.info("C L I E N T started");
 		
 		this.neighbors = arrayList;
-//		this.db = db;
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = new ModelStorage(db);
 		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
+		this.antApi = AntAPI.getInstance(context());
 	}
 	
 	@Override
