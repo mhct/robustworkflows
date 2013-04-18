@@ -2,6 +2,9 @@ package be.kuleuven.robustworkflows.model.ant;
 
 import java.util.List;
 
+import be.kuleuven.robustworkflows.model.ModelStorage;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
+
 import com.google.common.collect.Lists;
 
 import akka.actor.Actor;
@@ -19,9 +22,11 @@ import akka.actor.UntypedActorFactory;
 public class AntAPI {
 	List<ActorRef> explorationAnts = Lists.newArrayList();
 	private ActorContext context;
+	private final ModelStorage modelStorage;
 	
-	private AntAPI(ActorContext context) {
+	private AntAPI(ActorContext context, ModelStorage modelStorage) {
 		this.context = context;
+		this.modelStorage = modelStorage;
 	}
 	
 	public void createExplorationAnt() {
@@ -31,13 +36,15 @@ public class AntAPI {
 
 			@Override
 			public Actor create() throws Exception {
-				return ExplorationAnt.getInstance();
+				return ExplorationAnt.getInstance(modelStorage);
 			}
+
 		}), "explorationAnt" + explorationAnts.size()));
 
 	}
+
 	
-	public static AntAPI getInstance(ActorContext context) {
-		return new AntAPI(context);
+	public static AntAPI getInstance(ActorContext context, ModelStorage storage) {
+		return new AntAPI(context, storage);
 	}
 }

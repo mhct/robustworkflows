@@ -41,7 +41,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = new ModelStorage(db);
 		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
-		this.antApi = AntAPI.getInstance(context());
+		this.antApi = AntAPI.getInstance(context(), modelStorage);
 	}
 	
 	@Override
