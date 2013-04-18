@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;
-
-
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
@@ -15,9 +13,11 @@ import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
+import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.QoSData;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
 
+import com.google.common.collect.Lists;
 import com.mongodb.DB;
 
 /**
@@ -56,6 +56,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		if(ActorRef.class.isInstance(message)) {
 			log.debug("\n\n\nAdding neighbor to neighborlist" + message);
 			neighbors.add((ActorRef) message);
+		} else if ("GetNeighbors".equals(message)){
+			sender().tell(getNeighbors(), self());
 		} else {
 			log.debug("\n\n\nClientAgent, received Message" + message);
 			currentState.onReceive(message, sender());
@@ -75,6 +77,10 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		for (ActorRef neighbor: neighbors) {
 			neighbor.tell(msg, self());
 		}
+	}
+	
+	private Neighbors getNeighbors() {
+		return Neighbors.getInstance(Lists.newArrayList(neighbors));
 	}
 	
 	public void setState(ClientAgentState state) {
@@ -112,6 +118,10 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		return ServiceRequestExploration.getInstance("A", 10, self());
 	}
 
+	public AntAPI getAntAPI() {
+		return antApi;
+	}
+	
 	/**
 	 * Selects the ActorRef with the lowest QoS
 	 * TODO change return type to proper abstraction

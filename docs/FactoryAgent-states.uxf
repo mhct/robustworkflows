@@ -2,40 +2,15 @@
 <diagram program="umlet" version="12.0">
   <zoom_level>10</zoom_level>
   <element>
-    <type>com.umlet.element.custom.State</type>
-    <coordinates>
-      <x>380</x>
-      <y>380</y>
-      <w>220</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>Selecting Component Services
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>260</x>
+      <x>400</x>
       <y>300</y>
-      <w>428</w>
+      <w>150</w>
       <h>100</h>
     </coordinates>
-    <panel_attributes>lt=&lt;-
-Time expires, or receive feedback from "all" neighbors</panel_attributes>
-    <additional_attributes>220;80;220;30</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>350</x>
-      <y>390</y>
-      <w>248</w>
-      <h>100</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-
-Component services chosen</panel_attributes>
-    <additional_attributes>130;80;130;30</additional_attributes>
+    <panel_attributes>ServiceRequest</panel_attributes>
+    <additional_attributes>80;80;80;30</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.custom.InitialState</type>
@@ -67,19 +42,19 @@ ServiceRequestExploration
       <x>160</x>
       <y>180</y>
       <w>240</w>
-      <h>330</h>
+      <h>240</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 Composition
 is
 done</panel_attributes>
-    <additional_attributes>220;30;80;30;80;310;220;310</additional_attributes>
+    <additional_attributes>220;30;80;30;80;220;220;220</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.custom.State</type>
     <coordinates>
       <x>380</x>
-      <y>470</y>
+      <y>380</y>
       <w>220</w>
       <h>40</h>
     </coordinates>

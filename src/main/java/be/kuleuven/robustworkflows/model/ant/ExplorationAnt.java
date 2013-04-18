@@ -2,14 +2,17 @@ package be.kuleuven.robustworkflows.model.ant;
 
 import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.model.ModelStorage;
+import be.kuleuven.robustworkflows.model.Workflow;
 import be.kuleuven.robustworkflows.model.messages.QoSData;
 
 public class ExplorationAnt extends UntypedActor {
 
 	private final ModelStorage modelStorage;
+	private final Workflow workflow;
 
-	public ExplorationAnt(ModelStorage modelStorage) {
+	public ExplorationAnt(ModelStorage modelStorage, Workflow workflow) {
 		this.modelStorage = modelStorage;
+		this.workflow = workflow;
 	}
 
 	@Override
@@ -22,8 +25,8 @@ public class ExplorationAnt extends UntypedActor {
 		}
 	}
 	
-	public static ExplorationAnt getInstance(ModelStorage modelStorage) {
-		return new ExplorationAnt(modelStorage);
+	public static ExplorationAnt getInstance(ModelStorage modelStorage, Workflow workflow) {
+		return new ExplorationAnt(modelStorage, workflow);
 	}
 
 }
