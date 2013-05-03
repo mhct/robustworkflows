@@ -4,65 +4,8 @@
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>10</x>
-      <y>140</y>
-      <w>300</w>
-      <h>150</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;Actor&gt;&gt;
-ClientAgentFSM
---
-Receiving Events
-+ ServiceRequestExploration
-+ ExplorationDone
-+ getNeighbors
-
---
-Sending Events
-+ QoSData</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>270</x>
-      <y>260</y>
-      <w>390</w>
-      <h>60</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;30;370;40</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>280</x>
-      <y>130</y>
-      <w>260</w>
-      <h>50</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;30;240;30</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.Class</type>
-    <coordinates>
-      <x>0</x>
-      <y>640</y>
-      <w>310</w>
-      <h>140</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;Message&gt;&gt;
-ExplorationDone
---
-- QoSWorkflow</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Class</type>
-    <coordinates>
-      <x>470</x>
-      <y>300</y>
+      <x>700</x>
+      <y>330</y>
       <w>410</w>
       <h>200</h>
     </coordinates>
@@ -82,10 +25,35 @@ Sending Events
     <additional_attributes/>
   </element>
   <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>500</x>
+      <y>290</y>
+      <w>390</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;370;40</additional_attributes>
+  </element>
+  <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>520</x>
-      <y>110</y>
+      <x>180</x>
+      <y>660</y>
+      <w>340</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>ResourceProfile
+--
++ expectedTime(requestsPerSecond: int): long
++ static exponential(seed: int): ResourceProfile</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>750</x>
+      <y>140</y>
       <w>300</w>
       <h>80</h>
     </coordinates>
@@ -93,6 +61,116 @@ Sending Events
 --
 + createExplorationAnt(): ActorRef
  </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>210</x>
+      <y>400</y>
+      <w>310</w>
+      <h>170</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Actor&gt;&gt;
+FactoryAgent
+--
+Receiving Events
++ ServiceRequestExploration
++ ServiceRequest
++ TIME_TO_WORK_FOR_REQUEST_FINISHED
+--
+Sending Events
++ TIME_TO_WORK_FOR_REQUEST_FINISHED
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>1150</x>
+      <y>130</y>
+      <w>360</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>NodeAttributes
+--
++ NodeType: "Client", "Factory"
++ ComputationalResourceProfile: "Exponential"
++ Seed: Integer</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>310</x>
+      <y>540</y>
+      <w>50</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;30;120</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>510</x>
+      <y>160</y>
+      <w>260</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;240;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>900</x>
+      <y>600</y>
+      <w>230</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Message&gt;&gt;
+QoSData
+--
+- serviceTime: String
+- computationTime: long
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>1160</x>
+      <y>600</y>
+      <w>310</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Message&gt;&gt;
+ExplorationDone
+--
+- QoSWorkflow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>240</x>
+      <y>170</y>
+      <w>300</w>
+      <h>150</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Actor&gt;&gt;
+ClientAgentFSM
+--
+Receiving Events
++ ServiceRequestExploration
++ ExplorationDone
++ getNeighbors
++ ServiceRequestFinished
+
+--
+Sending Events
++ QoSData</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>

@@ -4,13 +4,51 @@
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>490</x>
-      <y>100</y>
-      <w>50</w>
-      <h>120</h>
+      <x>200</x>
+      <y>190</y>
+      <w>240</w>
+      <h>330</h>
     </coordinates>
-    <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>30;100;30;30</additional_attributes>
+    <panel_attributes>lt=&lt;-
+Composition
+is
+done</panel_attributes>
+    <additional_attributes>220;30;80;30;80;310;220;310</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.InitialState</type>
+    <coordinates>
+      <x>510</x>
+      <y>120</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>420</x>
+      <y>480</y>
+      <w>220</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>Engaging in Service
+Composition</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>420</x>
+      <y>200</y>
+      <w>210</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>WaitingTaskState
+</panel_attributes>
+    <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.custom.State</type>
@@ -36,18 +74,16 @@ Component services chosen</panel_attributes>
     <additional_attributes>130;80;130;30</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Relation</type>
+    <type>com.umlet.element.custom.State</type>
     <coordinates>
-      <x>200</x>
-      <y>190</y>
-      <w>240</w>
-      <h>330</h>
+      <x>420</x>
+      <y>390</y>
+      <w>220</w>
+      <h>40</h>
     </coordinates>
-    <panel_attributes>lt=&lt;-
-Composition
-is
-done</panel_attributes>
-    <additional_attributes>220;30;80;30;80;310;220;310</additional_attributes>
+    <panel_attributes>Selecting Component Services
+</panel_attributes>
+    <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>
@@ -62,51 +98,15 @@ Compose</panel_attributes>
     <additional_attributes>70;90;70;30</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.custom.State</type>
+    <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>420</x>
-      <y>200</y>
-      <w>210</w>
-      <h>40</h>
+      <x>490</x>
+      <y>100</y>
+      <w>50</w>
+      <h>120</h>
     </coordinates>
-    <panel_attributes>WaitingTaskState
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.custom.State</type>
-    <coordinates>
-      <x>420</x>
-      <y>390</y>
-      <w>220</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>Selecting Component Services
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.custom.State</type>
-    <coordinates>
-      <x>420</x>
-      <y>480</y>
-      <w>220</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>Engaging in Service
-Composition</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.custom.InitialState</type>
-    <coordinates>
-      <x>510</x>
-      <y>120</y>
-      <w>20</w>
-      <h>20</h>
-    </coordinates>
-    <panel_attributes/>
-    <additional_attributes/>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>30;100;30;30</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>

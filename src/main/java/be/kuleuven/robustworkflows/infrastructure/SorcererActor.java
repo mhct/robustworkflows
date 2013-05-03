@@ -8,8 +8,8 @@ import akka.actor.UntypedActorFactory;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
-import be.kuleuven.robustworkflows.infrastructure.messages.ActorDeployRef;
-import be.kuleuven.robustworkflows.infrastructure.messages.DeployActorMsg;
+import be.kuleuven.robustworkflows.infrastructure.messages.AgentDeployed;
+import be.kuleuven.robustworkflows.infrastructure.messages.DeployAgent;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -44,24 +44,24 @@ public class SorcererActor extends UntypedActor {
 //			collection.insert(new BasicDBObject("sorcererPath", getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress())));
 			storage.persistSorcererAddress(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
 			
-		} else if (DeployActorMsg.class.isInstance(message)) {
+		} else if (DeployAgent.class.isInstance(message)) {
 			log.debug("DeployActorMsg received" + message);
-			final DeployActorMsg msg = DeployActorMsg.valueOf(message);
+			final DeployAgent msg = DeployAgent.valueOf(message);
 			ActorRef childActor = getContext().actorOf(new Props(new UntypedActorFactory() {
 				
 				private static final long serialVersionUID = 2013021401L;
 
 				@Override
 				public Actor create() throws Exception {
-					return agentFactory.handleInstance(msg.getAgentType(), adminDB);
+					return agentFactory.handleInstance(msg.attributes(), adminDB);
 				}
-			}), msg.getName());
+			}), msg.attributes().getAgentId());
 			
 			if(childActor == null) {
 				System.out.println("PROBLEM: childActor is null");
 			}
 			
-			getSender().tell(new ActorDeployRef(childActor, msg.getName()), getSelf());
+			getSender().tell(new AgentDeployed(childActor, msg.attributes().getAgentId()), getSelf());
 		} else {
 			log.debug("Not handling message" + message);
 			unhandled(message);

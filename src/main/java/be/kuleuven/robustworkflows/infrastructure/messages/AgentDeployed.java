@@ -4,13 +4,13 @@ import java.io.Serializable;
 
 import akka.actor.ActorRef;
 
-public class ActorDeployRef implements Serializable{
+public class AgentDeployed implements Serializable{
 
 	private static final long serialVersionUID = 2013020601L;
 	private final ActorRef ref;
 	private final String nodeName;
 
-	public ActorDeployRef(ActorRef ref, String nodeName) {
+	public AgentDeployed(ActorRef ref, String nodeName) {
 		this.ref = ref;
 		this.nodeName = nodeName;
 	}

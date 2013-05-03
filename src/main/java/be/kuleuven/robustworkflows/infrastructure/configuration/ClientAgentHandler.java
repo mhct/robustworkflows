@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import akka.actor.Actor;
 import akka.actor.ActorRef;
+import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgent;
 
 import com.mongodb.DB;
@@ -15,7 +16,7 @@ public class ClientAgentHandler extends AgentHandlerChain {
 	}
 
 	@Override
-	public Actor createInstance(DB db) {
+	public Actor createInstance(AgentAttributes attributes, DB db) {
 		return new ClientAgent(db, new ArrayList<ActorRef>());
 	}
 }

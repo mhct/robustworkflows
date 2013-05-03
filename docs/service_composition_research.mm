@@ -1,4 +1,4 @@
-<map version="1.0.0">
+<map version="1.0.1">
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
 <node COLOR="#000000" CREATED="1366184039789" ID="ID_1975663021" MODIFIED="1366191185238" TEXT="service composition research">
 <font NAME="SansSerif" SIZE="20"/>
@@ -22,6 +22,22 @@
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 </node>
+<node COLOR="#00b439" CREATED="1366371956435" ID="ID_1961675776" MODIFIED="1366371980073" TEXT="biologically inspired mw for service composition">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1366371980414" ID="ID_1000305203" MODIFIED="1366371983272" TEXT="totally decentralized">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1366371985499" ID="ID_1462157990" MODIFIED="1366371992228" TEXT="uses p2p networks">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1366371998212" ID="ID_1745993807" MODIFIED="1366372001453" TEXT="scalable">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1366372003478" ID="ID_1029524851" MODIFIED="1366372008327" TEXT="robust to failures">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
 </node>
 <node COLOR="#0033ff" CREATED="1366191267993" ID="ID_211748430" MODIFIED="1366191292794" POSITION="right" TEXT="experiment1">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
@@ -43,6 +59,30 @@
 </node>
 <node COLOR="#990000" CREATED="1366191703719" ID="ID_590102856" MODIFIED="1366191733138" TEXT="for every request, to a particular time, the service provider always return the same result">
 <font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1366372105436" ID="ID_1189343623" MODIFIED="1366372110241" TEXT="open world">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1366372016460" ID="ID_794730299" MODIFIED="1366372112597" TEXT="two types of scenarios">
+<font NAME="SansSerif" SIZE="12"/>
+<node COLOR="#111111" CREATED="1366372020071" ID="ID_1103495218" MODIFIED="1366372027103" TEXT="long running processes">
+<node COLOR="#111111" CREATED="1366372027418" ID="ID_1545007272" MODIFIED="1366372059269" TEXT="demand a different type of QoS, it is more about the quality of the created composition,">
+<node COLOR="#111111" CREATED="1366372059270" ID="ID_1122662795" MODIFIED="1366372061281" TEXT="execution time"/>
+<node COLOR="#111111" CREATED="1366372061539" ID="ID_1650767419" MODIFIED="1366372062440" TEXT="price "/>
+<node COLOR="#111111" CREATED="1366372064082" ID="ID_312243937" MODIFIED="1366372066951" TEXT="robustness"/>
+<node COLOR="#111111" CREATED="1366372067536" ID="ID_1831487810" MODIFIED="1366372068075" TEXT="etc"/>
+</node>
+</node>
+<node COLOR="#111111" CREATED="1366372069953" ID="ID_1083377473" MODIFIED="1366372073914" TEXT="short running processes">
+<node COLOR="#111111" CREATED="1366372074184" ID="ID_893415768" MODIFIED="1366372085648" TEXT="qos is basically response time">
+<node COLOR="#111111" CREATED="1366372085862" ID="ID_1404369582" MODIFIED="1366372091858" TEXT="compare to network coordinate systems"/>
+</node>
+</node>
+</node>
+</node>
+<node COLOR="#990000" CREATED="1366372115359" ID="ID_726124350" MODIFIED="1366372118634" TEXT="closed world">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1366372121591" ID="ID_1233785409" MODIFIED="1366372129838" TEXT="goal is to optimize resources usage"/>
+<node COLOR="#111111" CREATED="1366372136498" ID="ID_1457651226" MODIFIED="1366372146151" TEXT="also has long running processes and short running processes"/>
 </node>
 </node>
 <node COLOR="#00b439" CREATED="1366191270344" ID="ID_228564909" MODIFIED="1366191292795" TEXT="two solutions">

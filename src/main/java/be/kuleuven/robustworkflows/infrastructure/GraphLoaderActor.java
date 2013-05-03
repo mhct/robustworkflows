@@ -17,8 +17,9 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
-import be.kuleuven.robustworkflows.infrastructure.messages.ActorDeployRef;
-import be.kuleuven.robustworkflows.infrastructure.messages.DeployActorMsg;
+import be.kuleuven.robustworkflows.infrastructure.messages.AgentDeployed;
+import be.kuleuven.robustworkflows.infrastructure.messages.DeployAgent;
+import be.kuleuven.robustworkflows.model.AgentAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -69,8 +70,8 @@ public class GraphLoaderActor extends UntypedActor {
 			
 			loadActorsGraph();
 			
-		} else if (ActorDeployRef.class.isInstance(message)) {
-			ActorDeployRef ref = (ActorDeployRef) message;
+		} else if (AgentDeployed.class.isInstance(message)) {
+			AgentDeployed ref = (AgentDeployed) message;
 			
 			networkModel.getNode(ref.getNodeName()).getAttributes().setValue("ActorRef", ref.getRef().path().toString());
 			storage.persistActorAddress(ref.getRef().path().toString());
@@ -171,8 +172,7 @@ public class GraphLoaderActor extends UntypedActor {
 		for(Node n: networkModel.getNodes()) {
 			log.debug("node: " + n.getId());
 			ActorRef sorcerer = getRandomSorcerer();
-//			sorcerer.tell(new DeployActorMsg(new Props(agentFactory.handle(n.getAttributes().getValue("NodeType"))), n.getNodeData().getId()), getSelf()); //blocking operation
-			sorcerer.tell(new DeployActorMsg((String)n.getNodeData().getAttributes().getValue("NodeType"), n.getNodeData().getId()), getSelf()); //blocking operation
+			sorcerer.tell(DeployAgent.getInstance(AgentAttributes.getInstance(n.getNodeData().getAttributes(), n.getNodeData().getId())), getSelf()); //blocking operation
 		}
 	}
 }
