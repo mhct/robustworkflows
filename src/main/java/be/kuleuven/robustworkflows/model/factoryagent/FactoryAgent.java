@@ -68,7 +68,7 @@ public class FactoryAgent extends UntypedActor {
 			log.debug("Adding neighbor to neighborlist" + message);
 			neigbhor.add((ActorRef) message);
 		} else if (ServiceRequestExploration.class.isInstance(message)) {
-			sender().tell(QoSData.getInstance("A", computationalProfile.expectedTime(100)), self());
+			sender().tell(QoSData.getInstance("A", computationalProfile.expectedTime(2)), self());
 //			sender().tell(QoSData.getInstance(random.nextPoisson(avgComputationTime)), self());
 		} else if (ServiceRequest.class.isInstance(message)) {
 			modelStorage.persistEvent("FactoryAgent: " + self().path().name() + ", Engaging in Composition");

@@ -34,7 +34,7 @@ public class AgentAttributes implements Serializable {
 		String nodeType = (String) attributes.getValue(NodeAttributes.NodeType);
 		ComputationalResourceProfile profile = null;
 		
-		//TODO parse the nodeAttribute and load the correct type of resource
+		//FIXME TODO parse the nodeAttribute and load the correct type of resource
 		if ("Exponential".equals((String) attributes.getValue(NodeAttributes.ComputationalResourceProfile))) {
 			profile = ExponentialProfile.exponential(Integer.valueOf((String) attributes.getValue("Seed")));
 		}

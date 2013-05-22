@@ -1,5 +1,6 @@
 package be.kuleuven.robustworkflows.infrastructure.configuration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -30,11 +31,7 @@ public class GephiGraphImporterTester {
 	}
 	
 	@Before
-	public void getGraphPath() {
-//		System.out.println("/" + getClass().getName().replaceAll("\\.", "/") + "/data/simple1.gexf");
-//		System.out.println(getClass().getResource("/simple1.gexf").toString());
-//		this.graphPath = "/" + getClass().getName().replaceAll("\\.", "/") + "/data/simple1.gexf";
-//		System.out.println(graphPath);
+	public void setGraphPath() {
 		this.graphPath = "/simple1.gexf";
 	}
 	
@@ -71,6 +68,16 @@ public class GephiGraphImporterTester {
 	public void testNonExistingFile() {
 		GephiGraphImporter.loadDirectedGraphFrom(new File(UUID.randomUUID().toString().concat(".fakefile")));
 	}
+	
+	@Test
+	public void testAttributes() {
+		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath(graphPath));
+		Node n = graph.getNode("60");
+		
+		assertEquals("123", n.getAttributes().getValue("Seed"));
+		assertEquals("Exponential", n.getAttributes().getValue("ComputationalResourceProfile"));
+	}
+	
 //	@Test
 	public static void main(String[] args) {
 //		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("/scenario1/internet_routers-22july06.gml"));

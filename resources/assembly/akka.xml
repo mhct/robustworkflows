@@ -33,6 +33,16 @@
             <fileMode>744</fileMode>
         </file>
         <file>
+            <source>resources/loadRobustWorkflowsApp.sh</source>
+            <outputDirectory>/bin</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+        <file>
+            <source>src/main/javascript/adm.js</source>
+            <outputDirectory>/config</outputDirectory>
+            <fileMode>444</fileMode>
+        </file>
+        <file>
             <source>resources/application.conf</source>
             <outputDirectory>/config</outputDirectory>
         </file>

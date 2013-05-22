@@ -7,6 +7,7 @@ import com.mongodb.DB;
 
 /**
  * Chain of responsibility to handle the instantiation of MODEL classes
+ * TODO change the name of this class
  * 
  * @author mario
  *
