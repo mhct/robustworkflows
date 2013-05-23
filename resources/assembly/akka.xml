@@ -38,7 +38,7 @@
             <fileMode>744</fileMode>
         </file>
         <file>
-            <source>src/main/javascript/adm.js</source>
+            <source>src/main/javascript/runadm.js</source>
             <outputDirectory>/config</outputDirectory>
             <fileMode>444</fileMode>
         </file>

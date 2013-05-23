@@ -30,11 +30,18 @@ EOF
 # Load DB server using standard parameters
 #
 load_app "cd $DB_PATH;./mongod" 
+sleep 10
 
 #
 # Load Mongo Client with administrative scripts loaded
 #
-load_app "$DB_PATH/mongo --eval ../conf/adm.js"
+load_app "$DB_PATH/mongo $CURRENT_PWD/../config/runadm.js;$DB_PATH/mongo"
+
+#
+# Load the SorcererApp
+#
+load_app "cd $CURRENT_PWD;./startSorcerer"
+sleep 10
 
 #
 # Load the GraphLoaderApp
@@ -42,7 +49,3 @@ load_app "$DB_PATH/mongo --eval ../conf/adm.js"
 load_app "cd $CURRENT_PWD;./startGraphLoaderApp"
 
 
-#
-# Load the GraphLoaderApp
-#
-load_app "cd $CURRENT_PWD;./startSorcerer"

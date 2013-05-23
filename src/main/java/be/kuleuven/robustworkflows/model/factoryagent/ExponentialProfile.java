@@ -1,10 +1,13 @@
 package be.kuleuven.robustworkflows.model.factoryagent;
 
+import java.io.Serializable;
+
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
-public class ExponentialProfile extends ComputationalResourceProfile {
+public class ExponentialProfile extends ComputationalResourceProfile implements Serializable {
 	
+	private static final long serialVersionUID = 2013052301L;
 	private RandomDataGenerator random;
 
 	protected ExponentialProfile(int seed) {
