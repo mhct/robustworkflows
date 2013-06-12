@@ -59,7 +59,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		} else if ("GetNeighbors".equals(message)){
 			sender().tell(getNeighbors(), self());
 		} else {
-			log.debug("\n\n\nClientAgent, received Message" + message);
+			log.debug("\n\n\nClientAgent, received Message: " + message + "$ from " + sender());
 			currentState.onReceive(message, sender());
 		}
 	}

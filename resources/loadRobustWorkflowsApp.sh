@@ -10,6 +10,8 @@
 
 DB_PATH="/Users/mario/opt/mongo/bin"
 CURRENT_PWD=$(pwd)
+DB_NAME="workflows"                # the same as in application.conf
+DB_ADDRESS="localhost:27017"
 
 
 function load_app {
@@ -34,8 +36,10 @@ sleep 10
 
 #
 # Load Mongo Client with administrative scripts loaded
+# docs here http://docs.mongodb.org/manual/tutorial/write-scripts-for-the-mongo-shell/#mongo-shell-javascript-file
 #
-load_app "$DB_PATH/mongo $CURRENT_PWD/../config/runadm.js;$DB_PATH/mongo"
+load_app "$DB_PATH/mongo $DB_ADDRESS/$DB_NAME $CURRENT_PWD/../config/runadm.js;$DB_PATH/mongo $DB_NAME"
+sleep 5
 
 #
 # Load the SorcererApp

@@ -1,6 +1,6 @@
 <map version="1.0.1">
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
-<node COLOR="#000000" CREATED="1366184039789" ID="ID_1975663021" MODIFIED="1366191185238" TEXT="service composition research">
+<node COLOR="#000000" CREATED="1366184039789" ID="ID_1975663021" MODIFIED="1371028657678" TEXT="service composition research">
 <font NAME="SansSerif" SIZE="20"/>
 <hook NAME="accessories/plugins/AutomaticLayout.properties"/>
 <node COLOR="#0033ff" CREATED="1366184054859" ID="ID_264282552" MODIFIED="1366191185219" POSITION="right" TEXT="hypothesis">
@@ -108,6 +108,26 @@
 <node COLOR="#990000" CREATED="1366191392958" ID="ID_1447815643" MODIFIED="1366191398347" TEXT="compare to optimal solution?">
 <font NAME="SansSerif" SIZE="14"/>
 </node>
+</node>
+</node>
+<node COLOR="#0033ff" CREATED="1371028657902" ID="ID_860534724" MODIFIED="1371028662143" POSITION="left" TEXT="cycle1">
+<edge STYLE="sharp_bezier" WIDTH="8"/>
+<font NAME="SansSerif" SIZE="18"/>
+<node COLOR="#00b439" CREATED="1371028662446" ID="ID_883977582" MODIFIED="1371028673810" TEXT="test with artificial services.. and response times...">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+</node>
+<node COLOR="#00b439" CREATED="1371028694092" ID="ID_1199392225" MODIFIED="1371028708908" TEXT="fix scenario.. am I talking about a cloud provider or not?">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+</node>
+<node COLOR="#00b439" CREATED="1371029592759" ID="ID_1097401451" MODIFIED="1371029610857" TEXT="test for simple case. 1 ClientAgent and 1 FactoryAgent">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+</node>
+<node COLOR="#00b439" CREATED="1371029611598" ID="ID_1336329294" MODIFIED="1371029615871" TEXT="what can I learn from this?">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
 </node>
 </node>
 </node>

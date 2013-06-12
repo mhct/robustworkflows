@@ -1,6 +1,8 @@
 package be.kuleuven.robustworkflows.model.factoryagent;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;
@@ -11,6 +13,7 @@ import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.messages.QoSData;
+import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
@@ -29,13 +32,20 @@ public class FactoryAgent extends UntypedActor {
 	
 	private static final String TIME_TO_WORK_FOR_REQUEST_FINISHED = "time_to_service_request";
 
+	private static final long TIME_TO_COMPUTE_REQUEST = 500;
+
+	private static final String SERVICE_TYPE = "A";
+
 	private final List<ActorRef> neigbhor;
 	private final ModelStorage modelStorage;
 
 	private InfrastructureStorage storage;
-	private ActorRef servicingAgent = null;
+//	private ActorRef servicingAgent = null;
 
-	private ComputationalResourceProfile computationalProfile;
+//	private ComputationalResourceProfile computationalProfile;
+	private final Queue<ReceivedServiceRequest> serviceRequests;
+
+	private boolean busy;
 
 
 	@Override
@@ -43,14 +53,6 @@ public class FactoryAgent extends UntypedActor {
 		storage.persistFactoryAgentAddress(getSelf().path().name());
 	}
 	
-//	public FactoryAgent(DB db, List<ActorRef> neighbors) {
-//		log.info("FactoryActor started");
-//		
-//		this.storage = new InfrastructureStorage(db);
-//		this.modelStorage = new ModelStorage(db);
-//		this.neigbhor = neighbors;
-//		this.random = new RandomDataGenerator(new MersenneTwister(SEED_SORCERER_SELECTION));
-//	}
 	
 	public FactoryAgent(DB db, List<ActorRef> neighbors, ComputationalResourceProfile computationalProfile) {
 		log.info("FactoryAgent started");
@@ -58,33 +60,50 @@ public class FactoryAgent extends UntypedActor {
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = new ModelStorage(db);
 		this.neigbhor = neighbors;
-		this.computationalProfile = computationalProfile;
+		serviceRequests = new LinkedList<ReceivedServiceRequest>();
 	}
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
-		//Add reference to current actor
 		if(ActorRef.class.isInstance(message)) {
+			//
+			// Add reference to current actor
+			//
 			log.debug("Adding neighbor to neighborlist" + message);
 			neigbhor.add((ActorRef) message);
+			
 		} else if (ServiceRequestExploration.class.isInstance(message)) {
-			sender().tell(QoSData.getInstance("A", computationalProfile.expectedTime(2)), self());
-//			sender().tell(QoSData.getInstance(random.nextPoisson(avgComputationTime)), self());
+			//TODO consider the service type. perhaps refactor this to the ANT layer... to avoid clutering the code here
+			sender().tell(QoSData.getInstance(SERVICE_TYPE, expectedTimeToServeRequest()), self());
+			
 		} else if (ServiceRequest.class.isInstance(message)) {
-			modelStorage.persistEvent("FactoryAgent: " + self().path().name() + ", Engaging in Composition");
-			servicingAgent = sender();
-//			addExpirationTimer(random.nextLong((long)(avgComputationTime - 300), (long)(avgComputationTime + 300)), FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED);
+			serviceRequests.add(ReceivedServiceRequest.getInstance((ServiceRequest) message, sender()));
 
-			//TODO add a place to count the number of requests per second, etc..
-			addExpirationTimer(computationalProfile.expectedTime(100), FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED);
 		} else if (FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED.equals(message)) {
-			servicingAgent.tell(ServiceRequestFinished.getInstance(), self());
+			ReceivedServiceRequest rsr = serviceRequests.poll();
+			if (rsr != null) {
+				rsr.actor().tell(ServiceRequestFinished.getInstance(rsr.sr()), self());
+				busy = false;
+			}
+			else {
+				log.info("trying to work on empty ServiceRequest list");
+			}
+			
 		} else {
 			unhandled(message);
 		}
 		
+		if (!busy) {
+			busy = true;
+			addExpirationTimer(TIME_TO_COMPUTE_REQUEST, FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED);
+		}
 	}
 	
+	private long expectedTimeToServeRequest() {
+		return TIME_TO_COMPUTE_REQUEST * serviceRequests.size();
+	}
+
+
 	private void addExpirationTimer(long time, final String message) {
 		context().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 
 				new Runnable() {
