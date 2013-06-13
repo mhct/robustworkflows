@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.gephi.graph.api.Attributes;
 
+import com.itextpdf.text.log.SysoLogger;
+
 import be.kuleuven.robustworkflows.model.factoryagent.ComputationalResourceProfile;
 import be.kuleuven.robustworkflows.model.factoryagent.ExponentialProfile;
 
@@ -37,6 +39,8 @@ public class AgentAttributes implements Serializable {
 		//FIXME TODO parse the nodeAttribute and load the correct type of resource
 		if ("Exponential".equals((String) attributes.getValue(NodeAttributes.ComputationalResourceProfile))) {
 			profile = ExponentialProfile.exponential(Integer.valueOf((String) attributes.getValue("Seed")));
+		} else if ("FixedProcessingTime".equals((String) attributes.getValue(NodeAttributes.ComputationalResourceProfile))) {
+			profile = ExponentialProfile.fixedProcessingTime(Integer.valueOf((String) attributes.getValue("ProcessingTimePerRequest")));
 		}
 		
 		return new AgentAttributes(nodeType, nodeId, profile);

@@ -34,9 +34,8 @@ public class AgentAttributesTest {
 	
 	@Test
 	public void testComputationalProfile() {
-		assertEquals(exponentialProfile.expectedTime(2), AgentAttributes.getInstance(nodeAttributes, "1").getComputationalProfile().expectedTime(2));
+		assertEquals(exponentialProfile.expectedTimeToServeRequest(), AgentAttributes.getInstance(nodeAttributes, "1").getComputationalProfile().expectedTimeToServeRequest());
 	}
-	
 
 }
 

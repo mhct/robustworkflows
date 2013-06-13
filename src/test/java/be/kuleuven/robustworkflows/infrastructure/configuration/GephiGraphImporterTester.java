@@ -74,11 +74,12 @@ public class GephiGraphImporterTester {
 		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath(graphPath));
 		Node n = graph.getNode("60");
 		
-		assertEquals("123", n.getAttributes().getValue("Seed"));
+		assertEquals("676", n.getAttributes().getValue("Seed"));
 		assertEquals("Exponential", n.getAttributes().getValue("ComputationalResourceProfile"));
+		
+		assertEquals("50000", graph.getNode("64").getAttributes().getValue("ProcessingTimePerRequest"));
 	}
 	
-//	@Test
 	public static void main(String[] args) {
 //		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("/scenario1/internet_routers-22july06.gml"));
 		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("/simple1.gexf"));

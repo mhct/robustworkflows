@@ -1,8 +1,6 @@
 package be.kuleuven.robustworkflows.model.factoryagent;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;
@@ -12,6 +10,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
+import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.messages.QoSData;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
@@ -32,20 +31,17 @@ public class FactoryAgent extends UntypedActor {
 	
 	private static final String TIME_TO_WORK_FOR_REQUEST_FINISHED = "time_to_service_request";
 
-	private static final long TIME_TO_COMPUTE_REQUEST = 500;
-
-	private static final String SERVICE_TYPE = "A";
-
+	private final ServiceType SERVICE_TYPE = ServiceType.A; //TODO put this at the ComputationalProfile
 	private final List<ActorRef> neigbhor;
 	private final ModelStorage modelStorage;
 
 	private InfrastructureStorage storage;
 //	private ActorRef servicingAgent = null;
 
-//	private ComputationalResourceProfile computationalProfile;
-	private final Queue<ReceivedServiceRequest> serviceRequests;
+	private ComputationalResourceProfile computationalProfile;
+//	private final Queue<ReceivedServiceRequest> serviceRequests;
 
-	private boolean busy;
+	private boolean busy = false;
 
 
 	@Override
@@ -60,11 +56,14 @@ public class FactoryAgent extends UntypedActor {
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = new ModelStorage(db);
 		this.neigbhor = neighbors;
-		serviceRequests = new LinkedList<ReceivedServiceRequest>();
+		this.computationalProfile = computationalProfile;
+//		serviceRequests = new LinkedList<ReceivedServiceRequest>();
 	}
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
+		log.debug("Factory received message " + message);
+		
 		if(ActorRef.class.isInstance(message)) {
 			//
 			// Add reference to current actor
@@ -73,37 +72,36 @@ public class FactoryAgent extends UntypedActor {
 			neigbhor.add((ActorRef) message);
 			
 		} else if (ServiceRequestExploration.class.isInstance(message)) {
-			//TODO consider the service type. perhaps refactor this to the ANT layer... to avoid clutering the code here
-			sender().tell(QoSData.getInstance(SERVICE_TYPE, expectedTimeToServeRequest()), self());
+			sender().tell(QoSData.getInstance(SERVICE_TYPE, computationalProfile.expectedTimeToServeRequest()), self());
 			
 		} else if (ServiceRequest.class.isInstance(message)) {
-			serviceRequests.add(ReceivedServiceRequest.getInstance((ServiceRequest) message, sender()));
+			ServiceRequest sr = (ServiceRequest) message;
+			if (sr.typeOf(SERVICE_TYPE)) {
+				computationalProfile.add(ReceivedServiceRequest.getInstance((ServiceRequest) message, sender()));
+			} else {
+				//TODO reply saying this factory does not serve this type of service
+			}
 
 		} else if (FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED.equals(message)) {
-			ReceivedServiceRequest rsr = serviceRequests.poll();
+			ReceivedServiceRequest rsr = computationalProfile.poll();
 			if (rsr != null) {
 				rsr.actor().tell(ServiceRequestFinished.getInstance(rsr.sr()), self());
-				busy = false;
 			}
 			else {
 				log.info("trying to work on empty ServiceRequest list");
 			}
+			busy = false;
 			
 		} else {
 			unhandled(message);
 		}
 		
-		if (!busy) {
+		if (!busy && computationalProfile.hasWork()) {
 			busy = true;
-			addExpirationTimer(TIME_TO_COMPUTE_REQUEST, FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED);
+			addExpirationTimer(computationalProfile.blockFor(), FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED);
 		}
 	}
 	
-	private long expectedTimeToServeRequest() {
-		return TIME_TO_COMPUTE_REQUEST * serviceRequests.size();
-	}
-
-
 	private void addExpirationTimer(long time, final String message) {
 		context().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 
 				new Runnable() {

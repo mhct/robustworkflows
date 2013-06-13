@@ -2,6 +2,8 @@ package be.kuleuven.robustworkflows.model;
 
 import java.util.Date;
 
+import be.kuleuven.robustworkflows.model.clientagent.EventType;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -22,11 +24,25 @@ public class ModelStorage {
 		this.db = db;
 	}
 
+	/**
+	 * Persists an event in the database
+	 * 
+	 * FIXME avoid this duplication of code in the two methods below
+	 * @param event
+	 */
 	public void persistEvent(String event) {
-//		System.out.println("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPOOORAOROAROAR\n\n\n");
 		DBCollection coll = db.getCollection("robustworkflows");
 		BasicDBObject obj = new BasicDBObject("current-time", new Date());
 		obj.append("Event", event);
 		coll.insert(obj);
 	}
+
+	public void persistEvent(EventType eventType, String event) {
+		DBCollection coll = db.getCollection("robustworkflows");
+		BasicDBObject obj = new BasicDBObject("current-time", new Date());
+		obj.append("EventType", eventType.toString());
+		obj.append(eventType.toString(), event);
+		coll.insert(obj);
+	}
+	
 }

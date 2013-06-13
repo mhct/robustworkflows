@@ -1,5 +1,7 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import be.kuleuven.robustworkflows.model.ServiceType;
+
 /**
  * MESSAGE Containing information about the quality of service of a particular component service 
  * @author mario
@@ -8,14 +10,14 @@ package be.kuleuven.robustworkflows.model.messages;
 public class QoSData {
 
 	private long computationTime;
-	private String serviceType;
+	private ServiceType serviceType;
 
-	public QoSData(String serviceType, long computationTime) {
+	public QoSData(ServiceType serviceType, long computationTime) {
 		this.serviceType = serviceType;
 		this.computationTime = computationTime;
 	}
 
-	public static QoSData getInstance(String serviceType, long computationTime) {
+	public static QoSData getInstance(ServiceType serviceType, long computationTime) {
 		return new QoSData(serviceType, computationTime);
 	}
 
@@ -23,7 +25,7 @@ public class QoSData {
 		return computationTime;
 	}
 	
-	public String getServiceType() {
+	public ServiceType getServiceType() {
 		return serviceType;
 	}
 

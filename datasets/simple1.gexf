@@ -10,6 +10,7 @@
       <attribute id="ActorRef" title="ActorRef" type="string"></attribute>
       <attribute id="ComputationalResourceProfile" title="ComputationalResourceProfile" type="string"></attribute>
       <attribute id="Seed" title="Seed" type="string"></attribute>
+	  <attribute id="ProcessingTimePerRequest" title="ProcessingTimePerRequest" type="string"></attribute>      
     </attributes>
     <nodes>
       <node id="60" label="f1">
@@ -17,7 +18,7 @@
           <attvalue for="NodeType" value="Factory"></attvalue>
           <attvalue for="ActorRef" value="1"></attvalue>
           <attvalue for="ComputationalResourceProfile" value="Exponential"></attvalue>
-          <attvalue for="Seed" value="123"></attvalue>
+          <attvalue for="Seed" value="676"></attvalue>
         </attvalues>
         <viz:size value="4.0"></viz:size>
         <viz:position x="-99.99221" y="55.930542" z="0.0"></viz:position>
@@ -60,8 +61,8 @@
         <attvalues>
           <attvalue for="NodeType" value="Factory"></attvalue>
           <attvalue for="ActorRef" value="1"></attvalue>
-          <attvalue for="ComputationalResourceProfile" value="Exponential"></attvalue>
-          <attvalue for="Seed" value="123"></attvalue>
+		  <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="50000"></attvalue>
         </attvalues>
         <viz:size value="4.0"></viz:size>
         <viz:position x="145.1659" y="2.9566896" z="0.0"></viz:position>

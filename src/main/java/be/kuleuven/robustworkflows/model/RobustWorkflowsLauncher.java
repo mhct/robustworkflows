@@ -1,17 +1,14 @@
 package be.kuleuven.robustworkflows.model;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;
-
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.kernel.Bootable;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
-import bsh.Interpreter;
 
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
@@ -47,31 +44,32 @@ public class RobustWorkflowsLauncher implements Bootable {
 		}
 		db = mongoClient.getDB(DB_NAME);
 		storage = new InfrastructureStorage(db);
-		getClientAgent();
-		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), 
+	}
+	
+	public void sendComposeToAllClientAgents() {
+		DBCursor cursor = storage.getClientAgent().find();
+		String ref = "";
+		long i=5;
+		while (cursor.hasNext()) {	
+			ref = (String) cursor.next().get("address");
+			sendComposeMessage(system.actorFor(ref), i);
+			i += 3;
+		}
+	}
+	
+	private void sendComposeMessage(final ActorRef ref, long time) {
+		system.scheduler().scheduleOnce(Duration.create(time, TimeUnit.SECONDS), 
 				new Runnable() {
 
 					@Override
 					public void run() {
 						System.out.println("Enviando Compose Message");
-						getClientAgent().tell("Compose", system.deadLetters());
+						ref.tell("Compose", system.deadLetters());
 					}
 			
-		}, system.dispatcher());	
+		}, system.dispatcher());		
 	}
-	
-	//Assuming there is only one client agent
-	public ActorRef getClientAgent() {
-		DBCursor cursor = storage.getActors().find();
-		String ref = "";
-		while (cursor.hasNext()) {	
-			ref = (String) cursor.next().get("actorAddress");
-		}
-		
-		System.out.println("ClientActor: " + ref);
-		return system.actorFor(ref);
-	}
-	
+
 	public ActorSystem getSystem() {
 		return system;
 	}
@@ -79,9 +77,10 @@ public class RobustWorkflowsLauncher implements Bootable {
 	public static void main(String[] args) throws IOException {
 		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
 		wf.startup();
+		wf.sendComposeToAllClientAgents();
 //		Interpreter bsh = new Interpreter(new InputStreamReader(System.in), System.out, System.err, true);
 //		bsh.run();
-		System.in.read();
-		wf.shutdown();
+//		System.in.read();
+//		wf.shutdown();
 	}
 }

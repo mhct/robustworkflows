@@ -12,6 +12,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
+import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.QoSData;
@@ -115,7 +116,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	//TODO add abstraction to represent workflow
 	@Override
 	public ServiceRequestExploration getWorkflow() {
-		return ServiceRequestExploration.getInstance("A", 10, self());
+		return ServiceRequestExploration.getInstance(ServiceType.A, 10, self());
 	}
 
 	public AntAPI getAntAPI() {

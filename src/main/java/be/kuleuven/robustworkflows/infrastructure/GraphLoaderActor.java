@@ -49,17 +49,17 @@ public class GraphLoaderActor extends UntypedActor {
 		this.networkModel = networkModel;
 		this.actors = Maps.newTreeMap();
 		
-		//once
-		context().system().scheduler().scheduleOnce(Duration.create(20, TimeUnit.SECONDS), 
-				new Runnable() {
-
-					@Override
-					public void run() {
-						System.out.println("Enviando Compose Message");
-						getClientAgent().tell("Compose", self());
-					}
-			
-		}, context().system().dispatcher());
+//		this was just to facilitate some tests
+//		context().system().scheduler().scheduleOnce(Duration.create(20, TimeUnit.SECONDS), 
+//				new Runnable() {
+//
+//					@Override
+//					public void run() {
+//						System.out.println("Enviando Compose Message");
+//						getClientAgent().tell("Compose", self());
+//					}
+//			
+//		}, context().system().dispatcher());
 	}
 	
 	@Override
@@ -91,16 +91,22 @@ public class GraphLoaderActor extends UntypedActor {
 		
 	}
 	
-	public ActorRef getClientAgent() {
-		DBCursor cursor = storage.getClientAgent().find();
-		String ref = "";
-		while (cursor.hasNext()) {	
-			ref = (String) cursor.next().get("address");
-		}
-		
-		System.out.println("ClientActor: " + ref);
-		return context().system().actorFor(ref);
-	}
+	/**
+	 * FIXME this code is iterating over all ClientAgents and returning the last one... 
+	 * improve this.. perhaps remove this from here.
+	 * 
+	 * @return
+	 */
+//	public ActorRef getClientAgent() {
+//		DBCursor cursor = storage.getClientAgent().find();
+//		String ref = "";
+//		while (cursor.hasNext()) {	
+//			ref = (String) cursor.next().get("address");
+//		}
+//		
+//		System.out.println("ClientActor: " + ref);
+//		return context().system().actorFor(ref);
+//	}
 	
 	/**
 	 * Creates a list of sorcerers actors available on remote machines

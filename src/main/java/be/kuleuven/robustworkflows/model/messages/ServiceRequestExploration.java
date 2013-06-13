@@ -1,21 +1,22 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import be.kuleuven.robustworkflows.model.ServiceType;
 import akka.actor.ActorRef;
 
 public class ServiceRequestExploration {
 
-	private String serviceType;
+	private ServiceType serviceType;
 	private Integer numberOfHopsToTravel;
 	private ActorRef origin;
 
-	public ServiceRequestExploration(String serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
+	public ServiceRequestExploration(ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
 		this.serviceType = serviceType;
 		this.numberOfHopsToTravel = numberOfHopsToTravel;
 		this.origin = origin;
 	}
 	
 
-	public String getServiceType() {
+	public ServiceType getServiceType() {
 		return serviceType;
 	}
 
@@ -27,7 +28,7 @@ public class ServiceRequestExploration {
 		return origin;
 	}
 
-	public static ServiceRequestExploration getInstance(String serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
+	public static ServiceRequestExploration getInstance(ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
 		return new ServiceRequestExploration(serviceType, numberOfHopsToTravel, origin);
 	}
 

@@ -8,5 +8,7 @@ dropall = function() {
         db.sorcerers.drop();
         db.clientAgents.drop();
         db.factory_agents.drop();
+        
+        Date();
 }
 

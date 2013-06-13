@@ -26,6 +26,10 @@ public abstract class ClientAgentState {
 		clientAgentProxy.getModelStorage().persistEvent(event);
 	}
 	
+	protected void persistEvent(EventType eventType, String event) {
+		clientAgentProxy.getModelStorage().persistEvent(eventType, event);
+	}
+	
 	protected void addExpirationTimer(long time, String message) {
 		clientAgentProxy.addExpirationTimer(time, message);
 	}

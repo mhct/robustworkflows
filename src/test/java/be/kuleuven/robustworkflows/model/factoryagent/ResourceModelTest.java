@@ -15,6 +15,6 @@ public class ResourceModelTest {
 	@Test
 	public void testExponentialValues() {
 		ComputationalResourceProfile rm = ComputationalResourceProfile.exponential(1);
-		assertEquals(2, rm.expectedTime(1));
+		assertEquals(2, rm.expectedTimeToServeRequest());
 	}
 }

@@ -2,10 +2,16 @@ package be.kuleuven.robustworkflows.model.messages;
 
 public class ServiceRequestFinished {
 
-	public ServiceRequestFinished(ServiceRequest serviceRequest) {
-		// TODO Auto-generated constructor stub
+	private final ServiceRequest serviceRequest;
+
+	private ServiceRequestFinished(ServiceRequest serviceRequest) {
+		this.serviceRequest = serviceRequest;
 	}
 
+	public ServiceRequest getServiceRequest() {
+		return serviceRequest;
+	}
+	
 	public static ServiceRequestFinished getInstance(ServiceRequest serviceRequest) {
 		return new ServiceRequestFinished(serviceRequest);
 	}
