@@ -1,6 +1,9 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
+import com.mongodb.BasicDBObject;
+
 import be.kuleuven.robustworkflows.model.ServiceType;
+import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
 import akka.actor.ActorRef;
@@ -16,31 +19,45 @@ import akka.actor.ActorRef;
  */
 public class EngagingInServiceComposition extends ClientAgentState {
 
-	private ActorRef selectedAgent;
+	private ExplorationResult selectedComposition;
 
-	private EngagingInServiceComposition(ClientAgentProxy clientAgentProxy, ActorRef selectedAgent) {
+	private EngagingInServiceComposition(ClientAgentProxy clientAgentProxy, ExplorationResult selected) {
 		super(clientAgentProxy);
-		this.selectedAgent = selectedAgent;
+		this.selectedComposition = selected;
 	}
 
 	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (RUN.equals(message)) {
-			persistEvent("Engaging in Service Composition: Agent " + selectedAgent.path().name());
-			selectedAgent.tell(ServiceRequest.getInstance(ServiceType.A), getClientAgentProxy().self());
+			//FIXME this is a hack. create new abstraction to perform this operation. (IntentionAnts)
+			for (ActorRef factoryAgent: selectedComposition.getFactoryAgents()) {
+				persistEvent("Engaging in Service Composition: " + factoryAgent.path().name()); //FIXME add ClientAgent name
+				factoryAgent.tell(ServiceRequest.getInstance(ServiceType.A), getClientAgentProxy().self()); //FIXME service type is fixed...
+			}
 			
 		} else if (ServiceRequestFinished.class.isInstance(message)){
 			persistEvent("ServiceComposition FINISHED");
-			persistEvent(EventType.TotalTimeToServeRequest, String.valueOf(((ServiceRequestFinished) message).getServiceRequest().totalTimeToServeRequest()));
+			persistEvent(summaryRequest((ServiceRequestFinished) message));
+			
+			
 			//TODO add more information about this particular event.
+			//TODO, look a better way to persist different objects.... via reflection? etc.
 			setState(WaitingTaskState.getInstance(getClientAgentProxy()));
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
 		}
 	}
 	
-	public static EngagingInServiceComposition getInstance(ClientAgentProxy clientAgentProxy, ActorRef selectedAgent) {
-		return new EngagingInServiceComposition(clientAgentProxy, selectedAgent);
+	private BasicDBObject summaryRequest(ServiceRequestFinished req) {
+		BasicDBObject obj = new BasicDBObject();
+		obj.append("EventType", EventType.TotalTimeToServeRequest.toString());
+		obj.append(EventType.TotalTimeToServeRequest.toString(), String.valueOf(req.getServiceRequest().totalTimeToServeRequest()));
+		obj.append("factoryAgentName", req.getFactoryAgentName());
+		return obj;
+	}
+	
+	public static EngagingInServiceComposition getInstance(ClientAgentProxy clientAgentProxy, ExplorationResult selected) {
+		return new EngagingInServiceComposition(clientAgentProxy, selected);
 	}
 
 }

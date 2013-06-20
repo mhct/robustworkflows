@@ -1,16 +1,17 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
-import java.util.Map;
+import java.util.List;
 
 import akka.actor.ActorRef;
-import be.kuleuven.robustworkflows.model.messages.QoSData;
+import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 
 public class ExploringState extends ClientAgentState {
 	
+	private final long EXPLORING_STATE_TIMEOUT_VALUE = 10000;
 	private final String EXPLORING_STATE_TIMEOUT = "ExploringStateTimeout";
-	Map<ActorRef, QoSData> replies = Maps.newHashMap(); //replies received from other agents
+	private final List<ExplorationResult> replies = Lists.newArrayList();
 	
 	public ExploringState(ClientAgentProxy clientAgentProxy) {
 		super(clientAgentProxy);
@@ -18,8 +19,11 @@ public class ExploringState extends ClientAgentState {
 
 	public void run() {
 		persistEvent("ExploringState: " + RUN);
-		getClientAgentProxy().broadcastToNeighbors(getClientAgentProxy().getWorkflow());
-		addExpirationTimer(100, EXPLORING_STATE_TIMEOUT);
+		
+		getClientAgentProxy().getAntAPI().createExplorationAnt(getClientAgentProxy().getWorkflow());
+
+		//TODO create new exploration ANTS NOW..? at at ClientAgent creation
+		addExpirationTimer(EXPLORING_STATE_TIMEOUT_VALUE, EXPLORING_STATE_TIMEOUT);
 	}
 
 	@Override
@@ -27,21 +31,18 @@ public class ExploringState extends ClientAgentState {
 		if (RUN.equals(message)) {
 			run();
 		} else if (EXPLORING_STATE_TIMEOUT.equals(message)) {
+			//TODO if there are no replies.... go back to another state, instead of SelectingComponentServices.
 			persistEvent(EXPLORING_STATE_TIMEOUT);
-			for (Map.Entry<ActorRef, QoSData> entry : replies.entrySet()) {
-				persistEvent(entry.getKey().toString() + ": " + entry.getValue().toString());
-			}
 			setState(SelectingComponentServices.getInstance(getClientAgentProxy(), replies));
 			
-		} else if (QoSData.class.isInstance(message)) {
-			QoSData msg = (QoSData) message;
-			replies.put(actorRef, msg);
+		} else if (ExplorationResult.class.isInstance(message))  {
+			replies.add((ExplorationResult) message);
 			
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
 		}
 		
-		//TODO add return type and with TRUE or FALSE for possible to handle of not.. the message 
+		//TODO add return type and with TRUE or FALSE for possible to handle of not.. the message think about this. 
 	}
 
 	public static ClientAgentState getInstance(ClientAgentProxy clientAgentProxy) {

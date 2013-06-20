@@ -108,6 +108,20 @@
 <node COLOR="#990000" CREATED="1366191392958" ID="ID_1447815643" MODIFIED="1366191398347" TEXT="compare to optimal solution?">
 <font NAME="SansSerif" SIZE="14"/>
 </node>
+<node COLOR="#990000" CREATED="1371472427973" ID="ID_1329319493" MODIFIED="1371472432410" TEXT="factoryAgent">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1371472432412" ID="ID_1708643408" MODIFIED="1371472436574" TEXT="queue size per time?"/>
+</node>
+<node COLOR="#990000" CREATED="1371472438754" ID="ID_944461265" MODIFIED="1371472441116" TEXT="clientAgent">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1371472441295" ID="ID_710208905" MODIFIED="1371472451058" TEXT="average composition time"/>
+</node>
+<node COLOR="#990000" CREATED="1371472566344" ID="ID_232259224" MODIFIED="1371472606022" TEXT="time to find composition depends on the time to query the Chord network?, but can be optimized since we prune the number of possible services offering the service">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1371472621395" ID="ID_1679265221" MODIFIED="1371472639413" TEXT="will not count the time to query the cyclon network. ">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
 </node>
 </node>
 <node COLOR="#0033ff" CREATED="1371028657902" ID="ID_860534724" MODIFIED="1371028662143" POSITION="left" TEXT="cycle1">

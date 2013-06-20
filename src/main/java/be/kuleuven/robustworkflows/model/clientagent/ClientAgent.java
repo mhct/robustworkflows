@@ -1,8 +1,9 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;
@@ -13,9 +14,10 @@ import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
+import be.kuleuven.robustworkflows.model.Workflow;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
+import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
-import be.kuleuven.robustworkflows.model.messages.QoSData;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
 
 import com.google.common.collect.Lists;
@@ -34,6 +36,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private InfrastructureStorage storage;
 	private ModelStorage modelStorage;
 	private AntAPI antApi;
+
+	private Workflow workflow;
 	
 	public ClientAgent(DB db, ArrayList<ActorRef> arrayList) {
 		log.info("C L I E N T started");
@@ -42,7 +46,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = new ModelStorage(db);
 		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
-		this.antApi = AntAPI.getInstance(context(), modelStorage);
+		this.antApi = AntAPI.getInstance(self(), context(), modelStorage);
+		this.workflow = Workflow.getLinear1();
 	}
 	
 	@Override
@@ -57,7 +62,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		if(ActorRef.class.isInstance(message)) {
 			log.debug("\n\n\nAdding neighbor to neighborlist" + message);
 			neighbors.add((ActorRef) message);
-		} else if ("GetNeighbors".equals(message)){
+		} else if (EventType.NeihgborListRequest.equals(message)){
+			log.debug(self() + " got " + message);
 			sender().tell(getNeighbors(), self());
 		} else {
 			log.debug("\n\n\nClientAgent, received Message: " + message + "$ from " + sender());
@@ -74,11 +80,11 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	 * 
 	 * @param msg
 	 */
-	public void broadcastToNeighbors(Object msg) {
-		for (ActorRef neighbor: neighbors) {
-			neighbor.tell(msg, self());
-		}
-	}
+//	public void broadcastToNeighbors(Object msg) {
+//		for (ActorRef neighbor: neighbors) {
+//			neighbor.tell(msg, self());
+//		}
+//	}
 	
 	private Neighbors getNeighbors() {
 		return Neighbors.getInstance(Lists.newArrayList(neighbors));
@@ -115,7 +121,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	
 	//TODO add abstraction to represent workflow
 	@Override
-	public ServiceRequestExploration getWorkflow() {
+	public ServiceRequestExploration getServiceRequestExploration() {
 		return ServiceRequestExploration.getInstance(ServiceType.A, 10, self());
 	}
 
@@ -124,24 +130,36 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	}
 	
 	/**
-	 * Selects the ActorRef with the lowest QoS
-	 * TODO change return type to proper abstraction
-	 *  
+	 * Selects the best (lowest totalComputationTime) ExplorationResult with the lowest QoS
 	 */
 	@Override
-	public ActorRef evaluateComposition(Map<ActorRef, QoSData> replies) {
-		long min = Long.MAX_VALUE;
-		ActorRef currentWinner = null;
+	public ExplorationResult evaluateComposition(List<ExplorationResult> replies) {
 		
-		for (Map.Entry<ActorRef, QoSData> e: replies.entrySet()) {
-			if (e.getValue().getComputationTime() <= min) {
-				min = e.getValue().getComputationTime();
-				currentWinner = e.getKey();
+		Collections.sort(replies, new Comparator<ExplorationResult>() {
+
+			@Override
+			public int compare(ExplorationResult o1, ExplorationResult o2) {
+				final long o1Time = o1.totalComputationTime();
+				final long o2Time = o2.totalComputationTime();
+				
+				if (o1Time < o2Time) {
+					return -1;
+				} else if (o2Time > o2Time) {
+					return 1;
+				}
+					
+				return 0;
 			}
-		}
+			
+		});
 		
-		assert currentWinner != null;
-		return currentWinner;
+		assert replies.get(0) != null;
+		return replies.get(0);
+	}
+
+	@Override
+	public Workflow getWorkflow() {
+		return workflow;
 	}
 	
 }

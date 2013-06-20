@@ -1,15 +1,16 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
-import java.util.Map;
+import java.util.List;
 
-import be.kuleuven.robustworkflows.model.messages.QoSData;
 import akka.actor.ActorRef;
+import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 
+//FIXME perhaps I don't really need to model this state as a class
 public class SelectingComponentServices extends ClientAgentState {
 
-	private Map<ActorRef, QoSData> replies;
+	private final List<ExplorationResult> replies;
 
-	private SelectingComponentServices(ClientAgentProxy clientAgentProxy, Map<ActorRef, QoSData> replies) {
+	private SelectingComponentServices(ClientAgentProxy clientAgentProxy, List<ExplorationResult> replies) {
 		super(clientAgentProxy);
 		
 		this.replies = replies;
@@ -19,14 +20,14 @@ public class SelectingComponentServices extends ClientAgentState {
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (RUN.equals(message)) {
 			persistEvent("SelectingComponentServices");
-			ActorRef selected = getClientAgentProxy().evaluateComposition(replies);
+			ExplorationResult selected = getClientAgentProxy().evaluateComposition(replies);
 			setState(EngagingInServiceComposition.getInstance(getClientAgentProxy(), selected));
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
 		}
 	}
 	
-	public static SelectingComponentServices getInstance(ClientAgentProxy clientAgentProxy, Map<ActorRef, QoSData> replies) {
+	public static SelectingComponentServices getInstance(ClientAgentProxy clientAgentProxy, List<ExplorationResult> replies) {
 		return new SelectingComponentServices(clientAgentProxy, replies);
 	}
 

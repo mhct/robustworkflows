@@ -53,7 +53,7 @@ public class RobustWorkflowsLauncher implements Bootable {
 		while (cursor.hasNext()) {	
 			ref = (String) cursor.next().get("address");
 			sendComposeMessage(system.actorFor(ref), i);
-			i += 3;
+			i += 0;
 		}
 	}
 	

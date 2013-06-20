@@ -43,7 +43,7 @@
       <h>40</h>
     </coordinates>
     <panel_attributes>&lt;&lt;ResourceProfile&gt;&gt;
-FixedRequestProcessingRate</panel_attributes>
+FixedTimeToProcessRequest</panel_attributes>
     <additional_attributes/>
   </element>
   <element>

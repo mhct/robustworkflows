@@ -33,7 +33,7 @@ public class ModelStorage {
 	public void persistEvent(String event) {
 		DBCollection coll = db.getCollection("robustworkflows");
 		BasicDBObject obj = new BasicDBObject("current-time", new Date());
-		obj.append("Event", event);
+		obj.append("EventType", event);
 		coll.insert(obj);
 	}
 
@@ -42,6 +42,11 @@ public class ModelStorage {
 		BasicDBObject obj = new BasicDBObject("current-time", new Date());
 		obj.append("EventType", eventType.toString());
 		obj.append(eventType.toString(), event);
+		coll.insert(obj);
+	}
+	
+	public void persistEvent(BasicDBObject obj) {
+		DBCollection coll = db.getCollection("robustworkflows");
 		coll.insert(obj);
 	}
 	

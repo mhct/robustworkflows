@@ -2,83 +2,33 @@
 <diagram program="umlet" version="12.0">
   <zoom_level>10</zoom_level>
   <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>510</x>
-      <y>30</y>
-      <w>260</w>
-      <h>50</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;30;240;30</additional_attributes>
-  </element>
-  <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>750</x>
+      <x>210</x>
       <y>10</y>
       <w>300</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>AntAPI
---
-+ createExplorationAnt(): ActorRef
- </panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>500</x>
-      <y>180</y>
-      <w>370</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;30;350;60</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.Class</type>
-    <coordinates>
-      <x>240</x>
-      <y>40</y>
-      <w>300</w>
-      <h>170</h>
+      <h>220</h>
     </coordinates>
     <panel_attributes>&lt;&lt;Actor&gt;&gt;
 ClientAgentFSM
 --
 Receiving Events
 + ServiceRequestExploration
-+ ExplorationDone
++ ExplorationResult
 + getNeighbors
 + ServiceRequestFinished
 
 --
 Sending Events
-+ QoSData</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Class</type>
-    <coordinates>
-      <x>1150</x>
-      <y>0</y>
-      <w>360</w>
-      <h>110</h>
-    </coordinates>
-    <panel_attributes>NodeAttributes
---
-+ NodeType: "Client", "Factory"
-+ ComputationalResourceProfile: "Exponential"
-+ Seed: Integer</panel_attributes>
++ QoSData
++ ServiceRequest</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>40</x>
-      <y>680</y>
+      <y>700</y>
       <w>330</w>
       <h>130</h>
     </coordinates>
@@ -95,8 +45,103 @@ Sending Events
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
+      <x>1160</x>
+      <y>490</y>
+      <w>310</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Message&gt;&gt;
+ExplorationDone
+--
+- QoSWorkflow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>480</x>
+      <y>0</y>
+      <w>290</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;270;80</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>180</x>
+      <y>550</y>
+      <w>340</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>ResourceProfile
+--
++ expectedTime(requestsPerSecond: int): long
++ static exponential(seed: int): ResourceProfile</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>1150</x>
+      <y>20</y>
+      <w>360</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>NodeAttributes
+--
++ NodeType: "Client", "Factory"
++ ComputationalResourceProfile: "Exponential"
++ Seed: Integer</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>310</x>
+      <y>430</y>
+      <w>50</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;30;120</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>900</x>
+      <y>490</y>
+      <w>230</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Message&gt;&gt;
+QoSData
+--
+- serviceTime: String
+- computationTime: long
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>750</x>
+      <y>30</y>
+      <w>300</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>AntAPI
+--
++ createExplorationAnt(): ActorRef
+ </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
       <x>680</x>
-      <y>240</y>
+      <y>260</y>
       <w>410</w>
       <h>200</h>
     </coordinates>
@@ -112,14 +157,14 @@ Receiving Events
 Sending Events
 + ServiceRequestExploration
 + GetNeighbors
-+ ExplorationDone</panel_attributes>
++ ExplorationResult</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>210</x>
-      <y>270</y>
+      <y>290</y>
       <w>310</w>
       <h>170</h>
     </coordinates>
@@ -137,35 +182,10 @@ Sending Events
     <additional_attributes/>
   </element>
   <element>
-    <type>com.umlet.element.Class</type>
-    <coordinates>
-      <x>180</x>
-      <y>530</y>
-      <w>340</w>
-      <h>110</h>
-    </coordinates>
-    <panel_attributes>ResourceProfile
---
-+ expectedTime(requestsPerSecond: int): long
-+ static exponential(seed: int): ResourceProfile</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>310</x>
-      <y>410</y>
-      <w>50</w>
-      <h>140</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>30;30;30;120</additional_attributes>
-  </element>
-  <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>180</x>
-      <y>610</y>
+      <y>630</y>
       <w>50</w>
       <h>90</h>
     </coordinates>
@@ -173,33 +193,14 @@ Sending Events
     <additional_attributes>30;30;30;70</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Class</type>
+    <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>1160</x>
-      <y>470</y>
-      <w>310</w>
-      <h>140</h>
-    </coordinates>
-    <panel_attributes>&lt;&lt;Message&gt;&gt;
-ExplorationDone
---
-- QoSWorkflow</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Class</type>
-    <coordinates>
-      <x>900</x>
-      <y>470</y>
-      <w>230</w>
+      <x>470</x>
+      <y>200</y>
+      <w>400</w>
       <h>80</h>
     </coordinates>
-    <panel_attributes>&lt;&lt;Message&gt;&gt;
-QoSData
---
-- serviceTime: String
-- computationTime: long
-</panel_attributes>
-    <additional_attributes/>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;380;60</additional_attributes>
   </element>
 </diagram>

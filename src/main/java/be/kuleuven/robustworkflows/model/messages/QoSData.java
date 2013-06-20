@@ -9,7 +9,7 @@ import be.kuleuven.robustworkflows.model.ServiceType;
  */
 public class QoSData {
 
-	private long computationTime;
+	private long computationTime; //only quality being evaluated right now
 	private ServiceType serviceType;
 
 	public QoSData(ServiceType serviceType, long computationTime) {

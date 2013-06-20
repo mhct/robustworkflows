@@ -11,12 +11,15 @@ import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
+import be.kuleuven.robustworkflows.model.clientagent.EventType;
+import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.QoSData;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
 
+import com.google.common.collect.Lists;
 import com.mongodb.DB;
 
 /**
@@ -32,7 +35,7 @@ public class FactoryAgent extends UntypedActor {
 	private static final String TIME_TO_WORK_FOR_REQUEST_FINISHED = "time_to_service_request";
 
 	private final ServiceType SERVICE_TYPE = ServiceType.A; //TODO put this at the ComputationalProfile
-	private final List<ActorRef> neigbhor;
+	private final List<ActorRef> neigbhors;
 	private final ModelStorage modelStorage;
 
 	private InfrastructureStorage storage;
@@ -46,7 +49,7 @@ public class FactoryAgent extends UntypedActor {
 
 	@Override
 	public void preStart() {
-		storage.persistFactoryAgentAddress(getSelf().path().name());
+		storage.persistFactoryAgentAddress(getName());
 	}
 	
 	
@@ -55,7 +58,7 @@ public class FactoryAgent extends UntypedActor {
 		
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = new ModelStorage(db);
-		this.neigbhor = neighbors;
+		this.neigbhors = neighbors;
 		this.computationalProfile = computationalProfile;
 //		serviceRequests = new LinkedList<ReceivedServiceRequest>();
 	}
@@ -69,7 +72,7 @@ public class FactoryAgent extends UntypedActor {
 			// Add reference to current actor
 			//
 			log.debug("Adding neighbor to neighborlist" + message);
-			neigbhor.add((ActorRef) message);
+			neigbhors.add((ActorRef) message);
 			
 		} else if (ServiceRequestExploration.class.isInstance(message)) {
 			sender().tell(QoSData.getInstance(SERVICE_TYPE, computationalProfile.expectedTimeToServeRequest()), self());
@@ -85,13 +88,15 @@ public class FactoryAgent extends UntypedActor {
 		} else if (FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED.equals(message)) {
 			ReceivedServiceRequest rsr = computationalProfile.poll();
 			if (rsr != null) {
-				rsr.actor().tell(ServiceRequestFinished.getInstance(rsr.sr()), self());
+				rsr.actor().tell(ServiceRequestFinished.getInstance(rsr.sr(), getName()), self());
 			}
 			else {
 				log.info("trying to work on empty ServiceRequest list");
 			}
 			busy = false;
 			
+		} else if (EventType.NeihgborListRequest.toString().equals(message)){
+			sender().tell(getNeighbors(), self());
 		} else {
 			unhandled(message);
 		}
@@ -100,6 +105,14 @@ public class FactoryAgent extends UntypedActor {
 			busy = true;
 			addExpirationTimer(computationalProfile.blockFor(), FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED);
 		}
+	}
+	
+	private Neighbors getNeighbors() {
+		return Neighbors.getInstance(neigbhors);
+	}
+	
+	private String getName() {
+		return getSelf().path().name();
 	}
 	
 	private void addExpirationTimer(long time, final String message) {
