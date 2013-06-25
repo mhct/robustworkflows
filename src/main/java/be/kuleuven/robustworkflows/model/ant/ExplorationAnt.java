@@ -4,12 +4,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;
-
 import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.Workflow;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
@@ -20,6 +17,12 @@ import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
 
 import com.google.common.collect.Maps;
 
+/**
+ * Explores the Agent graph looking for good services (QoS)
+ * 
+ * @author mario
+ *
+ */
 public class ExplorationAnt extends UntypedActor {
 	
 	private final long EXPLORATION_TIMEOUT = 1000;
@@ -44,16 +47,19 @@ public class ExplorationAnt extends UntypedActor {
 			
 		} else if (Neighbors.class.isInstance(message)) {
 			modelStorage.persistEvent(self() + " received " + message);
+			//check if still need more candidate services
+			//if so, send message for them
 			for (ActorRef agent: ((Neighbors)message).getNeighbors()) {
 				agent.tell(ServiceRequestExploration.getInstance(workflow.get(0), 10, self()), self());
 			}
 			
 		} else if (QoSData.class.isInstance(message)) {
+			//add information to the required type of service
 			modelStorage.persistEvent(self() + " received " + message);
 			QoSData qos = (QoSData) message;
 			replies.put(sender(), qos);
 			
-		} else if (EventType.ExploringStateTimeout.equals(message)) {
+		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
 			modelStorage.persistEvent("ExpAnt Timeout");
 			master.tell(ExplorationResult.getInstance(replies), self());
 		}

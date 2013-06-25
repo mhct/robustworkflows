@@ -5,21 +5,19 @@ import com.google.common.collect.Multimap;
 
 /**
  * Represents a workflow specification
- * 
  * @author mariohct
  *
  */
 public class Workflow {
-	//Adjacency list representing a service workflow
-	Multimap<ServiceType, ServiceType> workflow;
+	Multimap<WorkflowTask, WorkflowTask> workflow;
 	
-	private Workflow(Multimap<ServiceType, ServiceType> workflow) {
+	private Workflow(Multimap<WorkflowTask, WorkflowTask> workflow) {
 		this.workflow = workflow;
 	}
 	
 	public static Workflow getLinear1(){
-		Multimap<ServiceType, ServiceType> workflow = ArrayListMultimap.create();
-		workflow.put(ServiceType.A, ServiceType.B);
+		Multimap<WorkflowTask, WorkflowTask> workflow = ArrayListMultimap.create();
+		workflow.put(WorkflowTask.getInstance(ServiceType.A), WorkflowTask.getInstance(ServiceType.B));
 		
 		return new Workflow(workflow);
 	}
