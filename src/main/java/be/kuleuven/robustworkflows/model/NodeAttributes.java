@@ -10,4 +10,5 @@ public class NodeAttributes {
 	public static final String NodeType = "NodeType";
 	public static final String ComputationalResourceProfile = "ComputationalResourceProfile";
 	public static final String Seed = "Seed";
+	public static final String ServiceType = "ServiceType";
 }

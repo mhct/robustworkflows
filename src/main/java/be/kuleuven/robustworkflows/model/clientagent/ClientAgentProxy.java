@@ -4,10 +4,10 @@ import java.util.List;
 
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ModelStorage;
-import be.kuleuven.robustworkflows.model.Workflow;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
+import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 public interface ClientAgentProxy {
 

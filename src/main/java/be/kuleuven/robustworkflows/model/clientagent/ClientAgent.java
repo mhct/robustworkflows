@@ -14,11 +14,11 @@ import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.Workflow;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
+import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 import com.google.common.collect.Lists;
 import com.mongodb.DB;

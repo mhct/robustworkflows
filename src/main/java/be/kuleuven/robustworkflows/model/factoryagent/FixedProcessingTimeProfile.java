@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 
 /**
@@ -21,7 +22,8 @@ public class FixedProcessingTimeProfile extends ComputationalResourceProfile imp
 	private final long processingTimePerRequest;
 	private final Queue<ReceivedServiceRequest> serviceRequests;
 	
-	protected FixedProcessingTimeProfile(int processingTimePerRequest) {
+	public FixedProcessingTimeProfile(int processingTimePerRequest, ServiceType serviceType) {
+		super(serviceType);
 		this.processingTimePerRequest = processingTimePerRequest;
 		this.serviceRequests = new LinkedList<ReceivedServiceRequest>();
 	}
@@ -54,6 +56,7 @@ public class FixedProcessingTimeProfile extends ComputationalResourceProfile imp
 			return false;
 		}
 	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		// TODO Auto-generated method stub

@@ -1,54 +1,48 @@
-package be.kuleuven.robustworkflows.model.ant;
+package be.kuleuven.robustworkflows.model.messages;
 
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
 
-public class WorkflowServiceMatcherTask {
-	private final ServiceType type;
+/**
+ * A task in a workflow.
+ * 
+ * @author mario
+ *
+ */
+public class WorkflowTask {
+	private ServiceType type;
 	private ActorRef agent;
 	private ServiceRequestExplorationReply qos;
-	
-	private WorkflowServiceMatcherTask(ServiceType type) {
+
+	private WorkflowTask(ServiceType type) {
 		this.type = type;
 	}
 
-	public void setAgent(ActorRef actor) {
-		if (this.agent == null && actor != null) {
-			this.agent = actor;
-		} else {
-			throw new IllegalArgumentException("This task already has a matching service, or actor is null");
-		}
+	private WorkflowTask(ServiceType serviceType, ActorRef agent, ServiceRequestExplorationReply qos) {
+		this.type = serviceType;
+		this.agent = agent;
+		this.qos = qos;
 	}
-	
-	public void addQoS(ServiceRequestExplorationReply qos) {
-		if (qos == null) {
-			throw new IllegalArgumentException("QoS can't be null");
-		} else {
-			this.qos = qos;
-		}
-	}
-	
+
 	public ServiceType getType() {
 		return type;
 	}
 	
-	public ActorRef agent() {
+	public ActorRef getAgent() {
 		return agent;
 	}
 	
-	public ServiceRequestExplorationReply getQos() {
+	public ServiceRequestExplorationReply getQoS() {
 		return qos;
 	}
 	
-	public static WorkflowServiceMatcherTask getInstance(ServiceType type) {
-		if (type == null) {
-			throw new IllegalArgumentException("ServiceType can't be null");
-		}
-		
-		return new WorkflowServiceMatcherTask(type);
+	@Override
+	public String toString() {
+		return "WorkflowTask [type=" + type + ", agent=" + agent + ", qos="
+				+ qos + "]";
 	}
 
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -67,7 +61,7 @@ public class WorkflowServiceMatcherTask {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		WorkflowServiceMatcherTask other = (WorkflowServiceMatcherTask) obj;
+		WorkflowTask other = (WorkflowTask) obj;
 		if (agent == null) {
 			if (other.agent != null)
 				return false;
@@ -82,6 +76,21 @@ public class WorkflowServiceMatcherTask {
 			return false;
 		return true;
 	}
-	
+
+	public static WorkflowTask getInstance(ServiceType type) {
+		return new WorkflowTask(type);
+	}
+
+	/**
+	 * Factory Method to create a WorkflowTask
+	 * 
+	 * @param serviceType
+	 * @param agent
+	 * @param qos
+	 * @return
+	 */
+	public static WorkflowTask getInstance(ServiceType serviceType, ActorRef agent, ServiceRequestExplorationReply qos) {
+		return new WorkflowTask(serviceType, agent, qos);
+	}
 	
 }

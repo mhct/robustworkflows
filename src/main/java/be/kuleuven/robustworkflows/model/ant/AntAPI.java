@@ -8,8 +8,8 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 import be.kuleuven.robustworkflows.model.ModelStorage;
-import be.kuleuven.robustworkflows.model.Workflow;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
+import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 import com.google.common.collect.Lists;
 

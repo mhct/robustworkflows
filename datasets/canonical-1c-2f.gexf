@@ -22,33 +22,7 @@
         <viz:position x="-5.438381" y="57.28569" z="0.0"></viz:position>
         <viz:color r="179" g="0" b="0"></viz:color>
       </node>
-      <node id="2" label="Client2">
-        <attvalues>
-          <attvalue for="NodeType" value="Client"></attvalue>
-          <attvalue for="ActorRef" value="1"></attvalue>
-        </attvalues>
-        <viz:size value="4.0"></viz:size>
-        <viz:position x="-5.438381" y="57.28569" z="0.0"></viz:position>
-        <viz:color r="179" g="0" b="0"></viz:color>
-      </node>
-      <node id="3" label="Client3">
-        <attvalues>
-          <attvalue for="NodeType" value="Client"></attvalue>
-          <attvalue for="ActorRef" value="1"></attvalue>
-        </attvalues>
-        <viz:size value="4.0"></viz:size>
-        <viz:position x="-5.438381" y="57.28569" z="0.0"></viz:position>
-        <viz:color r="179" g="0" b="0"></viz:color>
-      </node>
-      <node id="4" label="Client4">
-        <attvalues>
-          <attvalue for="NodeType" value="Client"></attvalue>
-          <attvalue for="ActorRef" value="1"></attvalue>
-        </attvalues>
-        <viz:size value="4.0"></viz:size>
-        <viz:position x="-5.438381" y="57.28569" z="0.0"></viz:position>
-        <viz:color r="179" g="0" b="0"></viz:color>
-      </node>
+      
       <node id="1001" label="Factory1">
         <attvalues>
           <attvalue for="NodeType" value="Factory"></attvalue>
@@ -80,24 +54,7 @@
       <edge source="1" target="1002">
         <attvalues></attvalues>
       </edge>
-      <edge source="2" target="1001" weight="2.0">
-        <attvalues></attvalues>
-      </edge>
-      <edge source="2" target="1002">
-        <attvalues></attvalues>
-      </edge>
-      <edge source="3" target="1001" weight="2.0">
-        <attvalues></attvalues>
-      </edge>
-      <edge source="3" target="1002">
-        <attvalues></attvalues>
-      </edge>
-      <edge source="4" target="1001" weight="2.0">
-        <attvalues></attvalues>
-      </edge>
-      <edge source="4" target="1002">
-        <attvalues></attvalues>
-      </edge>
+      
     </edges>
   </graph>
 </gexf>

@@ -13,7 +13,7 @@ import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
-import be.kuleuven.robustworkflows.model.messages.QoSData;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
@@ -34,15 +34,10 @@ public class FactoryAgent extends UntypedActor {
 	
 	private static final String TIME_TO_WORK_FOR_REQUEST_FINISHED = "time_to_service_request";
 
-	private final ServiceType SERVICE_TYPE = ServiceType.A; //TODO put this at the ComputationalProfile
 	private final List<ActorRef> neigbhors;
 	private final ModelStorage modelStorage;
-
 	private InfrastructureStorage storage;
-//	private ActorRef servicingAgent = null;
-
 	private ComputationalResourceProfile computationalProfile;
-//	private final Queue<ReceivedServiceRequest> serviceRequests;
 
 	private boolean busy = false;
 
@@ -50,8 +45,13 @@ public class FactoryAgent extends UntypedActor {
 	@Override
 	public void preStart() {
 		storage.persistFactoryAgentAddress(getName());
+		modelStorage.registerFactoryAgent(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()), computationalProfile.getServiceType());
 	}
 	
+	@Override
+	public void postStop() {
+		modelStorage.unRegisterFactoryAgent(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
+	}
 	
 	public FactoryAgent(DB db, List<ActorRef> neighbors, ComputationalResourceProfile computationalProfile) {
 		log.info("FactoryAgent started");
@@ -60,8 +60,9 @@ public class FactoryAgent extends UntypedActor {
 		this.modelStorage = new ModelStorage(db);
 		this.neigbhors = neighbors;
 		this.computationalProfile = computationalProfile;
-//		serviceRequests = new LinkedList<ReceivedServiceRequest>();
+		
 	}
+
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
@@ -75,11 +76,13 @@ public class FactoryAgent extends UntypedActor {
 			neigbhors.add((ActorRef) message);
 			
 		} else if (ServiceRequestExploration.class.isInstance(message)) {
-			sender().tell(QoSData.getInstance(SERVICE_TYPE, computationalProfile.expectedTimeToServeRequest()), self());
+			//TODO QoSData should be created by computationalProfile, since it has all the needed data to create it.
+			sender().tell(ServiceRequestExplorationReply.getInstance(computationalProfile.getServiceType(), computationalProfile.expectedTimeToServeRequest()), self());
+			
 			
 		} else if (ServiceRequest.class.isInstance(message)) {
 			ServiceRequest sr = (ServiceRequest) message;
-			if (sr.typeOf(SERVICE_TYPE)) {
+			if (sr.typeOf(computationalProfile.getServiceType())) {
 				computationalProfile.add(ReceivedServiceRequest.getInstance((ServiceRequest) message, sender()));
 			} else {
 				//TODO reply saying this factory does not serve this type of service

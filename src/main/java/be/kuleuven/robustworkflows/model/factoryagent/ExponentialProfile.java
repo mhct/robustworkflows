@@ -11,7 +11,7 @@ public class ExponentialProfile extends ComputationalResourceProfile implements 
 	private RandomDataGenerator random;
 
 	protected ExponentialProfile(int seed) {
-		super();
+		super(null);
 		this.random = new RandomDataGenerator(new MersenneTwister(seed));
 	}
 

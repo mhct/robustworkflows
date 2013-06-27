@@ -1,5 +1,8 @@
 package be.kuleuven.robustworkflows.model.factoryagent;
 
+import java.io.Serializable;
+
+import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 
 /**
@@ -9,9 +12,20 @@ import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
  * @author mario
  *
  */
-public abstract class ComputationalResourceProfile {
+public abstract class ComputationalResourceProfile implements Serializable {
 
-	protected ComputationalResourceProfile() {
+	private static final long serialVersionUID = 20130627L;
+	private final ServiceType serviceType;
+
+	public ComputationalResourceProfile(ServiceType serviceType) {
+		this.serviceType = serviceType;
+	}
+	
+	/**
+	 * SeriveType this ComputationalResourceProfile represents
+	 */
+	public ServiceType getServiceType() {
+		return serviceType;
 	}
 	
 	/**
@@ -57,8 +71,8 @@ public abstract class ComputationalResourceProfile {
 	 * @param processingTimePerRequest
 	 * @return
 	 */
-	public static ComputationalResourceProfile fixedProcessingTime(int processingTimePerRequest) {
-		return new FixedProcessingTimeProfile(processingTimePerRequest);
+	public static ComputationalResourceProfile fixedProcessingTime(int processingTimePerRequest, ServiceType serviceType) {
+		return new FixedProcessingTimeProfile(processingTimePerRequest, serviceType);
 	}
 	
 	/**

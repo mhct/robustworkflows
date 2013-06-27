@@ -1,5 +1,6 @@
 package be.kuleuven.robustworkflows.model.ant;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -8,12 +9,13 @@ import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.model.ModelStorage;
-import be.kuleuven.robustworkflows.model.Workflow;
+import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
-import be.kuleuven.robustworkflows.model.messages.QoSData;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
+import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 import com.google.common.collect.Maps;
 
@@ -27,14 +29,14 @@ public class ExplorationAnt extends UntypedActor {
 	
 	private final long EXPLORATION_TIMEOUT = 1000;
 	private final ModelStorage modelStorage;
-	private final Workflow workflow;
+	private final WorkflowServiceMatcher workflow;
 	private final ActorRef master;
-	private final Map<ActorRef, QoSData> replies = Maps.newHashMap();
+//	private final Map<ActorRef, QoSData> replies = Maps.newHashMap();
 
 	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow) {
 		this.master = master;
 		this.modelStorage = modelStorage;
-		this.workflow = workflow;
+		this.workflow = WorkflowServiceMatcher.getInstance(workflow);
 	}
 
 	@Override
@@ -42,30 +44,47 @@ public class ExplorationAnt extends UntypedActor {
 		if (EventType.RUN.equals(message)) {
 			modelStorage.persistEvent(self() + " received " + message);
 			
-			master.tell(EventType.NeihgborListRequest, self());
+			for (ServiceType st: workflow.getNeededServiceTypes()) {
+				List<String> agentPaths = modelStorage.getFactoryAgents(st);
+				askQoS(agentPaths, st);
+			}
 			addExpirationTimer(EXPLORATION_TIMEOUT, EventType.ExploringStateTimeout);
 			
-		} else if (Neighbors.class.isInstance(message)) {
+		} else if (ServiceRequestExplorationReply.class.isInstance(message)) {
+			//add information to the required type of service FIXME fix the event type
 			modelStorage.persistEvent(self() + " received " + message);
-			//check if still need more candidate services
-			//if so, send message for them
-			for (ActorRef agent: ((Neighbors)message).getNeighbors()) {
-				agent.tell(ServiceRequestExploration.getInstance(workflow.get(0), 10, self()), self());
-			}
+			ServiceRequestExplorationReply qos = (ServiceRequestExplorationReply) message;
+			workflow.associateAgentToTask(sender(), qos);
 			
-		} else if (QoSData.class.isInstance(message)) {
-			//add information to the required type of service
-			modelStorage.persistEvent(self() + " received " + message);
-			QoSData qos = (QoSData) message;
-			replies.put(sender(), qos);
+			if (workflow.getNeededServiceTypes().size() == 0) {
+				master.tell(ExplorationResult.getInstance(workflow));
+			}
+//			replies.put(sender(), qos);
+			
 			
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
 			modelStorage.persistEvent("ExpAnt Timeout");
-			master.tell(ExplorationResult.getInstance(replies), self());
+//			master.tell(ExplorationResult.getInstance(replies), self());
 		}
 		
 	}
-	
+
+	/**
+	 * Sends a ServiceRequestExploration message to the agents given at the list
+	 * agentPaths
+	 * 
+	 * @param agentPaths Paths to agents to be contacted
+	 * @param serviceType Desired ServiceType to be explored
+	 */
+	private void askQoS(List<String> agentPaths, ServiceType serviceType) {
+		for (String agentPath: agentPaths) {
+			ActorRef agent = context().actorFor(agentPath);
+			if (agent != null) {
+				agent.tell(ServiceRequestExploration.getInstance(serviceType, 10, self()), self());
+			}
+		}
+	}
+
 	public void addExpirationTimer(long time, final EventType message) {
 //		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), getClientAgent(), system.dispatcher(), null);
 		context().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 

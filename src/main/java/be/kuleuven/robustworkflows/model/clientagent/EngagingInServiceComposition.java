@@ -1,5 +1,7 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
+import java.util.Map;
+
 import com.mongodb.BasicDBObject;
 
 import be.kuleuven.robustworkflows.model.ServiceType;
@@ -30,9 +32,9 @@ public class EngagingInServiceComposition extends ClientAgentState {
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (RUN.equals(message)) {
 			//FIXME this is a hack. create new abstraction to perform this operation. (IntentionAnts)
-			for (ActorRef factoryAgent: selectedComposition.getFactoryAgents()) {
-				persistEvent("Engaging in Service Composition: " + factoryAgent.path().name()); //FIXME add ClientAgent name
-				factoryAgent.tell(ServiceRequest.getInstance(ServiceType.A), getClientAgentProxy().self()); //FIXME service type is fixed...
+			for (Map.Entry<ActorRef, ServiceType> e: selectedComposition.getAgentServicesMap().entrySet()) {
+				persistEvent("Engaging in Service Composition: " + e.getKey().path().name()); //FIXME add ClientAgent name
+				e.getKey().tell(ServiceRequest.getInstance(e.getValue()), getClientAgentProxy().self()); //FIXME service type is fixed...
 			}
 			
 		} else if (ServiceRequestFinished.class.isInstance(message)){
