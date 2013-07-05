@@ -52,34 +52,32 @@ public class ExplorationResult implements Iterable<WorkflowTask> {
 
 	/**
 	 * Iterates the workflow using Breadth First search
-	 * 
+	 * FIXME this is a template.... finish coding this should be inside WORKFLOW
 	 * @return
 	 */
 	@Override
 	public Iterator<WorkflowTask> iterator() {
 		Iterator<WorkflowTask> itr = new Iterator<WorkflowTask>() {
 
-			private WorkflowTask current = workflow.rawWorkflow().keySet().iterator().next(); //starts at the head
+			private Iterator<WorkflowTask> itr = workflow.rawWorkflow().keySet().iterator(); //FIXME this rawWorkflow is totally wrong. coupling.
 			
 			@Override
 			public boolean hasNext() {
-				// TODO Auto-generated method stub
-				return false;
+				return itr.hasNext();
 			}
 
 			@Override
 			public WorkflowTask next() {
-				if (current != null) {
-					
-				}
+				return itr.next();
 			}
 
 			@Override
 			public void remove() {
-				// TODO Auto-generated method stub
-				
+				itr.remove();
 			}
 			
-		}
+		};
+		
+		return itr;
 	}
 }

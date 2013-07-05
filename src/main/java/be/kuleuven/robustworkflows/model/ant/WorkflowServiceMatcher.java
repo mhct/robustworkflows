@@ -9,7 +9,7 @@ import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -53,7 +53,7 @@ public class WorkflowServiceMatcher {
 	}
 
 	/**
-	 * Associates an Agent and QoS to a particular TASK from the workflow
+	 * Associates an Agent and QoS to a particular TASK from the workflow. Current it uses the ServiceRequestExplorationReply.ServiceType to match which task is it...
 	 * @param agent
 	 * @param qos
 	 */
@@ -61,10 +61,10 @@ public class WorkflowServiceMatcher {
 		
 		WorkflowServiceMatcherTask task = null;
 		for (Map.Entry<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> e: workflow.entries()) {
-			if (e.getKey().getType().equals(qos.getServiceType())) {
+			if (e.getKey().getType().equals(qos.getRequestExploration().getServiceType())) {
 				task = e.getKey();
 				break;
-			} else if (e.getValue().getType().equals(qos.getServiceType())) {
+			} else if (e.getValue().getType().equals(qos.getRequestExploration().getServiceType())) {
 				task = e.getValue();
 				break;
 			}
@@ -73,7 +73,7 @@ public class WorkflowServiceMatcher {
 		if (task != null) {
 			task.setAgent(agent);
 			task.addQoS(qos);
-			remainingWorkflowTasks.remove(qos.getServiceType());
+			remainingWorkflowTasks.remove(qos.getRequestExploration().getServiceType());
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class WorkflowServiceMatcher {
 	 * @return
 	 */
 	public Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> rawWorkflow() {
-		return ArrayListMultimap.create(workflow);
+		return LinkedListMultimap.create(workflow);
 	}
 	
 	/**
@@ -91,7 +91,7 @@ public class WorkflowServiceMatcher {
 	 * @return an immutable workflow message representing this workflow
 	 */
 	public Workflow createWorkflow() {
-		Multimap<WorkflowTask, WorkflowTask> workflowMessage = ArrayListMultimap.create();
+		Multimap<WorkflowTask, WorkflowTask> workflowMessage = LinkedListMultimap.create();
 		
 		for (Map.Entry<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> e: workflow.entries()) {
 			WorkflowTask key = WorkflowTask.getInstance(e.getKey().getType(), e.getKey().agent(), e.getKey().getQos());
@@ -110,7 +110,7 @@ public class WorkflowServiceMatcher {
 	 * @return an instance of the WorkflowServiceMacher
 	 */
 	public static WorkflowServiceMatcher getInstance(Workflow workflow) {
-		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflowSM = ArrayListMultimap.create();
+		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflowSM = LinkedListMultimap.create();
 		
 		for (Map.Entry<WorkflowTask, WorkflowTask> e: workflow.rawWorkflow().entries()) {
 			workflowSM.put(WorkflowServiceMatcherTask.getInstance(e.getKey().getType()), WorkflowServiceMatcherTask.getInstance(e.getValue().getType()));
@@ -125,7 +125,7 @@ public class WorkflowServiceMatcher {
 	 * @return
 	 */
 	public static WorkflowServiceMatcher getLinear1(){
-		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = ArrayListMultimap.create();
+		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = LinkedListMultimap.create();
 		workflow.put(WorkflowServiceMatcherTask.getInstance(ServiceType.A), WorkflowServiceMatcherTask.getInstance(ServiceType.B));
 		
 		return new WorkflowServiceMatcher(workflow);
@@ -138,7 +138,7 @@ public class WorkflowServiceMatcher {
 	 * @return
 	 */
 	public static WorkflowServiceMatcher getLinear(ServiceType... types) {
-		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = ArrayListMultimap.create();
+		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = LinkedListMultimap.create();
 		for (int i=0; i<types.length-1; i++) {
 			workflow.put(WorkflowServiceMatcherTask.getInstance(types[i]), WorkflowServiceMatcherTask.getInstance(types[i+1]));
 		}

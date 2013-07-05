@@ -4,7 +4,7 @@ import java.util.Map;
 
 import be.kuleuven.robustworkflows.model.ServiceType;
 
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 
 /**
@@ -14,7 +14,7 @@ import com.google.common.collect.Multimap;
  *
  */
 public class Workflow {
-	Multimap<WorkflowTask, WorkflowTask> workflow;
+	Multimap<WorkflowTask, WorkflowTask> workflow; //FIXME update to use AdjacencyList abstraction, or even better, Graph Abstraction
 	
 	private Workflow(Multimap<WorkflowTask, WorkflowTask> workflow) {
 		this.workflow = workflow;
@@ -47,7 +47,7 @@ public class Workflow {
 	 * @return a workflow with only two tasks A -> B
 	 */
 	public static Workflow getLinear1(){
-		Multimap<WorkflowTask, WorkflowTask> workflow = ArrayListMultimap.create();
+		Multimap<WorkflowTask, WorkflowTask> workflow = LinkedListMultimap.create();
 		workflow.put(WorkflowTask.getInstance(ServiceType.A), WorkflowTask.getInstance(ServiceType.B));
 		
 		return new Workflow(workflow);
@@ -58,7 +58,7 @@ public class Workflow {
 	 * @return
 	 */
 	public Multimap<WorkflowTask, WorkflowTask> rawWorkflow() {
-		return ArrayListMultimap.create(workflow);
+		return LinkedListMultimap.create(workflow);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class Workflow {
 	 * @return a workflow 
 	 */
 	public static Workflow getLinear(ServiceType... types) {
-		Multimap<WorkflowTask, WorkflowTask> workflow = ArrayListMultimap.create();
+		Multimap<WorkflowTask, WorkflowTask> workflow = LinkedListMultimap.create();
 		for (int i=0; i<types.length-1; i++) {
 			workflow.put(WorkflowTask.getInstance(types[i]), WorkflowTask.getInstance(types[i+1]));
 		}
@@ -80,6 +80,6 @@ public class Workflow {
 	 *  Factory Method to create a workflow given the underlying map
 	 */
 	public static Workflow getInstance( Multimap<WorkflowTask, WorkflowTask> workflow) {
-		return new Workflow(ArrayListMultimap.create(workflow));
+		return new Workflow(LinkedListMultimap.create(workflow));
 	}
 }

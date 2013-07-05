@@ -3,13 +3,21 @@ package be.kuleuven.robustworkflows.model.messages;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import akka.actor.ActorRef;
 
+/**
+ * This class represents a message to query agents about what-if they receive a service request of service type X.
+ * 
+ * @author mario
+ *
+ */
 public class ServiceRequestExploration {
 
-	private ServiceType serviceType;
-	private Integer numberOfHopsToTravel;
-	private ActorRef origin;
+	private final ServiceType serviceType;
+	private final Integer numberOfHopsToTravel;
+	private final ActorRef origin;
+	private final long id;
 
-	public ServiceRequestExploration(ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
+	public ServiceRequestExploration(long id, ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
+		this.id = id;
 		this.serviceType = serviceType;
 		this.numberOfHopsToTravel = numberOfHopsToTravel;
 		this.origin = origin;
@@ -28,8 +36,12 @@ public class ServiceRequestExploration {
 		return origin;
 	}
 
-	public static ServiceRequestExploration getInstance(ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
-		return new ServiceRequestExploration(serviceType, numberOfHopsToTravel, origin);
+	public long getId() {
+		return id;
+	}
+	
+	public static ServiceRequestExploration getInstance(long id, ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
+		return new ServiceRequestExploration(id, serviceType, numberOfHopsToTravel, origin);
 	}
 
 	/**
@@ -39,7 +51,7 @@ public class ServiceRequestExploration {
 	 * @return
 	 */
 	public static ServiceRequestExploration getInstanceRemovingHop(ServiceRequestExploration msg) {
-		return new ServiceRequestExploration(msg.getServiceType(), msg.getNumberOfHopsToTravel() - 1, msg.getOrigin());
+		return new ServiceRequestExploration(msg.getId(), msg.getServiceType(), msg.getNumberOfHopsToTravel() - 1, msg.getOrigin());
 	}
 	
 }

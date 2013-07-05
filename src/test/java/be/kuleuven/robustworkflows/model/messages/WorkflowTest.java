@@ -1,38 +1,66 @@
 package be.kuleuven.robustworkflows.model.messages;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
-//import org.scalatest.matchers.MustMatchers.ArrayMustWrapper;
-
-import be.kuleuven.robustworkflows.model.ServiceType;
+import org.scalatest.selenium.WebBrowser.MultiSel;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
+
+import be.kuleuven.robustworkflows.model.ServiceType;
+import be.kuleuven.robustworkflows.model.collect.AdjacencyList;
+//import org.scalatest.matchers.MustMatchers.ArrayMustWrapper;
 
 public class WorkflowTest {
 
 	public static void main(String[] args) {
-		Multimap<WorkflowTask, WorkflowTask> tasks = ArrayListMultimap.create();
+		AdjacencyList<WorkflowTask> tasks = AdjacencyList.create();
 		
 		tasks.put(WorkflowTask.getInstance(ServiceType.A), WorkflowTask.getInstance(ServiceType.B));
 		tasks.put(WorkflowTask.getInstance(ServiceType.A), WorkflowTask.getInstance(ServiceType.C));
 		tasks.put(WorkflowTask.getInstance(ServiceType.A), WorkflowTask.getInstance(ServiceType.D));
 		tasks.put(WorkflowTask.getInstance(ServiceType.B), WorkflowTask.getInstance(ServiceType.C));
 		
-		WorkflowTask head = tasks.keys().iterator().next();
-		System.out.println("Head" + head);
+
+		//		String head = tasks.keys().iterator().next(); //FIXME check why this returns a different object from different invocations
+//		System.out.println("Head" + head);
+		
+//		AdjacencyList<String> map = AdjacencyList.create();
+		Multimap<String, String> map = ArrayListMultimap.create();
+		map.put("a", "1");
+		map.put("b", "2");
+		map.put("c", "3");
+		map.put("b", "4");
+		for (int i=1; i<100; i++) {
+			System.out.println("---->map head: " + map.keys().iterator().next());
+			Multiset<String> lista = map.keys();
+			for (String a: lista) {
+				System.out.println("map list: " + a);
+				
+			}
+			
+		}
+		
+//		map.entries();
+//		String head = map.head();
 //		for (WorkflowTask w: tasks.get(head)) {
 //			System.out.println(w);
 //		}
-		assertEquals(4, tasks.entries().size());
+//		assertEquals(4, tasks.entries().size());
 //		Workflow w = Workflow.getInstance(tasks);
-		DFS(tasks, head);
+//		DFS(map, map.head());
+//		DFS(tasks, tasks.head());
+//		tasks.DFS();
+//		map.DFS();
 	}
 	
-	private static void DFS(final Multimap<WorkflowTask, WorkflowTask> graph, WorkflowTask node) {
+	private static <K, V> void  DFS (final AdjacencyList<K> graph, K node) {
 		System.out.println(node);
-		for (WorkflowTask n: graph.get(node)) {
+		for (K n: graph.get(node)) {
 			DFS(graph, n);
 		}
 	}

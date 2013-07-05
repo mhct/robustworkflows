@@ -118,17 +118,6 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		}, context().system().dispatcher());
 	}
 
-	
-	//TODO add abstraction to represent workflow
-	@Override
-	public ServiceRequestExploration getServiceRequestExploration() {
-		return ServiceRequestExploration.getInstance(ServiceType.A, 10, self());
-	}
-
-	public AntAPI getAntAPI() {
-		return antApi;
-	}
-	
 	/**
 	 * Selects the best (lowest totalComputationTime) ExplorationResult with the lowest QoS
 	 */
@@ -160,6 +149,12 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	@Override
 	public Workflow getWorkflow() {
 		return workflow;
+	}
+
+	@Override
+	public AntAPI getAntAPI() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 
 /**
  * Keeps the information about a request and the actor who sent it
- * 
+ * TODO move to another place. since this is not a message
  * @author mario
  *
  */

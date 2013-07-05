@@ -1,7 +1,6 @@
 package be.kuleuven.robustworkflows.model.ant;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;
@@ -12,12 +11,9 @@ import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
-import be.kuleuven.robustworkflows.model.messages.Neighbors;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
-
-import com.google.common.collect.Maps;
 
 /**
  * Explores the Agent graph looking for good services (QoS)
@@ -31,6 +27,7 @@ public class ExplorationAnt extends UntypedActor {
 	private final ModelStorage modelStorage;
 	private final WorkflowServiceMatcher workflow;
 	private final ActorRef master;
+	private int explorationCounter = 0;
 //	private final Map<ActorRef, QoSData> replies = Maps.newHashMap();
 
 	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow) {
@@ -57,7 +54,7 @@ public class ExplorationAnt extends UntypedActor {
 			workflow.associateAgentToTask(sender(), qos);
 			
 			if (workflow.getNeededServiceTypes().size() == 0) {
-				master.tell(ExplorationResult.getInstance(workflow));
+				master.tell(ExplorationResult.getInstance(workflow), self());
 			}
 //			replies.put(sender(), qos);
 			
@@ -80,7 +77,7 @@ public class ExplorationAnt extends UntypedActor {
 		for (String agentPath: agentPaths) {
 			ActorRef agent = context().actorFor(agentPath);
 			if (agent != null) {
-				agent.tell(ServiceRequestExploration.getInstance(serviceType, 10, self()), self());
+				agent.tell(ServiceRequestExploration.getInstance(explorationCounter++, serviceType, 10, self()), self());
 			}
 		}
 	}

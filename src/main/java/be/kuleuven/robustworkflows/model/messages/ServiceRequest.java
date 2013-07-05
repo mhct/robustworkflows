@@ -11,9 +11,11 @@ import be.kuleuven.robustworkflows.model.ServiceType;
 public class ServiceRequest {
 	private ServiceType serviceType;
 	private final long creationTime;
+	private int id;
 
 
-	private ServiceRequest(ServiceType serviceType) {
+	private ServiceRequest(int id, ServiceType serviceType) {
+		this.id = id;
 		this.serviceType = serviceType;
 		this.creationTime = System.currentTimeMillis();
 	}
@@ -30,7 +32,11 @@ public class ServiceRequest {
 		return System.currentTimeMillis() - creationTime;
 	}
 	
-	public static ServiceRequest getInstance(ServiceType serviceType) {
-		return new ServiceRequest(serviceType);
+	public static ServiceRequest getInstance(int id, ServiceType serviceType) {
+		return new ServiceRequest(id, serviceType);
+	}
+
+	public int getId() {
+		return id;
 	}
 }

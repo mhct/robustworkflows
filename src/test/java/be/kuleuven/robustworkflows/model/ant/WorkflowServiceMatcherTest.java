@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
@@ -47,7 +48,9 @@ public class WorkflowServiceMatcherTest {
 		
 		assertEquals(2, workflow.getNeededServiceTypes().size());
 		ServiceRequestExplorationReply mockedReply = mock(ServiceRequestExplorationReply.class);
-		when(mockedReply.getServiceType()).thenReturn(ServiceType.B);
+		ServiceRequestExploration mockedReqExp = mock(ServiceRequestExploration.class);
+		when(mockedReqExp.getServiceType()).thenReturn(ServiceType.B);
+		when(mockedReply.getRequestExploration()).thenReturn(mockedReqExp);
 		
 		workflow.associateAgentToTask(mock(ActorRef.class), mockedReply);
 		assertEquals(1, workflow.getNeededServiceTypes().size());
@@ -60,7 +63,9 @@ public class WorkflowServiceMatcherTest {
 		
 		assertEquals(2, workflow.getNeededServiceTypes().size());
 		ServiceRequestExplorationReply mockedReply = mock(ServiceRequestExplorationReply.class);
-		when(mockedReply.getServiceType()).thenReturn(ServiceType.A);
+		ServiceRequestExploration mockedReqExp = mock(ServiceRequestExploration.class);
+		when(mockedReqExp.getServiceType()).thenReturn(ServiceType.A);
+		when(mockedReply.getRequestExploration()).thenReturn(mockedReqExp);
 		
 		workflow.associateAgentToTask(mock(ActorRef.class), mockedReply);
 		assertEquals(1, workflow.getNeededServiceTypes().size());

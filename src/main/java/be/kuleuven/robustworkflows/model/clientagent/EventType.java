@@ -1,5 +1,11 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
 public enum EventType {
-	TotalTimeToServeRequest, RUN, NeihgborListRequest, ExploringStateTimeout, ExplorationFinished;
+	ServiceRequestSummary,
+	TotalTimeToServeRequest, 
+	ExpectedTimeToServeRequest,
+	RUN, 
+	NeihgborListRequest, 
+	ExploringStateTimeout, 
+	ExplorationFinished;
 }
