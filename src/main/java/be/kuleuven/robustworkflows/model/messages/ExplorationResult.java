@@ -57,27 +57,12 @@ public class ExplorationResult implements Iterable<WorkflowTask> {
 	 */
 	@Override
 	public Iterator<WorkflowTask> iterator() {
-		Iterator<WorkflowTask> itr = new Iterator<WorkflowTask>() {
-
-			private Iterator<WorkflowTask> itr = workflow.rawWorkflow().keySet().iterator(); //FIXME this rawWorkflow is totally wrong. coupling.
-			
-			@Override
-			public boolean hasNext() {
-				return itr.hasNext();
-			}
-
-			@Override
-			public WorkflowTask next() {
-				return itr.next();
-			}
-
-			@Override
-			public void remove() {
-				itr.remove();
-			}
-			
-		};
-		
-		return itr;
+		return workflow.iterator();
 	}
+
+	@Override
+	public String toString() {
+		return "ExplorationResult [workflow=" + workflow + "]";
+	}
+	
 }

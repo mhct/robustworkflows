@@ -12,13 +12,13 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 
 import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.collect.AdjacencyList;
+import be.kuleuven.robustworkflows.model.collect.Graph;
 //import org.scalatest.matchers.MustMatchers.ArrayMustWrapper;
 
 public class WorkflowTest {
 
 	public static void main(String[] args) {
-		AdjacencyList<WorkflowTask> tasks = AdjacencyList.create();
+		Graph<WorkflowTask> tasks = Graph.create();
 		
 		tasks.put(WorkflowTask.getInstance(ServiceType.A), WorkflowTask.getInstance(ServiceType.B));
 		tasks.put(WorkflowTask.getInstance(ServiceType.A), WorkflowTask.getInstance(ServiceType.C));
@@ -58,7 +58,7 @@ public class WorkflowTest {
 //		map.DFS();
 	}
 	
-	private static <K, V> void  DFS (final AdjacencyList<K> graph, K node) {
+	private static <K, V> void  DFS (final Graph<K> graph, K node) {
 		System.out.println(node);
 		for (K n: graph.get(node)) {
 			DFS(graph, n);

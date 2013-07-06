@@ -1,79 +1,110 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
-import com.google.common.collect.Maps;
-import com.mongodb.BasicDBObject;
-
-import be.kuleuven.robustworkflows.model.ServiceType;
+import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
-import akka.actor.ActorRef;
+
+import com.mongodb.BasicDBObject;
 
 /**
- * FIXME when an agent is engaging in a composition, it has to maintain information and engage with differet providers... 
+ * Currently it will iterate SEQUENTIALLY unregarding if the workflow can have parallel tasks.
+ * 
+ * FIXME when an agent is engaging in a composition, it has to maintain information and engage with different providers... 
  * better to create a more evolved set of abstractions to deal with that
  * 
- * FIXME currently it is only engaging with ServiceType A
  * TODO check ExplorationResult
+ * 
  * @author mario
  *
  */
 public class EngagingInServiceComposition extends ClientAgentState {
-
+	private static final String EXPECTED_TIME_TO_SERVE_COMPOSITION = "EXPECTED_TIME_TO_SERVE_COMPOSITION";
+	private static final String REAL_TIME_TO_SERVE_COMPOSITION = "REAL_TIME_TO_SERVE_COMPOSITION";
+	private static final String EXPECTED_TIME_TO_SERVE_REQUEST = "EXPECTED_TIME_TO_SERVE_REQUEST";
+	private static final String REAL_TIME_TO_SERVE_REQUEST = "REAL_TIME_TO_SERVE_REQUEST"; 
+	
 	private ExplorationResult selectedComposition;
 	private int serviceRequestCounter = 0;
-	private HashMap<Integer, ServiceRequestExplorationReply> replies; 
+	private WorkflowTask currentTask;
+	private long startTimeSelectedComposition;
+	private long startTimeCurrentTask;
+	private Iterator<WorkflowTask> itr; 
 	
 	private EngagingInServiceComposition(ClientAgentProxy clientAgentProxy, ExplorationResult selected) {
 		super(clientAgentProxy);
 		this.selectedComposition = selected;
-		this.replies = Maps.newHashMap();
 	}
 
 	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (RUN.equals(message)) {
-			//FIXME this is a hack. create new abstraction to perform this operation. (IntentionAnts)
-			for (WorkflowTask t: selectedComposition) {
-				persistEvent("Engaging in Service Composition: " + t.getAgent().path().name()); //FIXME add ClientAgent name
-				serviceRequestCounter = serviceRequestCounter + 1;
-				t.getAgent().tell(ServiceRequest.getInstance(serviceRequestCounter, t.getType()), getClientAgentProxy().self());
-				replies.put(serviceRequestCounter, t.getQoS());
-				
+			persistEvent("Engaging in Service Composition: " + selectedComposition.toString()); // + t.getAgent().path().name()); //FIXME add ClientAgent name
+
+			startTimeSelectedComposition = System.currentTimeMillis();
+			itr = selectedComposition.iterator();
+			engageWithServiceProvider();
+		} 
+		else if (ServiceRequestFinished.class.isInstance(message)){
+			persistEvent(summaryServiceRequest((ServiceRequestFinished) message));
+			
+			if (!itr.hasNext()) {
+				persistEvent("ServiceComposition FINISHED");
+				persistEvent(summaryEngagement());
+				//TODO add more information about this particular event.
+				//TODO, look a better way to persist different objects.... via reflection? etc.
+				setState(WaitingTaskState.getInstance(getClientAgentProxy()));
+			} else {
+				engageWithServiceProvider();
 			}
 			
-		} else if (ServiceRequestFinished.class.isInstance(message)){
-			persistEvent("ServiceComposition FINISHED");
-			persistEvent(summaryRequest((ServiceRequestFinished) message));
-			
-			
-			//TODO add more information about this particular event.
-			//TODO, look a better way to persist different objects.... via reflection? etc.
-			setState(WaitingTaskState.getInstance(getClientAgentProxy()));
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
 		}
 	}
+
+	private void engageWithServiceProvider() {
+		currentTask = itr.next();
+		startTimeCurrentTask = System.currentTimeMillis();
+		serviceRequestCounter = serviceRequestCounter + 1;
+		
+		currentTask.getAgent().tell(ServiceRequest.getInstance(serviceRequestCounter, currentTask.getType()), getClientAgentProxy().self());
+	}
 	
 	/**
 	 * Creates a summary of the finished in a format accepted by the ModelStorage
+	obj.append(REAL_TIME_TO_SERVE_REQUEST, String.valueOf(req.getServiceRequest().totalTimeToServeRequest()));
 	 * 
 	 * @param req
 	 * @return
 	 */
-	private BasicDBObject summaryRequest(ServiceRequestFinished req) {
+	private BasicDBObject summaryServiceRequest(ServiceRequestFinished req) {
 		BasicDBObject obj = new BasicDBObject();
-		obj.append("EventType", EventType.ServiceRequestSummary.toString());
+		obj.append("EventType", EventType.SERVICE_REQUEST_SUMMARY.toString());
 		
-		obj.append(EventType.ExpectedTimeToServeRequest.toString(), replies.get(req.getServiceRequest().getId()).getComputationTime()); 
-		obj.append(EventType.TotalTimeToServeRequest.toString(), String.valueOf(req.getServiceRequest().totalTimeToServeRequest()));
+		obj.append(EXPECTED_TIME_TO_SERVE_REQUEST, String.valueOf(currentTask.getQoS().getComputationTime())); 
+		obj.append(REAL_TIME_TO_SERVE_REQUEST, String.valueOf(System.currentTimeMillis() - startTimeCurrentTask));
 		obj.append("factoryAgentName", req.getFactoryAgentName());
+		return obj;
+	}
+
+	/**
+	 * Creates a summary of the finished in a format accepted by the ModelStorage
+	obj.append(REAL_TIME_TO_SERVE_REQUEST, String.valueOf(req.getServiceRequest().totalTimeToServeRequest()));
+	 * 
+	 * @param req
+	 * @return
+	 */
+	private BasicDBObject summaryEngagement() {
+		BasicDBObject obj = new BasicDBObject();
+		obj.append("EventType", EventType.SERVICE_COMPOSITION_SUMMARY.toString());
+		
+		obj.append(EXPECTED_TIME_TO_SERVE_COMPOSITION, String.valueOf(selectedComposition.totalComputationTime())); 
+		obj.append(REAL_TIME_TO_SERVE_COMPOSITION, String.valueOf(System.currentTimeMillis() - startTimeSelectedComposition));
+		obj.append("CLIENT_AGENT", getClientAgentProxy().self().path().name());
 		return obj;
 	}
 	

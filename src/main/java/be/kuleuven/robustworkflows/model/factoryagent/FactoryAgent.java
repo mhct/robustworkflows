@@ -14,8 +14,8 @@ import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
+import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
 
 import com.mongodb.DB;
@@ -73,11 +73,11 @@ public class FactoryAgent extends UntypedActor {
 			log.debug("Adding neighbor to neighborlist" + message);
 			neigbhors.add((ActorRef) message);
 			
-		} else if (ServiceRequestExploration.class.isInstance(message)) {
-			ServiceRequestExploration msg = (ServiceRequestExploration) message;
+		} else if (ExplorationRequest.class.isInstance(message)) {
+			ExplorationRequest msg = (ExplorationRequest) message;
 			//TODO QoSData should be created by computationalProfile, since it has all the needed data to create it.
 			if (msg.getServiceType().equals(computationalProfile.getServiceType())) {
-				sender().tell(ServiceRequestExplorationReply.getInstance(msg, computationalProfile.expectedTimeToServeRequest()), self());
+				sender().tell(ExplorationReply.getInstance(msg, computationalProfile.expectedTimeToServeRequest()), self());
 			}
 			
 			

@@ -37,7 +37,7 @@ public class ExploringState extends ClientAgentState {
 			
 		} else if (ExplorationResult.class.isInstance(message))  {
 			replies.add((ExplorationResult) message);
-			
+			persistEvent("REPLIEs" + (ExplorationResult) message);
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
 		}

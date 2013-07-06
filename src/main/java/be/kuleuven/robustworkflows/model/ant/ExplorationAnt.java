@@ -11,12 +11,13 @@ import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
+import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 /**
  * Explores the Agent graph looking for good services (QoS)
+ * DUMB explorartion ant. Associates the first ExplorationReply received to a task in the workflow.
  * 
  * @author mario
  *
@@ -28,7 +29,7 @@ public class ExplorationAnt extends UntypedActor {
 	private final WorkflowServiceMatcher workflow;
 	private final ActorRef master;
 	private int explorationCounter = 0;
-//	private final Map<ActorRef, QoSData> replies = Maps.newHashMap();
+	private int waitForReply = 0;
 
 	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow) {
 		this.master = master;
@@ -42,18 +43,18 @@ public class ExplorationAnt extends UntypedActor {
 			modelStorage.persistEvent(self() + " received " + message);
 			
 			for (ServiceType st: workflow.getNeededServiceTypes()) {
-				List<String> agentPaths = modelStorage.getFactoryAgents(st);
+				List<String> agentPaths = modelStorage.getFactoryAgents(st); //FIXME CoordinationLayer function
 				askQoS(agentPaths, st);
 			}
 			addExpirationTimer(EXPLORATION_TIMEOUT, EventType.ExploringStateTimeout);
 			
-		} else if (ServiceRequestExplorationReply.class.isInstance(message)) {
+		} else if (ExplorationReply.class.isInstance(message)) {
 			//add information to the required type of service FIXME fix the event type
 			modelStorage.persistEvent(self() + " received " + message);
-			ServiceRequestExplorationReply qos = (ServiceRequestExplorationReply) message;
+			ExplorationReply qos = (ExplorationReply) message;
 			workflow.associateAgentToTask(sender(), qos);
-			
-			if (workflow.getNeededServiceTypes().size() == 0) {
+			waitForReply--;
+			if (waitForReply == 0) {
 				master.tell(ExplorationResult.getInstance(workflow), self());
 			}
 //			replies.put(sender(), qos);
@@ -77,11 +78,13 @@ public class ExplorationAnt extends UntypedActor {
 		for (String agentPath: agentPaths) {
 			ActorRef agent = context().actorFor(agentPath);
 			if (agent != null) {
-				agent.tell(ServiceRequestExploration.getInstance(explorationCounter++, serviceType, 10, self()), self());
+				agent.tell(ExplorationRequest.getInstance(explorationCounter++, serviceType, 10, self()), self());
+				waitForReply++;
 			}
 		}
+		
 	}
-
+	
 	public void addExpirationTimer(long time, final EventType message) {
 //		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), getClientAgent(), system.dispatcher(), null);
 		context().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 

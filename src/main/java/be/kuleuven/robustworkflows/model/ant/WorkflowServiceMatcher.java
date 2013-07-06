@@ -5,7 +5,7 @@ import java.util.Set;
 
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
@@ -57,7 +57,7 @@ public class WorkflowServiceMatcher {
 	 * @param agent
 	 * @param qos
 	 */
-	public void associateAgentToTask(ActorRef agent, ServiceRequestExplorationReply qos) {
+	public void associateAgentToTask(ActorRef agent, ExplorationReply qos) {
 		
 		WorkflowServiceMatcherTask task = null;
 		for (Map.Entry<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> e: workflow.entries()) {

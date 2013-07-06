@@ -30,7 +30,13 @@ public class FixedProcessingTimeProfile extends ComputationalResourceProfile imp
 
 	@Override
 	public long expectedTimeToServeRequest() {
-		return processingTimePerRequest * serviceRequests.size();
+		int size;
+		if (serviceRequests.size() == 0) {
+			size = 1;
+		} else {
+			size = serviceRequests.size();
+		}
+		return processingTimePerRequest * size;
 	}
 
 	@Override

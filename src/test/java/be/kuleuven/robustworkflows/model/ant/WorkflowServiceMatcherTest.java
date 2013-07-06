@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
+import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
@@ -26,7 +26,7 @@ public class WorkflowServiceMatcherTest {
 	
 	@Test
 	public void testSameWorkflowTasks() {
-		Workflow expected = Workflow.getLinear(ServiceType.A, ServiceType.B);
+		Workflow expected = Workflow.getLinear1();
 		WorkflowServiceMatcher actual = WorkflowServiceMatcher.getInstance(expected);
 		
 //		TODO Function<F, T> uae this function to transform WorkflowTask -> WorkflowServiceMatcherTask 
@@ -47,8 +47,8 @@ public class WorkflowServiceMatcherTest {
 		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getLinear1();
 		
 		assertEquals(2, workflow.getNeededServiceTypes().size());
-		ServiceRequestExplorationReply mockedReply = mock(ServiceRequestExplorationReply.class);
-		ServiceRequestExploration mockedReqExp = mock(ServiceRequestExploration.class);
+		ExplorationReply mockedReply = mock(ExplorationReply.class);
+		ExplorationRequest mockedReqExp = mock(ExplorationRequest.class);
 		when(mockedReqExp.getServiceType()).thenReturn(ServiceType.B);
 		when(mockedReply.getRequestExploration()).thenReturn(mockedReqExp);
 		
@@ -62,8 +62,8 @@ public class WorkflowServiceMatcherTest {
 		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getLinear1();
 		
 		assertEquals(2, workflow.getNeededServiceTypes().size());
-		ServiceRequestExplorationReply mockedReply = mock(ServiceRequestExplorationReply.class);
-		ServiceRequestExploration mockedReqExp = mock(ServiceRequestExploration.class);
+		ExplorationReply mockedReply = mock(ExplorationReply.class);
+		ExplorationRequest mockedReqExp = mock(ExplorationRequest.class);
 		when(mockedReqExp.getServiceType()).thenReturn(ServiceType.A);
 		when(mockedReply.getRequestExploration()).thenReturn(mockedReqExp);
 		

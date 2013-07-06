@@ -19,8 +19,9 @@ public class SelectingComponentServices extends ClientAgentState {
 	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (RUN.equals(message)) {
-			persistEvent("SelectingComponentServices");
+			persistEvent("BEFORE replies.size(): " + replies.size() + "\t" + replies.get(0));
 			ExplorationResult selected = getClientAgentProxy().evaluateComposition(replies);
+			persistEvent("SelectingComponentServices. selected. " + selected.toString());
 			setState(EngagingInServiceComposition.getInstance(getClientAgentProxy(), selected));
 		} else {
 			getClientAgentProxy().unhandledMessage(message);

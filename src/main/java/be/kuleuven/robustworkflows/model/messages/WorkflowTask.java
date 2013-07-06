@@ -12,13 +12,13 @@ import be.kuleuven.robustworkflows.model.ServiceType;
 public class WorkflowTask {
 	private ServiceType type;
 	private ActorRef agent;
-	private ServiceRequestExplorationReply qos;
+	private ExplorationReply qos;
 
 	private WorkflowTask(ServiceType type) {
 		this.type = type;
 	}
 
-	private WorkflowTask(ServiceType serviceType, ActorRef agent, ServiceRequestExplorationReply qos) {
+	private WorkflowTask(ServiceType serviceType, ActorRef agent, ExplorationReply qos) {
 		this.type = serviceType;
 		this.agent = agent;
 		this.qos = qos;
@@ -32,7 +32,7 @@ public class WorkflowTask {
 		return agent;
 	}
 	
-	public ServiceRequestExplorationReply getQoS() {
+	public ExplorationReply getQoS() {
 		return qos;
 	}
 	
@@ -89,7 +89,7 @@ public class WorkflowTask {
 	 * @param qos
 	 * @return
 	 */
-	public static WorkflowTask getInstance(ServiceType serviceType, ActorRef agent, ServiceRequestExplorationReply qos) {
+	public static WorkflowTask getInstance(ServiceType serviceType, ActorRef agent, ExplorationReply qos) {
 		return new WorkflowTask(serviceType, agent, qos);
 	}
 	

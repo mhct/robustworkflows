@@ -2,12 +2,12 @@ package be.kuleuven.robustworkflows.model.ant;
 
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 
 public class WorkflowServiceMatcherTask {
 	private final ServiceType type;
 	private ActorRef agent;
-	private ServiceRequestExplorationReply qos;
+	private ExplorationReply qos;
 	
 	private WorkflowServiceMatcherTask(ServiceType type) {
 		this.type = type;
@@ -21,7 +21,7 @@ public class WorkflowServiceMatcherTask {
 		}
 	}
 	
-	public void addQoS(ServiceRequestExplorationReply qos) {
+	public void addQoS(ExplorationReply qos) {
 		if (qos == null) {
 			throw new IllegalArgumentException("QoS can't be null");
 		} else {
@@ -37,7 +37,7 @@ public class WorkflowServiceMatcherTask {
 		return agent;
 	}
 	
-	public ServiceRequestExplorationReply getQos() {
+	public ExplorationReply getQos() {
 		return qos;
 	}
 	

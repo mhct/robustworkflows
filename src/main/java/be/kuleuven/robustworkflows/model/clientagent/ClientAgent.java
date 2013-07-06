@@ -17,7 +17,7 @@ import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestExploration;
+import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 import com.google.common.collect.Lists;
@@ -66,7 +66,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 			log.debug(self() + " got " + message);
 			sender().tell(getNeighbors(), self());
 		} else {
-			log.debug("\n\n\nClientAgent, received Message: " + message + "$ from " + sender());
+			log.debug("\n\n\nClientAgent, received ." + message + ". from " + sender());
 			currentState.onReceive(message, sender());
 		}
 	}
@@ -106,6 +106,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		return modelStorage;
 	}
 
+	//FIXME add this method to akka utils
 	@Override
 	public void addExpirationTimer(long time, final String message) {
 //		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), getClientAgent(), system.dispatcher(), null);
@@ -153,8 +154,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 
 	@Override
 	public AntAPI getAntAPI() {
-		// TODO Auto-generated method stub
-		return null;
+		return antApi;
 	}
 	
 }
