@@ -50,6 +50,7 @@ public class ModelStorage {
 	}
 	
 	public void persistEvent(BasicDBObject obj) {
+		obj.append("current-time", new Date());
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		coll.insert(obj);
 	}
