@@ -14,10 +14,10 @@ public class WorkflowServiceMatcherTask {
 	}
 
 	public void setAgent(ActorRef actor) {
-		if (this.agent == null && actor != null) {
-			this.agent = actor;
-		} else {
+		if (actor == null) {
 			throw new IllegalArgumentException("This task already has a matching service, or actor is null");
+		} else {
+			this.agent = actor;
 		}
 	}
 	

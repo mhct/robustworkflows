@@ -90,4 +90,5 @@ public class GephiGraphImporter {
 			throw new IllegalArgumentException("File for GRAPH can not be null or empty");
 		}
 	}
+	
 }

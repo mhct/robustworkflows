@@ -1,7 +1,13 @@
 package be.kuleuven.robustworkflows.model;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 
@@ -22,7 +28,9 @@ import com.mongodb.DBCursor;
 public class ModelStorage {
 	private final static String EVENTS_COLLECTION = "model_events";
 	private final static String FACTORY_AGENTS_COLLECTION = "model_factory_agents";
+	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 	private DB db;
+	
 	
 	public ModelStorage(DB db) {
 		this.db = db;
@@ -51,6 +59,7 @@ public class ModelStorage {
 	
 	public void persistEvent(BasicDBObject obj) {
 		obj.append("current-time", new Date());
+		obj.append("time-block", dtf.print(new DateTime()));
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		coll.insert(obj);
 	}

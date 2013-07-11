@@ -50,11 +50,11 @@ public class RobustWorkflowsLauncher implements Bootable {
 		DBCursor cursor = storage.getClientAgent().find();
 		String ref = "";
 		long i=5;
-		while (cursor.hasNext()) {	
+//		while (cursor.hasNext()) {	
 			ref = (String) cursor.next().get("address");
 			sendComposeMessage(system.actorFor(ref), i);
-			i += 0;
-		}
+//			i += 0;
+//		}
 	}
 	
 	private void sendComposeMessage(final ActorRef ref, long time) {

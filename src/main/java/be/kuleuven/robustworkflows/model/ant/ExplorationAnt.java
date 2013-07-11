@@ -52,6 +52,7 @@ public class ExplorationAnt extends UntypedActor {
 			//add information to the required type of service FIXME fix the event type
 			modelStorage.persistEvent(self() + " received " + message);
 			ExplorationReply qos = (ExplorationReply) message;
+			//FIXME currently it will associate the any Reply to a task.. it has to select which reply to use, instead.
 			workflow.associateAgentToTask(sender(), qos);
 			waitForReply--;
 			if (waitForReply == 0) {
