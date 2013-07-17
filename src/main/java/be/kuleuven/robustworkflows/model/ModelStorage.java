@@ -28,7 +28,7 @@ import com.mongodb.DBCursor;
 public class ModelStorage {
 	private final static String EVENTS_COLLECTION = "model_events";
 	private final static String FACTORY_AGENTS_COLLECTION = "model_factory_agents";
-	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss");
 	private DB db;
 	
 	
@@ -59,7 +59,7 @@ public class ModelStorage {
 	
 	public void persistEvent(BasicDBObject obj) {
 		obj.append("current-time", new Date());
-		obj.append("time-block", dtf.print(new DateTime()));
+		obj.append("time_block", dtf.print(new DateTime()));
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		coll.insert(obj);
 	}
