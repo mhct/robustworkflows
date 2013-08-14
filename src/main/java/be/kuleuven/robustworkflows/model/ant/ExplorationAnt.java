@@ -26,7 +26,7 @@ public class ExplorationAnt extends UntypedActor {
 	
 	private final long EXPLORATION_TIMEOUT = 1000;
 	private final ModelStorage modelStorage;
-	private final WorkflowServiceMatcher workflow;
+	private final WorkflowServiceMatcher serviceMatcher;
 	private final ActorRef master;
 	private int explorationCounter = 0;
 	private int waitForReply = 0;
@@ -34,7 +34,7 @@ public class ExplorationAnt extends UntypedActor {
 	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow) {
 		this.master = master;
 		this.modelStorage = modelStorage;
-		this.workflow = WorkflowServiceMatcher.getInstance(workflow);
+		this.serviceMatcher = WorkflowServiceMatcher.getInstance(workflow);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class ExplorationAnt extends UntypedActor {
 		if (EventType.RUN.equals(message)) {
 			modelStorage.persistEvent(self() + " received " + message);
 			
-			for (ServiceType st: workflow.getNeededServiceTypes()) {
+			for (ServiceType st: serviceMatcher.getNeededServiceTypes()) {
 				List<String> agentPaths = modelStorage.getFactoryAgents(st); //FIXME CoordinationLayer function
 				askQoS(agentPaths, st);
 			}
@@ -53,10 +53,10 @@ public class ExplorationAnt extends UntypedActor {
 			modelStorage.persistEvent(self() + " received " + message);
 			ExplorationReply qos = (ExplorationReply) message;
 			//FIXME currently it will associate the any Reply to a task.. it has to select which reply to use, instead.
-			workflow.associateAgentToTask(sender(), qos);
+			serviceMatcher.associateAgentToTask(sender(), qos);
 			waitForReply--;
 			if (waitForReply == 0) {
-				master.tell(ExplorationResult.getInstance(workflow), self());
+				master.tell(ExplorationResult.getInstance(serviceMatcher.createWorkflow()), self());
 			}
 //			replies.put(sender(), qos);
 			

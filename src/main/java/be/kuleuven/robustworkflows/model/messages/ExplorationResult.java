@@ -1,8 +1,6 @@
 package be.kuleuven.robustworkflows.model.messages;
 
-import java.util.Iterator;
 
-import be.kuleuven.robustworkflows.model.ant.WorkflowServiceMatcher;
 
 /**
  * Holds the exploration data obtained by an ExplorationAnt
@@ -10,9 +8,7 @@ import be.kuleuven.robustworkflows.model.ant.WorkflowServiceMatcher;
  * @author mario
  *
  */
-public class ExplorationResult implements Iterable<WorkflowTask> {
-	//FIXME the result should be in terms of Workflow and selected service to play that task in the workflow
-//	private final Map<ActorRef, ServiceRequestExplorationReply> data;
+public class ExplorationResult {
 	private Workflow workflow;
 	
 	public ExplorationResult(Workflow workflow) {
@@ -28,41 +24,18 @@ public class ExplorationResult implements Iterable<WorkflowTask> {
 		return workflow.totalComputationTime();
 	}
 
-//	public Map<ActorRef, ServiceType> getAgentServicesMap() {
-//		Map<ActorRef, ServiceType> agentServices = Maps.newTreeMap();
-//		
-//		for (Map.Entry<ActorRef, ServiceRequestExplorationReply> e: data.entrySet()) {
-//			agentServices.put(e.getKey(), e.getValue().getServiceType());
-//		}
-//		
-//		return agentServices;
-//	}
-	
-//	public Set<ActorRef> getFactoryAgents() {
-//		return new HashSet<ActorRef>(data.keySet());
-//	}
-
-//	public static ExplorationResult getInstance(Map<ActorRef, ServiceRequestExplorationReply> data) {
-//		return new ExplorationResult(Maps.newHashMap(data));
-//	}
-
-	public static ExplorationResult getInstance(WorkflowServiceMatcher workflow) {
-		return new ExplorationResult(workflow.createWorkflow());
-	}
-
-	/**
-	 * Iterates the workflow using Breadth First search
-	 * FIXME this is a template.... finish coding this should be inside WORKFLOW
-	 * @return
-	 */
-	@Override
-	public Iterator<WorkflowTask> iterator() {
-		return workflow.iterator();
-	}
 
 	@Override
 	public String toString() {
 		return "ExplorationResult [workflow=" + workflow + "]";
+	}
+
+	public Workflow getWorkflow() {
+		return workflow;
+	}
+
+	public static ExplorationResult getInstance(final Workflow workflow) {
+		return new ExplorationResult(workflow);
 	}
 	
 }

@@ -4,3 +4,6 @@ datafile used
 30c-10f.gexf
 
 
+- exporting data 
+mongoexport -d workflows -c model_events  -f time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT -q {EventType:\'SERVICE_COMPOSITION_SUMMARY\'} --csv > exp_30c_10f.csv
+

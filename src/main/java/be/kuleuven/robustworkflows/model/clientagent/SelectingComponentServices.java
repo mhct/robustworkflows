@@ -22,7 +22,7 @@ public class SelectingComponentServices extends ClientAgentState {
 			persistEvent("BEFORE replies.size(): " + replies.size() + "\t" + replies.get(0));
 			ExplorationResult selected = getClientAgentProxy().evaluateComposition(replies);
 			persistEvent("SelectingComponentServices. selected. " + selected.toString());
-			setState(EngagingInServiceComposition.getInstance(getClientAgentProxy(), selected));
+			setState(EngagingInServiceComposition.getInstance(getClientAgentProxy(), selected.getWorkflow()));
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
 		}

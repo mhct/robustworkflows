@@ -11,7 +11,7 @@ public class ExploringState extends ClientAgentState {
 	
 	private final long EXPLORING_STATE_TIMEOUT_VALUE = 10000;
 	private final String EXPLORING_STATE_TIMEOUT = "ExploringStateTimeout";
-	private final List<ExplorationResult> replies = Lists.newArrayList();
+	private List<ExplorationResult> replies;
 	
 	public ExploringState(ClientAgentProxy clientAgentProxy) {
 		super(clientAgentProxy);
@@ -19,7 +19,7 @@ public class ExploringState extends ClientAgentState {
 
 	public void run() {
 		persistEvent("ExploringState: " + RUN);
-		
+		replies = Lists.newArrayList();
 		getClientAgentProxy().getAntAPI().createExplorationAnt(getClientAgentProxy().getWorkflow());
 
 		//TODO create new exploration ANTS NOW..? at at ClientAgent creation

@@ -6,6 +6,7 @@ import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
+import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
 import com.mongodb.BasicDBObject;
@@ -27,16 +28,17 @@ public class EngagingInServiceComposition extends ClientAgentState {
 	private static final String EXPECTED_TIME_TO_SERVE_REQUEST = "EXPECTED_TIME_TO_SERVE_REQUEST";
 	private static final String REAL_TIME_TO_SERVE_REQUEST = "REAL_TIME_TO_SERVE_REQUEST"; 
 	
-	private ExplorationResult selectedComposition;
+	private Workflow selectedComposition;
 	private int serviceRequestCounter = 0;
 	private WorkflowTask currentTask;
 	private long startTimeSelectedComposition;
 	private long startTimeCurrentTask;
 	private Iterator<WorkflowTask> itr; 
+	private String servicesEngaged = ""; // Maintain a list of engaged services
 	
-	private EngagingInServiceComposition(ClientAgentProxy clientAgentProxy, ExplorationResult selected) {
+	private EngagingInServiceComposition(ClientAgentProxy clientAgentProxy, Workflow selectedComposition) {
 		super(clientAgentProxy);
-		this.selectedComposition = selected;
+		this.selectedComposition = selectedComposition;
 	}
 
 	@Override
@@ -45,18 +47,22 @@ public class EngagingInServiceComposition extends ClientAgentState {
 			persistEvent("Engaging in Service Composition: " + selectedComposition.toString()); // + t.getAgent().path().name()); //FIXME add ClientAgent name
 
 			startTimeSelectedComposition = System.currentTimeMillis();
+			servicesEngaged = "";
 			itr = selectedComposition.iterator();
 			engageWithServiceProvider();
 		} 
 		else if (ServiceRequestFinished.class.isInstance(message)){
-			persistEvent(summaryServiceRequest((ServiceRequestFinished) message));
+			final ServiceRequestFinished msg = (ServiceRequestFinished) message;
+			persistEvent(summaryServiceRequest(msg));
+			servicesEngaged += ";" + msg.getFactoryAgentName();
 			
 			if (!itr.hasNext()) {
 				persistEvent("ServiceComposition FINISHED");
 				persistEvent(summaryEngagement());
 				//TODO add more information about this particular event.
 				//TODO, look a better way to persist different objects.... via reflection? etc.
-				setState(WaitingTaskState.getInstance(getClientAgentProxy()));
+//				setState(WaitingTaskState.getInstance(getClientAgentProxy()));
+				setState(ExploringState.getInstance(getClientAgentProxy()));
 			} else {
 				engageWithServiceProvider();
 			}
@@ -105,10 +111,12 @@ public class EngagingInServiceComposition extends ClientAgentState {
 		obj.append(EXPECTED_TIME_TO_SERVE_COMPOSITION, String.valueOf(selectedComposition.totalComputationTime())); 
 		obj.append(REAL_TIME_TO_SERVE_COMPOSITION, String.valueOf(System.currentTimeMillis() - startTimeSelectedComposition));
 		obj.append("CLIENT_AGENT", getClientAgentProxy().self().path().name());
+		obj.append("SERVICES_ENGAGED", servicesEngaged);
+		
 		return obj;
 	}
 	
-	public static EngagingInServiceComposition getInstance(ClientAgentProxy clientAgentProxy, ExplorationResult selected) {
+	public static EngagingInServiceComposition getInstance(ClientAgentProxy clientAgentProxy, Workflow selected) {
 		return new EngagingInServiceComposition(clientAgentProxy, selected);
 	}
 

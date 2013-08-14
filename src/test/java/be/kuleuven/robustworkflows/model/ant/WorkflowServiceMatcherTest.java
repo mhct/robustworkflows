@@ -32,10 +32,10 @@ public class WorkflowServiceMatcherTest {
 //		TODO Function<F, T> uae this function to transform WorkflowTask -> WorkflowServiceMatcherTask 
 		for (WorkflowTask key: expected.rawWorkflow().keys()) {
 			Collection<WorkflowTask> expectedTasks = expected.rawWorkflow().get(key);
-			Collection<WorkflowServiceMatcherTask> actualTasks = actual.rawWorkflow().get(WorkflowServiceMatcherTask.getInstance(key.getType()));
+			Collection<MutableWorkflowTask> actualTasks = actual.rawWorkflow().get(MutableWorkflowTask.getInstance(key.getType()));
 			
 			Iterator<WorkflowTask> itrE = expectedTasks.iterator();
-			Iterator<WorkflowServiceMatcherTask> itrA = actualTasks.iterator();
+			Iterator<MutableWorkflowTask> itrA = actualTasks.iterator();
 			while (itrE.hasNext() || itrA.hasNext() ) {
 				assertEquals(itrE.next().getType(), itrA.next().getType());
 			}

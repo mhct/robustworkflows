@@ -35,7 +35,7 @@ public class CloudCreator {
 		
 		
 		final Graph g = gm.getGraph();
-		for (int i=0; i< 100; i++) {
+		for (int i=0; i< 20; i++) {
 			if (i%100 == 0) {
 				System.out.println("i: " + i);
 			}
@@ -43,14 +43,14 @@ public class CloudCreator {
 			g.addNode(n);
 		}
 		
-		for (int i=0; i<10; i++) {
+		for (int i=0; i<30; i++) {
 			Node n = newClientNode(gm);
 			g.addNode(n);
 		}
 		
 		final ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
-			ec.exportFile(new File("/tmp/10c-100f.gexf"));
+			ec.exportFile(new File("/tmp/30c-20f.gexf"));
 		} catch (IOException e) {
 			System.err.println(e);
 		}
@@ -59,7 +59,7 @@ public class CloudCreator {
 	private static Node newFactoryNode(final GraphModel gm) {
 		Node n = gm.factory().newNode();
 				
-		final int processingTimePerRequest = random1.nextInt(10, 500);
+		final int processingTimePerRequest = random1.nextInt(100, 600);
 		String serviceType = "A";
 		double e;
 		if ((e = random2.nextUniform(0, 1)) >= 0.5) {

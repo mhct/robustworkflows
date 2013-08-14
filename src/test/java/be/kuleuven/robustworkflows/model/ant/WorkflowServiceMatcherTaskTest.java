@@ -7,29 +7,29 @@ import org.junit.Test;
 
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.ant.WorkflowServiceMatcherTask;
+import be.kuleuven.robustworkflows.model.ant.MutableWorkflowTask;
 
 public class WorkflowServiceMatcherTaskTest {
 
 	@Test(expected=IllegalArgumentException.class)
 	public void testGetInstanceNull() {
-		WorkflowServiceMatcherTask.getInstance(null);
+		MutableWorkflowTask.getInstance(null);
 	}
 
 	@Test
 	public void testGetInstance() {
-		assertNotNull(WorkflowServiceMatcherTask.getInstance(ServiceType.A));
+		assertNotNull(MutableWorkflowTask.getInstance(ServiceType.A));
 	}
 	
 	@Test
 	public void setActor() {
-		WorkflowServiceMatcherTask task = WorkflowServiceMatcherTask.getInstance(ServiceType.A);
+		MutableWorkflowTask task = MutableWorkflowTask.getInstance(ServiceType.A);
 		task.setAgent(mock(ActorRef.class));
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void setActorTwice() {
-		WorkflowServiceMatcherTask task = WorkflowServiceMatcherTask.getInstance(ServiceType.A);
+		MutableWorkflowTask task = MutableWorkflowTask.getInstance(ServiceType.A);
 		task.setAgent(mock(ActorRef.class));
 		task.setAgent(mock(ActorRef.class));
 		

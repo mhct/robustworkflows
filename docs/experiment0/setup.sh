@@ -1,5 +1,5 @@
 #!/bin/bash #
-# Setup environment for evaluating the CooS middleware 
+# Setup environment for evaluating the RobustWorflows middleware 
 #
 # 17/07/2013
 #

@@ -3,13 +3,15 @@ package be.kuleuven.robustworkflows.model.ant;
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ImmutableWorkflowTask;
+import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
-public class WorkflowServiceMatcherTask {
+public class MutableWorkflowTask implements WorkflowTask {
 	private final ServiceType type;
 	private ActorRef agent;
 	private ExplorationReply qos;
 	
-	private WorkflowServiceMatcherTask(ServiceType type) {
+	private MutableWorkflowTask(ServiceType type) {
 		this.type = type;
 	}
 
@@ -33,20 +35,24 @@ public class WorkflowServiceMatcherTask {
 		return type;
 	}
 	
-	public ActorRef agent() {
+	public ActorRef getAgent() {
 		return agent;
 	}
 	
-	public ExplorationReply getQos() {
+	public ExplorationReply getQoS() {
 		return qos;
 	}
 	
-	public static WorkflowServiceMatcherTask getInstance(ServiceType type) {
+	public ImmutableWorkflowTask getImmutableWorkflowTask() {
+		return ImmutableWorkflowTask.getInstance(getType(), getAgent(), getQoS());
+	}
+	
+	public static MutableWorkflowTask getInstance(ServiceType type) {
 		if (type == null) {
 			throw new IllegalArgumentException("ServiceType can't be null");
 		}
 		
-		return new WorkflowServiceMatcherTask(type);
+		return new MutableWorkflowTask(type);
 	}
 
 	@Override
@@ -67,7 +73,7 @@ public class WorkflowServiceMatcherTask {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		WorkflowServiceMatcherTask other = (WorkflowServiceMatcherTask) obj;
+		MutableWorkflowTask other = (MutableWorkflowTask) obj;
 		if (agent == null) {
 			if (other.agent != null)
 				return false;
@@ -82,6 +88,5 @@ public class WorkflowServiceMatcherTask {
 			return false;
 		return true;
 	}
-	
-	
+		
 }

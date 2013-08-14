@@ -15,15 +15,10 @@ import com.google.common.collect.Multimap;
  *
  */
 public class Workflow implements Iterable<WorkflowTask> {
-//	Multimap<WorkflowTask, WorkflowTask> workflow; //FIXME update to use the be.kuleuven.robustworkflows.model.collect.Graph Abstraction
-	Graph<WorkflowTask> workflow; 
+	Graph<WorkflowTask> activitiesGraph; 
 	
-//	private Workflow(Multimap<WorkflowTask, WorkflowTask> workflow) {
-//		this.workflow = workflow;
-//	}
-
 	private Workflow(Graph<WorkflowTask> workflow) {
-		this.workflow = workflow;
+		this.activitiesGraph = workflow;
 	}
 	
 	/**
@@ -34,7 +29,7 @@ public class Workflow implements Iterable<WorkflowTask> {
 	 */
 	public long totalComputationTime() {
 		long totalTime = 0;
-		for (WorkflowTask e: workflow.DFS()) {
+		for (WorkflowTask e: activitiesGraph.DFS()) {
 			totalTime  += e.getQoS().getComputationTime();
 		}
 		
@@ -45,7 +40,7 @@ public class Workflow implements Iterable<WorkflowTask> {
 	@Override
 	public String toString() {
 		String ret =  "Workflow [";
-		for (WorkflowTask e: workflow.DFS()) {
+		for (WorkflowTask e: activitiesGraph.DFS()) {
 			ret += " -> " + e.getType();
 		}
 		ret += " ]\n";
@@ -55,7 +50,7 @@ public class Workflow implements Iterable<WorkflowTask> {
 
 	@Override 
 	public Iterator<WorkflowTask> iterator() {
-		return workflow.DFS().iterator();
+		return activitiesGraph.DFS().iterator();
 	}
 
 	/**
@@ -63,7 +58,7 @@ public class Workflow implements Iterable<WorkflowTask> {
 	 * @return
 	 */
 	public Multimap<WorkflowTask, WorkflowTask> rawWorkflow() {
-		return workflow.raw();
+		return activitiesGraph.raw();
 	}
 
 	/**
@@ -72,38 +67,21 @@ public class Workflow implements Iterable<WorkflowTask> {
 	 * @return a workflow with only two tasks A -> B
 	 */
 	public static Workflow getLinear1(){
-//		Multimap<WorkflowTask, WorkflowTask> workflow = LinkedListMultimap.create();
 		Graph<WorkflowTask> workflow =  Graph.create(); 
 		
-		workflow.put(WorkflowTask.getInstance(ServiceType.A), WorkflowTask.getInstance(ServiceType.B));
+		workflow.put(ImmutableWorkflowTask.getInstance(ServiceType.A), ImmutableWorkflowTask.getInstance(ServiceType.B));
 		
 		return new Workflow(workflow);
 	}
 
-
-	/**
-	 * Factory Method to create linear workflows
-	 * 
-	 * @param types Types of services required by this workflow
-	 * @return a workflow 
-	 */
-//	public static Workflow getLinear(ServiceType... types) {
-//		Multimap<WorkflowTask, WorkflowTask> workflow = LinkedListMultimap.create();
-//		for (int i=0; i<types.length-1; i++) {
-//			workflow.put(WorkflowTask.getInstance(types[i]), WorkflowTask.getInstance(types[i+1]));
-//		}
-//		
-//		return new Workflow(workflow);
-//	}
-	
 	/**
 	 *  Factory Method to create a workflow given the underlying map
 	 */
 	public static Workflow getInstance( Multimap<WorkflowTask, WorkflowTask> workflowEntries) {
-		Graph<WorkflowTask> graph = Graph.create();
+		final Graph<WorkflowTask> graph = Graph.create();
 		
 		for (Map.Entry<WorkflowTask, WorkflowTask> e: workflowEntries.entries()) {
-			graph.put(e.getKey(), e.getValue());
+			graph.put(e.getKey().getImmutableWorkflowTask(), e.getValue().getImmutableWorkflowTask());
 		}
 		
 		return new Workflow(graph);

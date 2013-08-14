@@ -6,6 +6,7 @@ import java.util.Set;
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ImmutableWorkflowTask;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
@@ -21,10 +22,10 @@ import com.google.common.collect.Sets;
  *
  */
 public class WorkflowServiceMatcher {
-	private final Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow;
+	private final Multimap<MutableWorkflowTask, MutableWorkflowTask> workflow;
 	private Set<ServiceType> remainingWorkflowTasks = Sets.newTreeSet();
 	
-	private WorkflowServiceMatcher(Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow) {
+	private WorkflowServiceMatcher(Multimap<MutableWorkflowTask, MutableWorkflowTask> workflow) {
 		this.workflow = workflow;
 		initializeRemainingWorkflowTasks();
 	}
@@ -34,15 +35,12 @@ public class WorkflowServiceMatcher {
 	 * remainingWorkflowTasks attribute
 	 */
 	private void initializeRemainingWorkflowTasks() {
-		for (Map.Entry<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> e: workflow.entries()) {
+		for (Map.Entry<MutableWorkflowTask, MutableWorkflowTask> e: workflow.entries()) {
 			remainingWorkflowTasks.add(e.getKey().getType());
 			remainingWorkflowTasks.add(e.getValue().getType());
 		}
 	}
 	
-//	private void iterateExecuting(Command<WorkflowServiceMatcherTask> command) {
-//		for ()
-//	}
 	
 	/**
 	 * Returns a set containing all ServiceTypes needed by the tasks of this workflow
@@ -59,8 +57,8 @@ public class WorkflowServiceMatcher {
 	 */
 	public void associateAgentToTask(ActorRef agent, ExplorationReply qos) {
 		
-		WorkflowServiceMatcherTask task = null;
-		for (Map.Entry<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> e: workflow.entries()) {
+		MutableWorkflowTask task = null;
+		for (Map.Entry<MutableWorkflowTask, MutableWorkflowTask> e: workflow.entries()) {
 			if (e.getKey().getType().equals(qos.getRequestExploration().getServiceType())) {
 				task = e.getKey();
 				break;
@@ -81,7 +79,7 @@ public class WorkflowServiceMatcher {
 	 * Returns the RAW representatiom (the graph representing) this workflow
 	 * @return
 	 */
-	public Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> rawWorkflow() {
+	public Multimap<MutableWorkflowTask, MutableWorkflowTask> rawWorkflow() {
 		return LinkedListMultimap.create(workflow);
 	}
 	
@@ -93,9 +91,9 @@ public class WorkflowServiceMatcher {
 	public Workflow createWorkflow() {
 		Multimap<WorkflowTask, WorkflowTask> workflowMessage = LinkedListMultimap.create();
 		
-		for (Map.Entry<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> e: workflow.entries()) {
-			WorkflowTask key = WorkflowTask.getInstance(e.getKey().getType(), e.getKey().agent(), e.getKey().getQos());
-			WorkflowTask value = WorkflowTask.getInstance(e.getValue().getType(), e.getValue().agent(), e.getValue().getQos());
+		for (Map.Entry<MutableWorkflowTask, MutableWorkflowTask> e: workflow.entries()) {
+			WorkflowTask key = ImmutableWorkflowTask.getInstance(e.getKey().getType(), e.getKey().getAgent(), e.getKey().getQoS());
+			WorkflowTask value = ImmutableWorkflowTask.getInstance(e.getValue().getType(), e.getValue().getAgent(), e.getValue().getQoS());
 			workflowMessage.put(key, value);
 		}
 		
@@ -110,39 +108,39 @@ public class WorkflowServiceMatcher {
 	 * @return an instance of the WorkflowServiceMacher
 	 */
 	public static WorkflowServiceMatcher getInstance(Workflow workflow) {
-		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflowSM = LinkedListMultimap.create();
+		Multimap<MutableWorkflowTask, MutableWorkflowTask> workflowSM = LinkedListMultimap.create();
 		
 		for (Map.Entry<WorkflowTask, WorkflowTask> e: workflow.rawWorkflow().entries()) {
-			workflowSM.put(WorkflowServiceMatcherTask.getInstance(e.getKey().getType()), WorkflowServiceMatcherTask.getInstance(e.getValue().getType()));
+			workflowSM.put(MutableWorkflowTask.getInstance(e.getKey().getType()), MutableWorkflowTask.getInstance(e.getValue().getType()));
 		}
 		
 		return new WorkflowServiceMatcher(workflowSM);
 	}
 	
-	/**
-	 * Factory Method that creates simple workflow A -> B
-	 * 
-	 * @return
-	 */
-	public static WorkflowServiceMatcher getLinear1(){
-		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = LinkedListMultimap.create();
-		workflow.put(WorkflowServiceMatcherTask.getInstance(ServiceType.A), WorkflowServiceMatcherTask.getInstance(ServiceType.B));
-		
-		return new WorkflowServiceMatcher(workflow);
-	}
-	
-	/**
-	 * Factory Method based on the service types needed.
-	 * TODO perhaps remove this.. since this type olny exists because of Workflow
-	 * @param types
-	 * @return
-	 */
-	public static WorkflowServiceMatcher getLinear(ServiceType... types) {
-		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = LinkedListMultimap.create();
-		for (int i=0; i<types.length-1; i++) {
-			workflow.put(WorkflowServiceMatcherTask.getInstance(types[i]), WorkflowServiceMatcherTask.getInstance(types[i+1]));
-		}
-		
-		return new WorkflowServiceMatcher(workflow);
-	}
+//	/**
+//	 * Factory Method that creates simple workflow A -> B
+//	 * 
+//	 * @return
+//	 */
+//	public static WorkflowServiceMatcher getLinear1(){
+//		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = LinkedListMultimap.create();
+//		workflow.put(WorkflowServiceMatcherTask.getInstance(ServiceType.A), WorkflowServiceMatcherTask.getInstance(ServiceType.B));
+//		
+//		return new WorkflowServiceMatcher(workflow);
+//	}
+//	
+//	/**
+//	 * Factory Method based on the service types needed.
+//	 * TODO perhaps remove this.. since this type olny exists because of Workflow
+//	 * @param types
+//	 * @return
+//	 */
+//	public static WorkflowServiceMatcher getLinear(ServiceType... types) {
+//		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = LinkedListMultimap.create();
+//		for (int i=0; i<types.length-1; i++) {
+//			workflow.put(WorkflowServiceMatcherTask.getInstance(types[i]), WorkflowServiceMatcherTask.getInstance(types[i+1]));
+//		}
+//		
+//		return new WorkflowServiceMatcher(workflow);
+//	}
 }
