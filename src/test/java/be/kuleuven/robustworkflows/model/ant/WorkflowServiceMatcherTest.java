@@ -52,7 +52,7 @@ public class WorkflowServiceMatcherTest {
 		when(mockedReqExp.getServiceType()).thenReturn(ServiceType.B);
 		when(mockedReply.getRequestExploration()).thenReturn(mockedReqExp);
 		
-		workflow.associateAgentToTask(mock(ActorRef.class), mockedReply);
+		workflow.addReply(mock(ActorRef.class), mockedReply);
 		assertEquals(1, workflow.getNeededServiceTypes().size());
 		assertEquals(ServiceType.A, workflow.getNeededServiceTypes().iterator().next());
 	}
@@ -67,7 +67,7 @@ public class WorkflowServiceMatcherTest {
 		when(mockedReqExp.getServiceType()).thenReturn(ServiceType.A);
 		when(mockedReply.getRequestExploration()).thenReturn(mockedReqExp);
 		
-		workflow.associateAgentToTask(mock(ActorRef.class), mockedReply);
+		workflow.addReply(mock(ActorRef.class), mockedReply);
 		assertEquals(1, workflow.getNeededServiceTypes().size());
 		assertEquals(ServiceType.B, workflow.getNeededServiceTypes().iterator().next());
 	}

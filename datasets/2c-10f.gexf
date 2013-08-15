@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2" xmlns:viz="http://www.gexf.net/1.2draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
+  <meta lastmodifieddate="2013-07-12">
+    <creator>Gephi 0.8.1</creator>
+    <description></description>
+  </meta>
+  <graph defaultedgetype="directed" mode="static">
+    <attributes class="node" mode="static">
+      <attribute id="NodeType" title="NodeType" type="string"></attribute>
+      <attribute id="ComputationalResourceProfile" title="ComputationalResourceProfile" type="string"></attribute>
+      <attribute id="ProcessingTimePerRequest" title="ProcessingTimePerRequest" type="string"></attribute>
+      <attribute id="ServiceType" title="ServiceType" type="string"></attribute>
+    </attributes>
+    <nodes>
+      <node id="1">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="440"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-110.56766" y="-249.40926" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="2">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="572"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="152.2254" y="176.11304" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="3">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="166"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-60.17859" y="-423.97974" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="4">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="289"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-469.30408" y="271.9041" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="5">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="310"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-231.126" y="-362.82623" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="6">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="5"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-389.9282" y="-475.83307" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="7">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="10"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="65.793945" y="85.2854" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="8">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="266"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-183.19318" y="-173.09164" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="9">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="429"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="272.69434" y="314.979" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="10">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="315"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-64.77188" y="-109.2601" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="11">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-98.65286" y="289.45856" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="12">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="428.5512" y="-64.884735" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+     
+    </nodes>
+    <edges></edges>
+  </graph>
+</gexf>

@@ -6,7 +6,6 @@ import java.util.Set;
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
-import be.kuleuven.robustworkflows.model.messages.ImmutableWorkflowTask;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
@@ -55,7 +54,7 @@ public class WorkflowServiceMatcher {
 	 * @param agent
 	 * @param qos
 	 */
-	public void associateAgentToTask(ActorRef agent, ExplorationReply qos) {
+	public void addReply(ActorRef agent, ExplorationReply qos) {
 		
 		MutableWorkflowTask task = null;
 		for (Map.Entry<MutableWorkflowTask, MutableWorkflowTask> e: workflow.entries()) {
@@ -69,8 +68,9 @@ public class WorkflowServiceMatcher {
 		}
 		
 		if (task != null) {
-			task.setAgent(agent);
-			task.addQoS(qos);
+//			task.setAgent(agent);
+//			task.addQoS(qos);
+			task.addReply(MetaExplorationReply.getInstance(agent, qos));
 			remainingWorkflowTasks.remove(qos.getRequestExploration().getServiceType());
 		}
 	}
@@ -86,14 +86,18 @@ public class WorkflowServiceMatcher {
 	/**
 	 * Creates a representation of this datastructure as a Workflow message
 	 * 
+	 * FIXME URGENT WARNING. currently it selects the best services AND creates a WorkflowRepresentation for it
 	 * @return an immutable workflow message representing this workflow
 	 */
-	public Workflow createWorkflow() {
+	public Workflow createOptimalWorkflow() {
 		Multimap<WorkflowTask, WorkflowTask> workflowMessage = LinkedListMultimap.create();
 		
 		for (Map.Entry<MutableWorkflowTask, MutableWorkflowTask> e: workflow.entries()) {
-			WorkflowTask key = ImmutableWorkflowTask.getInstance(e.getKey().getType(), e.getKey().getAgent(), e.getKey().getQoS());
-			WorkflowTask value = ImmutableWorkflowTask.getInstance(e.getValue().getType(), e.getValue().getAgent(), e.getValue().getQoS());
+//			WorkflowTask key = ImmutableWorkflowTask.getInstance(e.getKey().getType(), e.getKey().getAgent(), e.getKey().getQoS());
+//			WorkflowTask value = ImmutableWorkflowTask.getInstance(e.getValue().getType(), e.getValue().getAgent(), e.getValue().getQoS());
+			WorkflowTask key = e.getKey().getImmutableWorkflowTask(); // the selection is done now, for individual tasks
+			WorkflowTask value = e.getValue().getImmutableWorkflowTask();
+			
 			workflowMessage.put(key, value);
 		}
 		
@@ -117,30 +121,4 @@ public class WorkflowServiceMatcher {
 		return new WorkflowServiceMatcher(workflowSM);
 	}
 	
-//	/**
-//	 * Factory Method that creates simple workflow A -> B
-//	 * 
-//	 * @return
-//	 */
-//	public static WorkflowServiceMatcher getLinear1(){
-//		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = LinkedListMultimap.create();
-//		workflow.put(WorkflowServiceMatcherTask.getInstance(ServiceType.A), WorkflowServiceMatcherTask.getInstance(ServiceType.B));
-//		
-//		return new WorkflowServiceMatcher(workflow);
-//	}
-//	
-//	/**
-//	 * Factory Method based on the service types needed.
-//	 * TODO perhaps remove this.. since this type olny exists because of Workflow
-//	 * @param types
-//	 * @return
-//	 */
-//	public static WorkflowServiceMatcher getLinear(ServiceType... types) {
-//		Multimap<WorkflowServiceMatcherTask, WorkflowServiceMatcherTask> workflow = LinkedListMultimap.create();
-//		for (int i=0; i<types.length-1; i++) {
-//			workflow.put(WorkflowServiceMatcherTask.getInstance(types[i]), WorkflowServiceMatcherTask.getInstance(types[i+1]));
-//		}
-//		
-//		return new WorkflowServiceMatcher(workflow);
-//	}
 }

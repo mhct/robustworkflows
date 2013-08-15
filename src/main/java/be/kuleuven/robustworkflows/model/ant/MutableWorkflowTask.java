@@ -1,51 +1,68 @@
 package be.kuleuven.robustworkflows.model.ant;
 
-import akka.actor.ActorRef;
-import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
-import be.kuleuven.robustworkflows.model.messages.ImmutableWorkflowTask;
-import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
+import java.util.List;
 
-public class MutableWorkflowTask implements WorkflowTask {
+import be.kuleuven.robustworkflows.model.ServiceType;
+import be.kuleuven.robustworkflows.model.messages.ImmutableWorkflowTask;
+
+import com.google.common.collect.Lists;
+//FIXME change the name of this class.. to represent what it really does/represent
+
+public class MutableWorkflowTask {
 	private final ServiceType type;
-	private ActorRef agent;
-	private ExplorationReply qos;
+	private final List<MetaExplorationReply> replies;
 	
 	private MutableWorkflowTask(ServiceType type) {
 		this.type = type;
+		this.replies = Lists.newArrayList();
 	}
 
-	public void setAgent(ActorRef actor) {
-		if (actor == null) {
-			throw new IllegalArgumentException("This task already has a matching service, or actor is null");
-		} else {
-			this.agent = actor;
-		}
-	}
+//	public void setAgent(ActorRef actor) {
+//		if (actor == null) {
+//			throw new IllegalArgumentException("This task already has a matching service, or actor is null");
+//		} else {
+//			this.agent = actor;
+//		}
+//	}
 	
-	public void addQoS(ExplorationReply qos) {
-		if (qos == null) {
+	public void addReply(MetaExplorationReply reply) {
+		if (reply == null) {
 			throw new IllegalArgumentException("QoS can't be null");
 		} else {
-			this.qos = qos;
+			replies.add(reply);
 		}
 	}
 	
 	public ServiceType getType() {
 		return type;
 	}
+//	
+//	public ActorRef getAgent() {
+//		return agent;
+//	}
+//	
+//	public ExplorationReply getQoS() {
+//		return qos;
+//	}
 	
-	public ActorRef getAgent() {
-		return agent;
-	}
-	
-	public ExplorationReply getQoS() {
-		return qos;
-	}
-	
+	/**
+	 * selects the best available service (minimum computational time)
+	 * @return
+	 */
 	public ImmutableWorkflowTask getImmutableWorkflowTask() {
-		return ImmutableWorkflowTask.getInstance(getType(), getAgent(), getQoS());
+//		return ImmutableWorkflowTask.getInstance(getType(), getAgent(), getQoS());
+		long computationTime = Long.MAX_VALUE;
+		MetaExplorationReply winner = null;
+		for (MetaExplorationReply m: replies) {
+			if (m.getReply().getComputationTime() <= computationTime) {
+				winner = m;
+			}
+		}
+		
+		assert winner != null;
+		return ImmutableWorkflowTask.getInstance(type, winner.getSender(), winner.getReply());
 	}
+	
 	
 	public static MutableWorkflowTask getInstance(ServiceType type) {
 		if (type == null) {
@@ -55,38 +72,4 @@ public class MutableWorkflowTask implements WorkflowTask {
 		return new MutableWorkflowTask(type);
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((agent == null) ? 0 : agent.hashCode());
-		result = prime * result + ((qos == null) ? 0 : qos.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MutableWorkflowTask other = (MutableWorkflowTask) obj;
-		if (agent == null) {
-			if (other.agent != null)
-				return false;
-		} else if (!agent.equals(other.agent))
-			return false;
-		if (qos == null) {
-			if (other.qos != null)
-				return false;
-		} else if (!qos.equals(other.qos))
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
-		
 }

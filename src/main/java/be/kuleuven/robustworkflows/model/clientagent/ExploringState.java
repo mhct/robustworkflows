@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 
 public class ExploringState extends ClientAgentState {
 	
-	private final long EXPLORING_STATE_TIMEOUT_VALUE = 10000;
+	private final long EXPLORING_STATE_TIMEOUT_VALUE = 11000;
 	private final String EXPLORING_STATE_TIMEOUT = "ExploringStateTimeout";
 	private List<ExplorationResult> replies;
 	

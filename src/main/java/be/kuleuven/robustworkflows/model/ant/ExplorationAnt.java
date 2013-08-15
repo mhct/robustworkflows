@@ -10,21 +10,21 @@ import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
-import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
-import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
+import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 /**
  * Explores the Agent graph looking for good services (QoS)
- * DUMB explorartion ant. Associates the first ExplorationReply received to a task in the workflow.
- * 
+ * Myopic Ant, minimizes the time for EACH service and does not look at reservations, or probabilities, for instance.
+ *  
  * @author mario
  *
  */
 public class ExplorationAnt extends UntypedActor {
 	
-	private final long EXPLORATION_TIMEOUT = 1000;
+	private final long EXPLORATION_TIMEOUT = 10000;
 	private final ModelStorage modelStorage;
 	private final WorkflowServiceMatcher serviceMatcher;
 	private final ActorRef master;
@@ -40,7 +40,7 @@ public class ExplorationAnt extends UntypedActor {
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if (EventType.RUN.equals(message)) {
-			modelStorage.persistEvent(self() + " received " + message);
+			modelStorage.persistEvent(master.toString() + ":" + self() + " received " + message);
 			
 			for (ServiceType st: serviceMatcher.getNeededServiceTypes()) {
 				List<String> agentPaths = modelStorage.getFactoryAgents(st); //FIXME CoordinationLayer function
@@ -50,20 +50,20 @@ public class ExplorationAnt extends UntypedActor {
 			
 		} else if (ExplorationReply.class.isInstance(message)) {
 			//add information to the required type of service FIXME fix the event type
-			modelStorage.persistEvent(self() + " received " + message);
+//			modelStorage.persistEvent(self() + " received " + message);
 			ExplorationReply qos = (ExplorationReply) message;
+			//test if has better options
 			//FIXME currently it will associate the any Reply to a task.. it has to select which reply to use, instead.
-			serviceMatcher.associateAgentToTask(sender(), qos);
+			serviceMatcher.addReply(sender(), qos);
 			waitForReply--;
 			if (waitForReply == 0) {
-				master.tell(ExplorationResult.getInstance(serviceMatcher.createWorkflow()), self());
+				master.tell(ExplorationResult.getInstance(serviceMatcher.createOptimalWorkflow()), self());
 			}
-//			replies.put(sender(), qos);
 			
 			
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
 			modelStorage.persistEvent("ExpAnt Timeout");
-//			master.tell(ExplorationResult.getInstance(replies), self());
+			master.tell(ExplorationResult.getInstance(serviceMatcher.createOptimalWorkflow()), self());
 		}
 		
 	}
@@ -85,7 +85,7 @@ public class ExplorationAnt extends UntypedActor {
 		}
 		
 	}
-	
+
 	public void addExpirationTimer(long time, final EventType message) {
 //		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), getClientAgent(), system.dispatcher(), null);
 		context().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 
