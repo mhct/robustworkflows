@@ -11,9 +11,14 @@ import java.util.Iterator;
 import org.junit.Test;
 
 import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.actor.UntypedActor;
+import akka.testkit.TestActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
@@ -44,7 +49,7 @@ public class WorkflowServiceMatcherTest {
 	
 	@Test
 	public void testAssociateAgentB() {
-		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getLinear1();
+		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getInstance(Workflow.getLinear1());
 		
 		assertEquals(2, workflow.getNeededServiceTypes().size());
 		ExplorationReply mockedReply = mock(ExplorationReply.class);
@@ -59,7 +64,7 @@ public class WorkflowServiceMatcherTest {
 
 	@Test
 	public void testAssociateAgentA() {
-		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getLinear1();
+		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getInstance(Workflow.getLinear1());
 		
 		assertEquals(2, workflow.getNeededServiceTypes().size());
 		ExplorationReply mockedReply = mock(ExplorationReply.class);
@@ -73,27 +78,8 @@ public class WorkflowServiceMatcherTest {
 	}
 	
 	@Test
-	public void testGetLinear1() {
-		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getLinear1();
-		assertNotNull(wf);
-	}
-
-	@Test
-	public void testGetLinear() {
-		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getLinear(ServiceType.A);
-		assertNotNull(wf);
-	}
-
-	@Test
-	public void testGetLinearMultipleServices() {
-		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getLinear(ServiceType.A, ServiceType.B, ServiceType.C);
-		
-		assertNotNull(wf);
-	}
-	
-	@Test
 	public void testgetNeededServiceTypes() {
-		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getLinear1();
+		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getInstance(Workflow.getLinear1());
 
 		Iterator<ServiceType> itr = wf.getNeededServiceTypes().iterator();
 		
@@ -102,5 +88,45 @@ public class WorkflowServiceMatcherTest {
 		assertEquals(ServiceType.A, itr.next());
 		assertEquals(ServiceType.B, itr.next());
 	}
+	
+	
+	@Test
+	public void testAddReply_createOptimalWorkflow() {
+		final ActorSystem system = ActorSystem.apply();
+		final Props props = Props.apply(MyActor.class);
+		final TestActorRef<MyActor> ac0 = TestActorRef.create(system, props, "ac0");
+		final TestActorRef<MyActor> ac1 = TestActorRef.create(system, props, "ac1");
+		final TestActorRef<MyActor> ac2 = TestActorRef.create(system, props, "ac2");
+		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getInstance(Workflow.getLinear1());
+		
+		ExplorationRequest er0 = ExplorationRequest.getInstance(0, ServiceType.A, 10, ac0);
+		ExplorationRequest er1 = ExplorationRequest.getInstance(0, ServiceType.B, 10, ac1);
 
+		ExplorationReply res0 = ExplorationReply.getInstance(er0, 1);
+		ExplorationReply res1 = ExplorationReply.getInstance(er1, 3);
+		ExplorationReply res2 = ExplorationReply.getInstance(er1, 10);
+		
+		wf.addReply(ac0, res0);
+		wf.addReply(ac1, res1);
+		wf.addReply(ac2, res2); //takes more time, ac2 shouldn't be selected
+		
+		//Test starts here
+		final Workflow pairedWorkflow = wf.createOptimalWorkflow();
+		final Iterator<WorkflowTask> itr = pairedWorkflow.iterator();
+		
+		assertEquals(ac0, itr.next().getAgent());
+		assertEquals(ac1, itr.next().getAgent());
+	}
+
+}
+
+
+class MyActor extends UntypedActor {
+
+	@Override
+	public void onReceive(Object arg0) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

@@ -41,7 +41,7 @@ public class Workflow implements Iterable<WorkflowTask> {
 	public String toString() {
 		String ret =  "Workflow [";
 		for (WorkflowTask e: activitiesGraph.DFS()) {
-			ret += " -> " + e.getType();
+			ret += " -> (" + e.getType() + "," + e.getAgent() + "," + e.getQoS().getComputationTime() +")";
 		}
 		ret += " ]\n";
 		
@@ -74,6 +74,14 @@ public class Workflow implements Iterable<WorkflowTask> {
 		return new Workflow(workflow);
 	}
 
+	public static Workflow getLinearInverted1(){
+		Graph<WorkflowTask> workflow =  Graph.create(); 
+		
+		workflow.put(ImmutableWorkflowTask.getInstance(ServiceType.B), ImmutableWorkflowTask.getInstance(ServiceType.A));
+		
+		return new Workflow(workflow);
+	}
+	
 	/**
 	 *  Factory Method to create a workflow given the underlying map
 	 */

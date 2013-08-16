@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
  *
  */
 public class AntAPI {
-	List<ActorRef> explorationAnts = Lists.newArrayList();
+	private List<ActorRef> explorationAnts;
 	private ActorContext context;
 	private final ModelStorage modelStorage;
 	private final ActorRef master;
@@ -29,6 +29,7 @@ public class AntAPI {
 		this.master = master;
 		this.context = context;
 		this.modelStorage = modelStorage;
+		this.explorationAnts = Lists.newArrayList();
 	}
 	
 	public void createExplorationAnt(final Workflow workflow) {

@@ -4,9 +4,7 @@ import java.util.List;
 
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.messages.ImmutableWorkflowTask;
-
 import com.google.common.collect.Lists;
-//FIXME change the name of this class.. to represent what it really does/represent
 
 public class MutableWorkflowTask {
 	private final ServiceType type;
@@ -56,6 +54,7 @@ public class MutableWorkflowTask {
 		for (MetaExplorationReply m: replies) {
 			if (m.getReply().getComputationTime() <= computationTime) {
 				winner = m;
+				computationTime = winner.getReply().getComputationTime();
 			}
 		}
 		

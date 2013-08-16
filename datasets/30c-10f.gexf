@@ -71,7 +71,7 @@
         <attvalues>
           <attvalue for="NodeType" value="Factory"></attvalue>
           <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
-          <attvalue for="ProcessingTimePerRequest" value="5"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="100"></attvalue>
           <attvalue for="ServiceType" value="B"></attvalue>
         </attvalues>
         <viz:size value="1.0"></viz:size>
@@ -82,7 +82,7 @@
         <attvalues>
           <attvalue for="NodeType" value="Factory"></attvalue>
           <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
-          <attvalue for="ProcessingTimePerRequest" value="10"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="100"></attvalue>
           <attvalue for="ServiceType" value="A"></attvalue>
         </attvalues>
         <viz:size value="1.0"></viz:size>

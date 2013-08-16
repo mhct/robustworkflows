@@ -61,8 +61,8 @@ public class EngagingInServiceComposition extends ClientAgentState {
 				persistEvent(summaryEngagement());
 				//TODO add more information about this particular event.
 				//TODO, look a better way to persist different objects.... via reflection? etc.
-				setState(WaitingTaskState.getInstance(getClientAgentProxy()));
-//				setState(ExploringState.getInstance(getClientAgentProxy()));
+//				setState(WaitingTaskState.getInstance(getClientAgentProxy()));
+				setState(ExploringState.getInstance(getClientAgentProxy()));
 			} else {
 				engageWithServiceProvider();
 			}

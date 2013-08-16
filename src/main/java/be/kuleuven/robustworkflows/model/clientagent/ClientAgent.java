@@ -47,7 +47,16 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		this.modelStorage = new ModelStorage(db);
 		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
 		this.antApi = AntAPI.getInstance(self(), context(), modelStorage);
-		this.workflow = Workflow.getLinear1();
+
+		//simple hack... for some tests.
+		//FIXME indicate the workflow at the GEXF file (agent configuration file)
+		
+		if(self().path().name().equals("11")) {
+			this.workflow = Workflow.getLinear1(); 
+		} else {
+			this.workflow = Workflow.getLinearInverted1(); 	
+		}
+		
 	}
 	
 	@Override

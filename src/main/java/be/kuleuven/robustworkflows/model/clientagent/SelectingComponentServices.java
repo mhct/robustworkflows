@@ -20,7 +20,8 @@ public class SelectingComponentServices extends ClientAgentState {
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (RUN.equals(message)) {
 			
-			persistEvent("BEFORE replies.size(): " + replies.size() + "\t" + (replies !=null? replies.get(0): "REPLIES WAS NULL"));
+			persistEvent("BEFORE replies.size(): " + replies.size() + "\t" + (replies !=null? replies: "REPLIES WAS NULL"));
+			
 			ExplorationResult selected = getClientAgentProxy().evaluateComposition(replies);
 			persistEvent("SelectingComponentServices. selected. " + selected.toString());
 			setState(EngagingInServiceComposition.getInstance(getClientAgentProxy(), selected.getWorkflow()));

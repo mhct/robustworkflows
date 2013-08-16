@@ -35,5 +35,13 @@ public class ExplorationReply {
 	public static ExplorationReply getInstance(ExplorationRequest requestExploration, long computationTime) {
 		return new ExplorationReply(requestExploration, computationTime);
 	}
+
+
+	@Override
+	public String toString() {
+		return "ExplorationReply [computationTime=" + computationTime
+				+ ", requestExploration=" + requestExploration + "]";
+	}
+
 	
 }

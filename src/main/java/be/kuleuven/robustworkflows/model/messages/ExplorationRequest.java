@@ -53,5 +53,14 @@ public class ExplorationRequest {
 	public static ExplorationRequest getInstanceRemovingHop(ExplorationRequest msg) {
 		return new ExplorationRequest(msg.getId(), msg.getServiceType(), msg.getNumberOfHopsToTravel() - 1, msg.getOrigin());
 	}
+
+
+	@Override
+	public String toString() {
+		return "ExplorationRequest [serviceType=" + serviceType
+				+ ", numberOfHopsToTravel=" + numberOfHopsToTravel
+				+ ", origin=" + origin + ", id=" + id + "]";
+	}
+	
 	
 }

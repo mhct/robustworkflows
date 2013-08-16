@@ -24,12 +24,13 @@ import be.kuleuven.robustworkflows.model.messages.Workflow;
  */
 public class ExplorationAnt extends UntypedActor {
 	
-	private final long EXPLORATION_TIMEOUT = 10000;
+	private final long EXPLORATION_TIMEOUT = 900;
 	private final ModelStorage modelStorage;
 	private final WorkflowServiceMatcher serviceMatcher;
 	private final ActorRef master;
 	private int explorationCounter = 0;
 	private int waitForReply = 0;
+	private String cachedName;
 
 	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow) {
 		this.master = master;
@@ -37,10 +38,19 @@ public class ExplorationAnt extends UntypedActor {
 		this.serviceMatcher = WorkflowServiceMatcher.getInstance(workflow);
 	}
 
+	private String selfName() {
+		if (cachedName == null) {
+			cachedName = master.path().name();
+		}
+		
+		return cachedName;
+	}
+	
+	
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if (EventType.RUN.equals(message)) {
-			modelStorage.persistEvent(master.toString() + ":" + self() + " received " + message);
+			modelStorage.persistEvent(selfName() + " received " + message);
 			
 			for (ServiceType st: serviceMatcher.getNeededServiceTypes()) {
 				List<String> agentPaths = modelStorage.getFactoryAgents(st); //FIXME CoordinationLayer function
@@ -50,14 +60,15 @@ public class ExplorationAnt extends UntypedActor {
 			
 		} else if (ExplorationReply.class.isInstance(message)) {
 			//add information to the required type of service FIXME fix the event type
-//			modelStorage.persistEvent(self() + " received " + message);
 			ExplorationReply qos = (ExplorationReply) message;
+			modelStorage.persistEvent("ClientAgent: " + selfName() + " FROM: "+ sender().path().name() + " received " + qos);
+			
 			//test if has better options
 			//FIXME currently it will associate the any Reply to a task.. it has to select which reply to use, instead.
 			serviceMatcher.addReply(sender(), qos);
 			waitForReply--;
 			if (waitForReply == 0) {
-				master.tell(ExplorationResult.getInstance(serviceMatcher.createOptimalWorkflow()), self());
+				addExpirationTimer(0, EventType.ExplorationFinished);
 			}
 			
 			

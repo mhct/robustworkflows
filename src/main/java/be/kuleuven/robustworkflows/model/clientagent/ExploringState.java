@@ -6,10 +6,11 @@ import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 
 import com.google.common.collect.Lists;
+import com.mongodb.BasicDBObject;
 
 public class ExploringState extends ClientAgentState {
-	
-	private final long EXPLORING_STATE_TIMEOUT_VALUE = 11000;
+
+	private final long EXPLORING_STATE_TIMEOUT_VALUE = 1100;
 	private final String EXPLORING_STATE_TIMEOUT = "ExploringStateTimeout";
 	private List<ExplorationResult> replies;
 	
@@ -36,8 +37,9 @@ public class ExploringState extends ClientAgentState {
 			setState(SelectingComponentServices.getInstance(getClientAgentProxy(), replies));
 			
 		} else if (ExplorationResult.class.isInstance(message))  {
-			replies.add((ExplorationResult) message);
-			persistEvent("REPLIEs" + (ExplorationResult) message);
+			ExplorationResult msg = (ExplorationResult) message;
+			replies.add(msg);
+			persistEvent(debugExplorationResult(msg));
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
 		}
@@ -48,5 +50,14 @@ public class ExploringState extends ClientAgentState {
 	public static ClientAgentState getInstance(ClientAgentProxy clientAgentProxy) {
 		return new ExploringState(clientAgentProxy);
 	}
-
+	
+	private BasicDBObject debugExplorationResult(ExplorationResult msg) {
+		BasicDBObject obj = new BasicDBObject();
+		obj.append("EventType", EventType.ExplorationResult.toString());
+		
+		obj.append("CLIENT_AGENT", getClientAgentProxy().self().path().name());
+		obj.append("SERVICES_ENGAGED", msg.toString());
+		
+		return obj;
+	}
 }

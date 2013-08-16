@@ -6,5 +6,6 @@ public enum EventType {
 	RUN, 
 	NeihgborListRequest, 
 	ExploringStateTimeout, 
-	ExplorationFinished;
+	ExplorationFinished, 
+	ExplorationResult;
 }
