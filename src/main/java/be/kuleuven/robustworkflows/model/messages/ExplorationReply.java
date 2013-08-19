@@ -1,5 +1,10 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import be.kuleuven.robustworkflows.model.clientagent.EventType;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
 
 /**
  * MESSAGE Containing information about the quality of service of a particular component service 
@@ -43,5 +48,14 @@ public class ExplorationReply {
 				+ ", requestExploration=" + requestExploration + "]";
 	}
 
-	
+
+	public DBObject toDBObject(String factoryAgentName) {
+		BasicDBObject obj = new BasicDBObject();
+		obj.append("EventType", EventType.ExplorationReply.toString());
+		obj.append("ClientAgent", getRequestExploration().getOriginName());
+		obj.append("FactoryAgent", factoryAgentName);
+		obj.append("ComputationTime", getComputationTime());
+		
+		return obj;
+	}
 }

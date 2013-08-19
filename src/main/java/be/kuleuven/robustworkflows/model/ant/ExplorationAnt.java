@@ -1,7 +1,11 @@
 package be.kuleuven.robustworkflows.model.ant;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 
 import scala.concurrent.duration.Duration;
 import akka.actor.Actor;
@@ -59,10 +63,9 @@ public class ExplorationAnt extends UntypedActor {
 			addExpirationTimer(EXPLORATION_TIMEOUT, EventType.ExploringStateTimeout);
 			
 		} else if (ExplorationReply.class.isInstance(message)) {
-			//add information to the required type of service FIXME fix the event type
 			ExplorationReply qos = (ExplorationReply) message;
-			modelStorage.persistEvent("ClientAgent: " + selfName() + " FROM: "+ sender().path().name() + " received " + qos);
-			
+			modelStorage.persistEvent(qos.toDBObject(sender().path().name()));
+
 			//test if has better options
 			//FIXME currently it will associate the any Reply to a task.. it has to select which reply to use, instead.
 			serviceMatcher.addReply(sender(), qos);
@@ -107,7 +110,7 @@ public class ExplorationAnt extends UntypedActor {
 					}
 		}, context().system().dispatcher());
 	}
-
+	
 	public static Actor getInstance(ActorRef master, ModelStorage modelStorage, Workflow workflow) {
 		return new ExplorationAnt(master, modelStorage, workflow);
 	}

@@ -51,11 +51,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		//simple hack... for some tests.
 		//FIXME indicate the workflow at the GEXF file (agent configuration file)
 		
-		if(self().path().name().equals("11")) {
-			this.workflow = Workflow.getLinear1(); 
-		} else {
-			this.workflow = Workflow.getLinearInverted1(); 	
-		}
+		this.workflow = Workflow.getLinear1(); 
 		
 	}
 	

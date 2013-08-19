@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.bson.BSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -16,6 +17,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 
 /**
@@ -44,29 +46,28 @@ public class ModelStorage {
 	 */
 	public void persistEvent(String event) {
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
-		BasicDBObject obj = new BasicDBObject("current-time", new Date());
+		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
 		obj.append("EventType", event);
 		coll.insert(obj);
 	}
 
 	public void persistEvent(EventType eventType, String event) {
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
-		BasicDBObject obj = new BasicDBObject("current-time", new Date());
+		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
 		obj.append("EventType", eventType.toString());
 		obj.append(eventType.toString(), event);
 		coll.insert(obj);
 	}
 	
-	public void persistEvent(BasicDBObject obj) {
-		obj.append("current-time", new Date());
-		obj.append("time_block", dtf.print(new DateTime()));
+	public void persistEvent(DBObject obj) {
+		obj.put("time_block", dtf.print(new DateTime()));
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		coll.insert(obj);
 	}
 
 	public void registerFactoryAgent(String path, ServiceType serviceType) {
 		DBCollection coll = db.getCollection(FACTORY_AGENTS_COLLECTION);
-		BasicDBObject obj = new BasicDBObject("current-time", new Date());
+		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
 		obj.append("FactoryAgentPath", path);
 		obj.append("ServiceType", serviceType.toString());
 		coll.insert(obj);

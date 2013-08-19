@@ -36,6 +36,10 @@ public class ExplorationRequest {
 		return origin;
 	}
 
+	public String getOriginName() {
+		return origin.path().name();
+	}
+	
 	public long getId() {
 		return id;
 	}
