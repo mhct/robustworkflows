@@ -22,6 +22,9 @@ public class CloudCreator {
 	private static RandomDataGenerator random1 = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator random2 = new RandomDataGenerator(new MersenneTwister(SEED));
 
+	private static final int NUMBER_OF_FACTORIES = 10;
+	private static final int NUMBER_OF_CLIENTS = 100;
+	
 	/**
 	 * @param args
 	 * @throws InterruptedException 
@@ -33,9 +36,8 @@ public class CloudCreator {
 		
 		final GraphModel gm = Lookup.getDefault().lookup(GraphController.class).getModel();
 		
-		
 		final Graph g = gm.getGraph();
-		for (int i=0; i< 20; i++) {
+		for (int i=0; i<NUMBER_OF_FACTORIES ; i++) {
 			if (i%100 == 0) {
 				System.out.println("i: " + i);
 			}
@@ -43,14 +45,15 @@ public class CloudCreator {
 			g.addNode(n);
 		}
 		
-		for (int i=0; i<30; i++) {
+		for (int i=0; i<NUMBER_OF_CLIENTS; i++) {
 			Node n = newClientNode(gm);
 			g.addNode(n);
 		}
 		
 		final ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
-			ec.exportFile(new File("/tmp/30c-20f.gexf"));
+			String graphFilename = "/tmp/" + NUMBER_OF_CLIENTS + "c-" + NUMBER_OF_FACTORIES + "f.gexf";
+			ec.exportFile(new File(graphFilename));
 		} catch (IOException e) {
 			System.err.println(e);
 		}

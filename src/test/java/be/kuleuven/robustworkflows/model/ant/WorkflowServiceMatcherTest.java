@@ -29,23 +29,24 @@ public class WorkflowServiceMatcherTest {
 		assertNotNull(WorkflowServiceMatcher.getInstance(Workflow.getLinear1()));
 	}
 	
-	@Test
-	public void testSameWorkflowTasks() {
-		Workflow expected = Workflow.getLinear1();
-		WorkflowServiceMatcher actual = WorkflowServiceMatcher.getInstance(expected);
-		
-//		TODO Function<F, T> uae this function to transform WorkflowTask -> WorkflowServiceMatcherTask 
-		for (WorkflowTask key: expected.rawWorkflow().keys()) {
-			Collection<WorkflowTask> expectedTasks = expected.rawWorkflow().get(key);
-			Collection<MutableWorkflowTask> actualTasks = actual.rawWorkflow().get(MutableWorkflowTask.getInstance(key.getType()));
-			
-			Iterator<WorkflowTask> itrE = expectedTasks.iterator();
-			Iterator<MutableWorkflowTask> itrA = actualTasks.iterator();
-			while (itrE.hasNext() || itrA.hasNext() ) {
-				assertEquals(itrE.next().getType(), itrA.next().getType());
-			}
-		}
-	}
+//	@Test
+//	public void testSameWorkflowTasks() {
+//		Workflow expected = Workflow.getLinear1();
+//		WorkflowServiceMatcher actual = WorkflowServiceMatcher.getInstance(expected);
+//		
+////		TODO Function<F, T> uae this function to transform WorkflowTask -> WorkflowServiceMatcherTask 
+//		for (WorkflowTask key: expected.rawWorkflow().keys()) {
+//			Collection<WorkflowTask> expectedTasks = expected.rawWorkflow().get(key);
+//			Collection<MutableWorkflowTask> actualTasks = actual.rawWorkflow().get(MutableWorkflowTask.getInstance(key.getType()));
+//			
+//			Iterator<WorkflowTask> itrE = expectedTasks.iterator();
+//			Iterator<MutableWorkflowTask> itrA = actualTasks.iterator();
+//			
+//			while (itrE.hasNext() || itrA.hasNext() ) {
+//				assertEquals(itrE.next().getType(), itrA.next().getType());
+//			}
+//		}
+//	}
 	
 	@Test
 	public void testAssociateAgentB() {

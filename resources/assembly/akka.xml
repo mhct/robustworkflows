@@ -33,6 +33,11 @@
             <fileMode>744</fileMode>
         </file>
         <file>
+            <source>resources/startRobustWorkflowsLauncher</source>
+            <outputDirectory>/bin</outputDirectory>
+            <fileMode>744</fileMode>
+        </file>
+        <file>
             <source>resources/loadRobustWorkflowsApp.sh</source>
             <outputDirectory>/bin</outputDirectory>
             <fileMode>744</fileMode>

@@ -9,26 +9,6 @@ import org.junit.Test;
 public class GraphTest {
 
 	@Test
-	public void testPut() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGet() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testHead() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testRaw() {
-		fail("Not yet implemented");
-	}
-
-	@Test
 	public void testDFS() {
 		Graph<String> graph = Graph.create();
 		graph.put("A", "B");
@@ -37,11 +17,6 @@ public class GraphTest {
 		
 		assertEquals("A", itr.next());
 		assertEquals("B", itr.next());
-	}
-
-	@Test
-	public void testCreate() {
-		fail("Not yet implemented");
 	}
 
 }

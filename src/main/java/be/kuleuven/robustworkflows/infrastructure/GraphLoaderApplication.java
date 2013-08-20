@@ -28,6 +28,8 @@ public class GraphLoaderApplication implements Bootable {
 	private static final String DB_SERVER_IP = config.getString("db-server-ip");
 	private static final Integer DB_SERVER_PORT = config.getInt("db-server-port");
 	private static final String DB_NAME = config.getString("db-name");
+	private static final String DB_USER = config.getString("db-user");
+	private static final String DB_PASS = config.getString("db-pass");
 	private static final String NETWORK_MODEL = config.getString("network-model");
 	
 	
@@ -49,11 +51,15 @@ public class GraphLoaderApplication implements Bootable {
 	@Override
 	public void startup() {
 		try {
-			mongoClient = new MongoClient(DB_SERVER_IP, DB_SERVER_PORT);
-			final DB db = mongoClient.getDB(DB_NAME);
-			final InfrastructureStorage storage = new InfrastructureStorage(db);
 			
 			mongoClient = new MongoClient(DB_SERVER_IP, DB_SERVER_PORT);
+			final DB db = mongoClient.getDB(DB_NAME);
+			if ( (!DB_USER.equals("") && !DB_PASS.equals("")) && !db.authenticate(DB_USER, DB_PASS.toCharArray()) ) {
+				throw new RuntimeException("Couldn't authenticate to the Mongodb server");
+			}
+			
+			final InfrastructureStorage storage = new InfrastructureStorage(db);
+			
 			final AgentFactory agentFactory = AgentFactory.getInstance();
 			
 			graphLoaderActor = system.actorOf(new Props(new UntypedActorFactory() {

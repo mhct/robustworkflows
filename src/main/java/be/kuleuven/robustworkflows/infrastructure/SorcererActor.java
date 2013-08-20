@@ -26,12 +26,13 @@ public class SorcererActor extends UntypedActor {
 	private final AgentFactory agentFactory;
 	private InfrastructureStorage storage; 
 	
-	public SorcererActor(MongoClient mongoClient, String dbName, AgentFactory agentFactory) {
+	public SorcererActor(DB adminDB, AgentFactory agentFactory) {
 		log.debug("SorcererActor loaded");
 		log.info("SorcererActor loaded R E A L L Y");
 		
 //		this.mongoClient = mongoClient;
-		this.adminDB = mongoClient.getDB(dbName);
+		this.adminDB = adminDB;
+		
 		this.agentFactory = agentFactory;
 		this.storage = new InfrastructureStorage(adminDB);
 	}

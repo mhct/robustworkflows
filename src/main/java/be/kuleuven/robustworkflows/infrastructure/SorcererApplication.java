@@ -11,6 +11,7 @@ import akka.actor.UntypedActorFactory;
 import akka.kernel.Bootable;
 import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 
+import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -34,23 +35,33 @@ public class SorcererApplication implements Bootable {
 	private static final String DB_SERVER_IP = config.getString("db-server-ip");
 	private static final Integer DB_SERVER_PORT = config.getInt("db-server-port");
 	private static final String DB_NAME = config.getString("db-name");
+	private static final String DB_USER = config.getString("db-user");
+	private static final String DB_PASS = config.getString("db-pass");
+	
 	private static final String SORCERER_NAME = config.getString("sorcerer-name");
 	
 	private ActorSystem system;// = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
 	
 	private MongoClient mongoClient;
+	private DB db;
 	private ActorRef sorcererActor;
 			
 	@Override
 	public void shutdown() {
 		system.shutdown();
-		mongoClient.close();
+		if(mongoClient != null) {
+			mongoClient.close();
+		}
 	}
 
 	@Override
 	public void startup() {
 		try {
 			mongoClient = new MongoClient(DB_SERVER_IP, DB_SERVER_PORT);
+			db = mongoClient.getDB(DB_NAME);
+			if ( (!DB_USER.equals("") && !DB_PASS.equals("")) && !db.authenticate(DB_USER, DB_PASS.toCharArray()) ) {
+				throw new RuntimeException("Couldn't authenticate to the Mongodb server");
+			}
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -63,7 +74,7 @@ public class SorcererApplication implements Bootable {
 
 			@Override
 			public Actor create() throws Exception {
-				return new SorcererActor(mongoClient, DB_NAME, agentFactory);
+				return new SorcererActor(db, agentFactory);
 			}
 		}), SORCERER_NAME);
 		
