@@ -1,6 +1,5 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -13,11 +12,9 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
-import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
-import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 import com.google.common.collect.Lists;
@@ -39,10 +36,10 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 
 	private Workflow workflow;
 	
-	public ClientAgent(DB db, ArrayList<ActorRef> arrayList) {
+	public ClientAgent(DB db, List<ActorRef> neighbors) {
 		log.info("C L I E N T started");
 		
-		this.neighbors = arrayList;
+		this.neighbors = neighbors;
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = new ModelStorage(db);
 		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
@@ -70,7 +67,13 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		} else if (EventType.NeihgborListRequest.equals(message)){
 			log.debug(self() + " got " + message);
 			sender().tell(getNeighbors(), self());
-		} else {
+		} else if ("expirationTimer".equals(message)) {
+			log.debug(message + ". from " + sender());
+			addExpirationTimer(10, "test");
+		} else if ("test".equals(message)) {
+			log.debug(message.toString());
+		}
+		else {
 			log.debug("\n\n\nClientAgent, received ." + message + ". from " + sender());
 			currentState.onReceive(message, sender());
 		}
@@ -115,17 +118,20 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	@Override
 	public void addExpirationTimer(long time, final String message) {
 //		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), getClientAgent(), system.dispatcher(), null);
+		final ActorRef selfReference = self();
+		
 		context().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 
 				new Runnable() {
 					@Override
 					public void run() {
-						self().tell(message, null);
+						self().tell(message, selfReference);
 					}
 		}, context().system().dispatcher());
 	}
 
 	/**
 	 * Selects the best (lowest totalComputationTime) ExplorationResult with the lowest QoS
+	 * 
 	 */
 	@Override
 	public ExplorationResult evaluateComposition(List<ExplorationResult> replies) {

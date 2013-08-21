@@ -16,6 +16,7 @@ import com.google.common.collect.Sets;
 /**
  * Represents a workflow specification
  * 
+ * @Warning NOT THREAD SAFE
  * @Mutable
  * @author mariohct
  *
@@ -74,6 +75,11 @@ public class WorkflowServiceMatcher {
 			remainingWorkflowTasks.remove(qos.getRequestExploration().getServiceType());
 		}
 	}
+	
+//	public void clear() {
+//		workflow.clear();
+//		remainingWorkflowTasks.clear();
+//	}
 	
 	/**
 	 * Returns the RAW representatiom (the graph representing) this workflow

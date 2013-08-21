@@ -1,5 +1,7 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import java.io.Serializable;
+
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
 
@@ -9,7 +11,8 @@ import be.kuleuven.robustworkflows.model.ServiceType;
  * @author mario
  *
  */
-public class ImmutableWorkflowTask implements WorkflowTask {
+public class ImmutableWorkflowTask implements WorkflowTask, Serializable {
+	private static final long serialVersionUID = 20130821L;
 	
 	private final ServiceType type;
 	private final ActorRef agent;

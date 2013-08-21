@@ -1,5 +1,6 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -14,7 +15,10 @@ import com.google.common.collect.Multimap;
  * @author mariohct
  *
  */
-public class Workflow implements Iterable<WorkflowTask> {
+public class Workflow implements Iterable<WorkflowTask>, Serializable {
+	
+	private static final long serialVersionUID = 20130821L;
+	
 	Graph<WorkflowTask> activitiesGraph; 
 	
 	private Workflow(Graph<WorkflowTask> workflow) {
@@ -24,24 +28,47 @@ public class Workflow implements Iterable<WorkflowTask> {
 	/**
 	 * Calculates the overall computation time for this workflow. It adds up the computation time needed to 
 	 * complete each task. It is a simple SUM of all computation times from individual tasks from this workflow.
+	 *
+	 * If the workflow is fulfilled, that is, has agents assigned to each workflow activity, then, 
+	 * calculates the expected time to perform the workflow, otherwise it simply returns a maximum value for long.
 	 * 
 	 * @return time to compute all workflow tasks
 	 */
 	public long totalComputationTime() {
-		long totalTime = 0;
-		for (WorkflowTask e: activitiesGraph.DFS()) {
-			totalTime  += e.getQoS().getComputationTime();
+		long totalTime = Long.MAX_VALUE;
+		
+		if (fulfilled()) {
+			totalTime = 0;
+
+			for (WorkflowTask w: activitiesGraph.DFS()) {
+				totalTime  += w.getQoS().getComputationTime();
+			}
 		}
 		
 		return totalTime;
 	}
 	
+	public Boolean fulfilled() {
+		boolean complete = true;
+		for (WorkflowTask w: activitiesGraph.DFS()) {
+			if (w.getAgent() == null || w.getQoS() == null) {
+				complete = false;
+			}
+		}
+
+		return complete;
+	}
 	
 	@Override
 	public String toString() {
 		String ret =  "Workflow [";
 		for (WorkflowTask e: activitiesGraph.DFS()) {
-			ret += " -> (" + e.getType() + "," + e.getAgent() + "," + e.getQoS().getComputationTime() +")";
+			ret += " -> (" + e.getType() + "," + e.getAgent() + ",";
+			if (e.getQoS() == null ) {
+				ret += "NoQoS";
+			} else {
+				ret += e.getQoS().getComputationTime() +")";
+			}
 		}
 		ret += " ]\n";
 		

@@ -10,7 +10,7 @@ SSH_USER="u0061821"
 #ROOT="/Users/mario/Estudos/phd/software-projects/projects/evaluation_givemearide"
 #MONGO_CLIENT="/Users/mario/opt/mongo/bin/mongo"
 
-GRAPH_LOADER_SERVER="aalst.cs.kotnet.kuleuven.be"
+GRAPH_LOADER_SERVER="virton.cs.kotnet.kuleuven.be"
 
 DB_SERVER="andenne.cs.kotnet.kuleuven.be"
 DB_SERVER_PORT="27017"
@@ -28,7 +28,8 @@ function loadDatabase {
 # Loads GraphLoader
 #
 function loadGraphLoader {
-    ssh $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startGraphLoaderApp \& echo PID: \$! & 
+    network_model=$1
+    ssh $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER NETWORK_MODEL=$network_model PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startGraphLoaderApp \& echo PID: \$! & 
 }
 
 
@@ -49,7 +50,7 @@ function loadRobustWorkflowsApp {
 function loadSorcerer {
     sorcerer_server=$1
     sorcerer_name=$2
-    ssh -n $SSH_USER@$sorcerer_server DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SORCERER_NAME=$sorcerer_name SYSTEM_HOSTNAME=$sorcerer_server PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startSorcerer \& echo PID: \$! & 
+    ssh -n $SSH_USER@$sorcerer_server DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SORCERER_NAME=$sorcerer_name SYSTEM_HOSTNAME=$sorcerer_server PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startSorcerer \>\> /home/u0061821/robustworkflows/logs 2\>\&1  \& echo PID: \$! & 
 }
 
 

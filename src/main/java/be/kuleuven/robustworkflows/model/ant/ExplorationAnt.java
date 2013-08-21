@@ -1,11 +1,7 @@
 package be.kuleuven.robustworkflows.model.ant;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
 
 import scala.concurrent.duration.Duration;
 import akka.actor.Actor;
@@ -30,7 +26,8 @@ public class ExplorationAnt extends UntypedActor {
 	
 	private final long EXPLORATION_TIMEOUT = 900;
 	private final ModelStorage modelStorage;
-	private final WorkflowServiceMatcher serviceMatcher;
+	private WorkflowServiceMatcher serviceMatcher;
+	private final Workflow workflow;
 	private final ActorRef master;
 	private int explorationCounter = 0;
 	private int waitForReply = 0;
@@ -39,7 +36,8 @@ public class ExplorationAnt extends UntypedActor {
 	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow) {
 		this.master = master;
 		this.modelStorage = modelStorage;
-		this.serviceMatcher = WorkflowServiceMatcher.getInstance(workflow);
+//		this.serviceMatcher = WorkflowServiceMatcher.getInstance(workflow);
+		this.workflow = workflow;
 	}
 
 	private String selfName() {
@@ -56,6 +54,7 @@ public class ExplorationAnt extends UntypedActor {
 		if (EventType.RUN.equals(message)) {
 			modelStorage.persistEvent(selfName() + " received " + message);
 			
+			serviceMatcher = WorkflowServiceMatcher.getInstance(workflow);
 			for (ServiceType st: serviceMatcher.getNeededServiceTypes()) {
 				List<String> agentPaths = modelStorage.getFactoryAgents(st); //FIXME CoordinationLayer function
 				askQoS(agentPaths, st);
@@ -66,8 +65,6 @@ public class ExplorationAnt extends UntypedActor {
 			ExplorationReply qos = (ExplorationReply) message;
 			modelStorage.persistEvent(qos.toDBObject(sender().path().name()));
 
-			//test if has better options
-			//FIXME currently it will associate the any Reply to a task.. it has to select which reply to use, instead.
 			serviceMatcher.addReply(sender(), qos);
 			waitForReply--;
 			if (waitForReply == 0) {
@@ -76,7 +73,7 @@ public class ExplorationAnt extends UntypedActor {
 			
 			
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
-			modelStorage.persistEvent("ExpAnt Timeout");
+			modelStorage.persistEvent("ExpAnt Timeout"); //add complete summary of the state of explorationant
 			master.tell(ExplorationResult.getInstance(serviceMatcher.createOptimalWorkflow()), self());
 		}
 		

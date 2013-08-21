@@ -7,3 +7,5 @@ datafile used
 - exporting data 
 mongoexport -d workflows -c model_events  -f time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT -q {EventType:\'SERVICE_COMPOSITION_SUMMARY\'} --csv > exp_30c_10f.csv
 
+- running deployment
+rsync -avz -e ssh ./ u0061821@aalst.cs.kotnet.kuleuven.be:/home/u0061821/robustworkflows/

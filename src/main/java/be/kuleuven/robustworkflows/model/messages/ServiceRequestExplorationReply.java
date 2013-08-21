@@ -1,13 +1,16 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import java.io.Serializable;
+
 
 /**
  * MESSAGE Containing information about the quality of service of a particular component service 
  * @author mario
  *
  */
-public class ServiceRequestExplorationReply {
-
+public class ServiceRequestExplorationReply implements Serializable {
+	private static final long serialVersionUID = 20130821L;
+	
 	private final long computationTime; //only quality being evaluated right now
 	private final ServiceRequestExploration requestExploration;
 

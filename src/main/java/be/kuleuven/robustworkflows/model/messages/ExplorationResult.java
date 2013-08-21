@@ -1,5 +1,10 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import be.kuleuven.robustworkflows.model.clientagent.EventType;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
 
 
 /**
@@ -38,4 +43,11 @@ public class ExplorationResult {
 		return new ExplorationResult(workflow);
 	}
 	
+	public DBObject toDBObject() {
+		BasicDBObject obj = new BasicDBObject();
+		obj.append("EventType", EventType.ExplorationResult.toString());
+		obj.append("ExplorationResult", toString());
+
+		return obj;
+	}
 }

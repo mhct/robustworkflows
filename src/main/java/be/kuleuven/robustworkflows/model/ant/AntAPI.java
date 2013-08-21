@@ -58,4 +58,12 @@ public class AntAPI {
 	public static AntAPI getInstance(ActorRef master, ActorContext context, ModelStorage storage) {
 		return new AntAPI(master, context, storage);
 	}
+
+	public int explorationAnts() {
+		return explorationAnts.size();
+	}
+
+	public void explore() {
+		startExplorationAnts();
+	}
 }

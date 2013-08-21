@@ -1,5 +1,7 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import java.io.Serializable;
+
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 
 import com.mongodb.BasicDBObject;
@@ -11,8 +13,10 @@ import com.mongodb.DBObject;
  * @author mario
  *
  */
-public class ExplorationReply {
+public class ExplorationReply implements Serializable {
 
+	private static final long serialVersionUID = 20130821L;
+	
 	private final long computationTime; //only quality being evaluated right now
 	private final ExplorationRequest requestExploration;
 

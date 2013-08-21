@@ -1,0 +1,9 @@
+#!/bin/sh
+
+AKKA_HOME="$(cd "$(cd "$(dirname "$0")"; pwd -P)"/..; pwd)"
+AKKA_CLASSPATH="$AKKA_HOME/config:$AKKA_HOME/lib/*"
+JAVA_OPTS="-Xms256M -Xmx1024M"
+#CONFIG_FILE="-Dconfig.file=$AKKA_HOME/config/sorcerer-app.conf" #OLD stuff.. here only for reference
+CONFIG_FILE=""
+
+java $JAVA_OPTS $CONFIG_FILE -cp "$AKKA_CLASSPATH" -Dakka.home="$AKKA_HOME" akka.kernel.Main be.kuleuven.robustworkflows.model.RobustWorkflowsLauncher

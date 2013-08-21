@@ -58,8 +58,11 @@ public class MutableWorkflowTask {
 			}
 		}
 		
-		assert winner != null;
-		return ImmutableWorkflowTask.getInstance(type, winner.getSender(), winner.getReply());
+		if (winner == null) {
+			return ImmutableWorkflowTask.getInstance(type, null, null);
+		} else {
+			return ImmutableWorkflowTask.getInstance(type, winner.getSender(), winner.getReply());
+		}
 	}
 	
 	

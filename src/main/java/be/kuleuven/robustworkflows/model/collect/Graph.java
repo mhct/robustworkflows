@@ -26,6 +26,10 @@ public final class Graph<K> {
 	
 
 	public void put(K key, K value) {
+		if (key == null || value == null) {
+			throw new RuntimeException("Key or Value can't be null");
+		}
+		
 		if (empty) {
 			head = key;
 			empty = false;
@@ -51,7 +55,9 @@ public final class Graph<K> {
 	 */
 	public List<K>  DFS() {
 		visitedNodes = Lists.newArrayList(); 
-		DFS(head);
+		if (head != null) {
+			DFS(head);
+		}
 		
 		return visitedNodes;
 	}

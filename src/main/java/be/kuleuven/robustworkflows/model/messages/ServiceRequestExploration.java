@@ -1,5 +1,7 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import java.io.Serializable;
+
 import be.kuleuven.robustworkflows.model.ServiceType;
 import akka.actor.ActorRef;
 
@@ -9,8 +11,9 @@ import akka.actor.ActorRef;
  * @author mario
  *
  */
-public class ServiceRequestExploration {
-
+public class ServiceRequestExploration implements Serializable {
+	private static final long serialVersionUID = 20130821L;
+	
 	private final ServiceType serviceType;
 	private final Integer numberOfHopsToTravel;
 	private final ActorRef origin;

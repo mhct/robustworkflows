@@ -7,12 +7,14 @@ import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 
 import com.google.common.collect.Lists;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 
 public class ExploringState extends ClientAgentState {
 
 	private final long EXPLORING_STATE_TIMEOUT_VALUE = 1100;
 	private final String EXPLORING_STATE_TIMEOUT = "ExploringStateTimeout";
 	private List<ExplorationResult> replies;
+	private int expirationTimer = 1;
 	
 	public ExploringState(ClientAgentProxy clientAgentProxy) {
 		super(clientAgentProxy);
@@ -21,7 +23,11 @@ public class ExploringState extends ClientAgentState {
 	public void run() {
 		persistEvent("ExploringState: " + RUN);
 		replies = Lists.newArrayList();
-		getClientAgentProxy().getAntAPI().createExplorationAnt(getClientAgentProxy().getWorkflow());
+		if (getClientAgentProxy().getAntAPI().explorationAnts() == 0) {
+			getClientAgentProxy().getAntAPI().createExplorationAnt(getClientAgentProxy().getWorkflow());
+		} else {
+			getClientAgentProxy().getAntAPI().explore();
+		}
 
 		//TODO create new exploration ANTS NOW..? at at ClientAgent creation
 		addExpirationTimer(EXPLORING_STATE_TIMEOUT_VALUE, EXPLORING_STATE_TIMEOUT);
@@ -34,11 +40,20 @@ public class ExploringState extends ClientAgentState {
 		} else if (EXPLORING_STATE_TIMEOUT.equals(message)) {
 			//TODO if there are no replies.... go back to another state, instead of SelectingComponentServices.
 			persistEvent(EXPLORING_STATE_TIMEOUT);
-			setState(SelectingComponentServices.getInstance(getClientAgentProxy(), replies));
+			if (replies.size() == 0) {
+				getClientAgentProxy().addExpirationTimer(expirationTimer, RUN);
+				expirationTimer += expirationTimer;
+			} else {
+				setState(SelectingComponentServices.getInstance(getClientAgentProxy(), replies));
+			}
 			
 		} else if (ExplorationResult.class.isInstance(message))  {
 			ExplorationResult msg = (ExplorationResult) message;
-			replies.add(msg);
+			
+			if (msg.getWorkflow().fulfilled()) {
+				replies.add(msg);
+			}
+			
 			persistEvent(debugExplorationResult(msg));
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
@@ -51,12 +66,9 @@ public class ExploringState extends ClientAgentState {
 		return new ExploringState(clientAgentProxy);
 	}
 	
-	private BasicDBObject debugExplorationResult(ExplorationResult msg) {
-		BasicDBObject obj = new BasicDBObject();
-		obj.append("EventType", EventType.ExplorationResult.toString());
-		
-		obj.append("CLIENT_AGENT", getClientAgentProxy().self().path().name());
-		obj.append("SERVICES_ENGAGED", msg.toString());
+	private DBObject debugExplorationResult(ExplorationResult msg) {
+		DBObject obj = msg.toDBObject();
+		obj.put("CLIENT_AGENT", getClientAgentProxy().self().path().name());
 		
 		return obj;
 	}

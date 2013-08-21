@@ -1,8 +1,8 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
-import com.mongodb.BasicDBObject;
-
 import akka.actor.ActorRef;
+
+import com.mongodb.DBObject;
 
 public abstract class ClientAgentState {
 	
@@ -28,7 +28,7 @@ public abstract class ClientAgentState {
 		clientAgentProxy.getModelStorage().persistEvent(event);
 	}
 
-	protected void persistEvent(BasicDBObject event) {
+	protected void persistEvent(DBObject event) {
 		clientAgentProxy.getModelStorage().persistEvent(event);
 	}
 	

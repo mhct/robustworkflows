@@ -1,5 +1,7 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import java.io.Serializable;
+
 import be.kuleuven.robustworkflows.model.ServiceType;
 
 /**
@@ -8,7 +10,9 @@ import be.kuleuven.robustworkflows.model.ServiceType;
  * @author mario
  *
  */
-public class ServiceRequest {
+public class ServiceRequest implements Serializable {
+	private static final long serialVersionUID = 20130821L;
+	
 	private ServiceType serviceType;
 	private final long creationTime;
 	private int id;
