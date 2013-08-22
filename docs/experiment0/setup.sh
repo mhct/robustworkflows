@@ -10,7 +10,7 @@ SSH_USER="u0061821"
 #ROOT="/Users/mario/Estudos/phd/software-projects/projects/evaluation_givemearide"
 #MONGO_CLIENT="/Users/mario/opt/mongo/bin/mongo"
 
-GRAPH_LOADER_SERVER="virton.cs.kotnet.kuleuven.be"
+GRAPH_LOADER_SERVER="mol.cs.kotnet.kuleuven.be"
 
 DB_SERVER="andenne.cs.kotnet.kuleuven.be"
 DB_SERVER_PORT="27017"

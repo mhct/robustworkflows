@@ -1,11 +1,28 @@
+Experiments RobustWorkflows
+@mariohct 20/08/2013
 
-datafile used
-==============
-30c-10f.gexf
-
+===============
+General Information
 
 - exporting data 
-mongoexport -d workflows -c model_events  -f time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT -q {EventType:\'SERVICE_COMPOSITION_SUMMARY\'} --csv > exp_30c_10f.csv
+mongoexport -d workflows -c model_events  -f time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT,SERVICES_ENGAGED -q {EventType:\'SERVICE_COMPOSITION_SUMMARY\'} --csv > exp_30c_10f.csv
 
 - running deployment
 rsync -avz -e ssh ./ u0061821@aalst.cs.kotnet.kuleuven.be:/home/u0061821/robustworkflows/
+
+
+===============
+Experiment 0
+
+Number of Sorcerer machines: 4
+datafile: 100c-10f.gexf
+results: exp0.csv 
+
+
+===============
+Experiment 1
+Number of Sorcerer machines: 10
+datafile: 100c-10f.gexf
+results: exp1.csv
+
+
