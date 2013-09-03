@@ -22,8 +22,8 @@ public class CloudCreator {
 	private static RandomDataGenerator random1 = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator random2 = new RandomDataGenerator(new MersenneTwister(SEED));
 
-	private static final int NUMBER_OF_FACTORIES = 10;
-	private static final int NUMBER_OF_CLIENTS = 100;
+	private static final int NUMBER_OF_FACTORIES = 100;
+	private static final int NUMBER_OF_CLIENTS = 1000;
 	
 	/**
 	 * @param args
@@ -52,17 +52,34 @@ public class CloudCreator {
 		
 		final ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
-			String graphFilename = "/tmp/" + NUMBER_OF_CLIENTS + "c-" + NUMBER_OF_FACTORIES + "f.gexf";
+			String graphFilename = "/tmp/" + NUMBER_OF_CLIENTS + "c-" + NUMBER_OF_FACTORIES + "f-long-times.gexf";
 			ec.exportFile(new File(graphFilename));
 		} catch (IOException e) {
 			System.err.println(e);
 		}
 	}
 
+	
+	private static StringBuilder factoriesToCSV(Graph graph) {
+		
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("id,ServiceType,time");
+		for (Node n: graph.getNodes()) {
+			sb.append(n.getId());
+			sb.append(",");
+			sb.append(n.getAttributes().getValue("ServiceType"));
+			sb.append(",");
+			sb.append(n.getAttributes().getValue("ProcessingTimePerRequest"));
+		}
+		
+		return sb;
+	}
+	
 	private static Node newFactoryNode(final GraphModel gm) {
 		Node n = gm.factory().newNode();
 				
-		final int processingTimePerRequest = random1.nextInt(100, 600);
+		final int processingTimePerRequest = random1.nextInt(10000, 60000);
 		String serviceType = "A";
 		double e;
 		if ((e = random2.nextUniform(0, 1)) >= 0.5) {

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2" xmlns:viz="http://www.gexf.net/1.2draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
+  <meta lastmodifieddate="2013-07-12">
+    <creator>Gephi 0.8.1</creator>
+    <description></description>
+  </meta>
+  <graph defaultedgetype="directed" mode="static">
+    <attributes class="node" mode="static">
+      <attribute id="NodeType" title="NodeType" type="string"></attribute>
+      <attribute id="ComputationalResourceProfile" title="ComputationalResourceProfile" type="string"></attribute>
+      <attribute id="ProcessingTimePerRequest" title="ProcessingTimePerRequest" type="string"></attribute>
+      <attribute id="ServiceType" title="ServiceType" type="string"></attribute>
+    </attributes>
+    <nodes>
+      <node id="1">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="440"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-110.56766" y="-249.40926" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="2">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="660"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-110.56766" y="-249.40926" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="3">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-98.65286" y="289.45856" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+    </nodes>
+    <edges></edges>
+  </graph>
+</gexf>

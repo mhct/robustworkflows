@@ -1,0 +1,5 @@
+plot histogram of Frequencies on a table
+
+ggplot(data=services_eng) + geom_histogram(aes(x=Freq))
+
+

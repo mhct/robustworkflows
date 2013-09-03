@@ -4,8 +4,138 @@
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>200</x>
-      <y>190</y>
+      <x>260</x>
+      <y>470</y>
+      <w>156</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+ExploringState
+</panel_attributes>
+    <additional_attributes>80;100;80;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>240</x>
+      <y>670</y>
+      <w>210</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>ExploringState</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>570</x>
+      <y>400</y>
+      <w>220</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>Engaging in Service
+Composition</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>540</x>
+      <y>320</y>
+      <w>248</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+Component services chosen</panel_attributes>
+    <additional_attributes>130;80;130;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>570</x>
+      <y>310</y>
+      <w>220</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>Selecting Component Services
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>210</x>
+      <y>770</y>
+      <w>248</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+Component services chosen</panel_attributes>
+    <additional_attributes>130;80;130;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>570</x>
+      <y>220</y>
+      <w>210</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>ExploringState</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>230</x>
+      <y>680</y>
+      <w>212</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+ExploringStateTimeout</panel_attributes>
+    <additional_attributes>110;80;110;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.InitialState</type>
+    <coordinates>
+      <x>660</x>
+      <y>40</y>
+      <w>20</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>560</x>
+      <y>230</y>
+      <w>212</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+ExploringStateTimeout</panel_attributes>
+    <additional_attributes>110;80;110;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>570</x>
+      <y>120</y>
+      <w>210</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>WaitingTaskState
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>350</x>
+      <y>110</y>
       <w>240</w>
       <h>330</h>
     </coordinates>
@@ -18,8 +148,8 @@ done</panel_attributes>
   <element>
     <type>com.umlet.element.custom.InitialState</type>
     <coordinates>
-      <x>510</x>
-      <y>120</y>
+      <x>330</x>
+      <y>490</y>
       <w>20</w>
       <h>20</h>
     </coordinates>
@@ -29,55 +159,8 @@ done</panel_attributes>
   <element>
     <type>com.umlet.element.custom.State</type>
     <coordinates>
-      <x>420</x>
-      <y>480</y>
-      <w>220</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>Engaging in Service
-Composition</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.custom.State</type>
-    <coordinates>
-      <x>420</x>
-      <y>200</y>
-      <w>210</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>WaitingTaskState
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.custom.State</type>
-    <coordinates>
-      <x>420</x>
-      <y>300</y>
-      <w>210</w>
-      <h>40</h>
-    </coordinates>
-    <panel_attributes>ExploringState</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>390</x>
-      <y>400</y>
-      <w>248</w>
-      <h>100</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;-
-Component services chosen</panel_attributes>
-    <additional_attributes>130;80;130;30</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.custom.State</type>
-    <coordinates>
-      <x>420</x>
-      <y>390</y>
+      <x>240</x>
+      <y>760</y>
       <w>220</w>
       <h>40</h>
     </coordinates>
@@ -88,8 +171,8 @@ Component services chosen</panel_attributes>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>450</x>
-      <y>210</y>
+      <x>600</x>
+      <y>130</y>
       <w>122</w>
       <h>110</h>
     </coordinates>
@@ -100,8 +183,8 @@ Compose</panel_attributes>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>490</x>
-      <y>100</y>
+      <x>640</x>
+      <y>20</y>
       <w>50</w>
       <h>120</h>
     </coordinates>
@@ -109,15 +192,53 @@ Compose</panel_attributes>
     <additional_attributes>30;100;30;30</additional_attributes>
   </element>
   <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>240</x>
+      <y>850</y>
+      <w>220</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>Engaging in Service
+Composition</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.custom.State</type>
+    <coordinates>
+      <x>240</x>
+      <y>570</y>
+      <w>210</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>ExploringState
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>410</x>
-      <y>310</y>
-      <w>212</w>
-      <h>100</h>
+      <x>270</x>
+      <y>580</y>
+      <w>122</w>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
-ExploringStateTimeout</panel_attributes>
-    <additional_attributes>110;80;110;30</additional_attributes>
+Compose</panel_attributes>
+    <additional_attributes>70;90;70;30</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>20</x>
+      <y>560</y>
+      <w>240</w>
+      <h>330</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+Composition
+is
+done</panel_attributes>
+    <additional_attributes>220;30;80;30;80;310;220;310</additional_attributes>
   </element>
 </diagram>

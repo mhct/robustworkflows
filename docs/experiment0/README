@@ -4,6 +4,12 @@ Experiments RobustWorkflows
 ===============
 General Information
 
+- load all functions
+source setup.sh
+
+- load mongod database
+loadDatabase
+
 - exporting data 
 mongoexport -d workflows -c model_events  -f time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT,SERVICES_ENGAGED -q {EventType:\'SERVICE_COMPOSITION_SUMMARY\'} --csv > exp_30c_10f.csv
 
@@ -24,5 +30,17 @@ Experiment 1
 Number of Sorcerer machines: 10
 datafile: 100c-10f.gexf
 results: exp1.csv
+
+===============
+Experiment 2
+Number of Sorcerer machines: 17
+datafile: 1000c-100f.gexf
+results: exp2.csv
+
+===============
+Experiment 3
+Number of Sorcerer machines: 17
+datafile: 1000c-100f-long-times.gexf
+results: exp3.csv
 
 
