@@ -3,6 +3,7 @@ package be.kuleuven.robustworkflows.model.clientagent;
 import java.util.List;
 
 import akka.actor.ActorRef;
+import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
@@ -25,4 +26,6 @@ public interface ClientAgentProxy {
 	public AntAPI getAntAPI();
 
 	public Workflow getWorkflow();
+	
+	public AgentAttributes getAttributes();
 }

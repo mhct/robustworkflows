@@ -32,14 +32,14 @@ public class AntAPI {
 		this.explorationAnts = Lists.newArrayList();
 	}
 	
-	public void createExplorationAnt(final Workflow workflow) {
+	public void createExplorationAnt(final Workflow workflow, final long explorationTimeout) {
 		explorationAnts.add(context.actorOf(new Props(new UntypedActorFactory() {
 			
 			private static final long serialVersionUID = 2013021401L;
 
 			@Override
 			public Actor create() throws Exception {
-				return ExplorationAnt.getInstance(master, modelStorage, workflow);
+				return ExplorationAnt.getInstance(master, modelStorage, workflow, explorationTimeout);
 			}
 
 		}), "explorationAnt" + explorationAnts.size()));

@@ -2,8 +2,6 @@ package be.kuleuven.robustworkflows.playground;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -16,6 +14,8 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 
+import be.kuleuven.robustworkflows.model.NodeAttributes;
+
 public class CloudCreator {
 
 	private static int SEED = 808080;
@@ -24,6 +24,8 @@ public class CloudCreator {
 
 	private static final int NUMBER_OF_FACTORIES = 100;
 	private static final int NUMBER_OF_CLIENTS = 1000;
+	private static final long EXPLORATION_TIMEOUT = 1100;
+	private static final long ANT_EXPLORATION_TIMEOUT = 100;
 	
 	/**
 	 * @param args
@@ -52,7 +54,7 @@ public class CloudCreator {
 		
 		final ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
-			String graphFilename = "/tmp/" + NUMBER_OF_CLIENTS + "c-" + NUMBER_OF_FACTORIES + "f-long-times.gexf";
+			String graphFilename = "/tmp/" + NUMBER_OF_CLIENTS + "c-" + NUMBER_OF_FACTORIES + "f-long-times-exp_timeout-" + ANT_EXPLORATION_TIMEOUT + ".gexf";
 			ec.exportFile(new File(graphFilename));
 		} catch (IOException e) {
 			System.err.println(e);
@@ -64,13 +66,13 @@ public class CloudCreator {
 		
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("id,ServiceType,time");
+		sb.append("id,ServiceType,time\n");
 		for (Node n: graph.getNodes()) {
 			sb.append(n.getId());
 			sb.append(",");
-			sb.append(n.getAttributes().getValue("ServiceType"));
+			sb.append(n.getAttributes().getValue(NodeAttributes.ServiceType));
 			sb.append(",");
-			sb.append(n.getAttributes().getValue("ProcessingTimePerRequest"));
+			sb.append(n.getAttributes().getValue(NodeAttributes.ProcessingTimePerRequest));
 		}
 		
 		return sb;
@@ -85,18 +87,20 @@ public class CloudCreator {
 		if ((e = random2.nextUniform(0, 1)) >= 0.5) {
 			serviceType = "B";
 		}
-		n.getAttributes().setValue("NodeType", "Factory");
-		n.getAttributes().setValue("ComputationalResourceProfile", "FixedProcessingTime");
-		n.getAttributes().setValue("ProcessingTimePerRequest", String.valueOf(processingTimePerRequest));
-		n.getAttributes().setValue("ServiceType", serviceType);
+		n.getAttributes().setValue(NodeAttributes.NodeType, "Factory");
+		n.getAttributes().setValue(NodeAttributes.ComputationalResourceProfile, "FixedProcessingTime");
+		n.getAttributes().setValue(NodeAttributes.ProcessingTimePerRequest, String.valueOf(processingTimePerRequest));
+		n.getAttributes().setValue(NodeAttributes.ServiceType, serviceType);
 
 		return n;
 	}
 
 	private static Node newClientNode(final GraphModel gm) {
 		Node n = gm.factory().newNode();
-		
-		n.getAttributes().setValue("NodeType", "Client");
+		//FIXME this strings are simply BAD. put on a separate class, enumeration, wherever
+		n.getAttributes().setValue(NodeAttributes.NodeType, "Client");
+		n.getAttributes().setValue(NodeAttributes.ExplorationStateTimeout, EXPLORATION_TIMEOUT);
+		n.getAttributes().setValue(NodeAttributes.AntExplorationTimeout, ANT_EXPLORATION_TIMEOUT);
 		
 		return n;
 	}

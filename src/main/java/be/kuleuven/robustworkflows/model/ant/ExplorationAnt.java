@@ -24,7 +24,6 @@ import be.kuleuven.robustworkflows.model.messages.Workflow;
  */
 public class ExplorationAnt extends UntypedActor {
 	
-	private final long EXPLORATION_TIMEOUT = 900;
 	private final ModelStorage modelStorage;
 	private WorkflowServiceMatcher serviceMatcher;
 	private final Workflow workflow;
@@ -32,12 +31,13 @@ public class ExplorationAnt extends UntypedActor {
 	private int explorationCounter = 0;
 	private int waitForReply = 0;
 	private String cachedName;
+	private final long explorationTimeout;
 
-	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow) {
+	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
 		this.master = master;
 		this.modelStorage = modelStorage;
-//		this.serviceMatcher = WorkflowServiceMatcher.getInstance(workflow);
 		this.workflow = workflow;
+		this.explorationTimeout = explorationTimeout;
 	}
 
 	private String selfName() {
@@ -59,7 +59,7 @@ public class ExplorationAnt extends UntypedActor {
 				List<String> agentPaths = modelStorage.getFactoryAgents(st); //FIXME CoordinationLayer function
 				askQoS(agentPaths, st);
 			}
-			addExpirationTimer(EXPLORATION_TIMEOUT, EventType.ExploringStateTimeout);
+			addExpirationTimer(explorationTimeout, EventType.ExploringStateTimeout);
 			
 		} else if (ExplorationReply.class.isInstance(message)) {
 			ExplorationReply qos = (ExplorationReply) message;
@@ -108,8 +108,8 @@ public class ExplorationAnt extends UntypedActor {
 		}, context().system().dispatcher());
 	}
 	
-	public static Actor getInstance(ActorRef master, ModelStorage modelStorage, Workflow workflow) {
-		return new ExplorationAnt(master, modelStorage, workflow);
+	public static Actor getInstance(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
+		return new ExplorationAnt(master, modelStorage, workflow, explorationTimeout);
 	}
 
 }

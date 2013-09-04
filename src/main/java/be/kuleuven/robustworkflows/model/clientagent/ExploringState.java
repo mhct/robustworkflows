@@ -6,12 +6,10 @@ import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 
 import com.google.common.collect.Lists;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 public class ExploringState extends ClientAgentState {
-
-	private final long EXPLORING_STATE_TIMEOUT_VALUE = 1100;
+	
 	private final String EXPLORING_STATE_TIMEOUT = "ExploringStateTimeout";
 	private List<ExplorationResult> replies;
 	private int expirationTimer = 1;
@@ -24,13 +22,13 @@ public class ExploringState extends ClientAgentState {
 		persistEvent("ExploringState: " + RUN);
 		replies = Lists.newArrayList();
 		if (getClientAgentProxy().getAntAPI().explorationAnts() == 0) {
-			getClientAgentProxy().getAntAPI().createExplorationAnt(getClientAgentProxy().getWorkflow());
+			getClientAgentProxy().getAntAPI().createExplorationAnt(getClientAgentProxy().getWorkflow(), getClientAgentProxy().getAttributes().getAntExplorationTimeout());
 		} else {
 			getClientAgentProxy().getAntAPI().explore();
 		}
 
 		//TODO create new exploration ANTS NOW..? at at ClientAgent creation
-		addExpirationTimer(EXPLORING_STATE_TIMEOUT_VALUE, EXPLORING_STATE_TIMEOUT);
+		addExpirationTimer(getClientAgentProxy().getAttributes().getExplorationStateTimeout(), EXPLORING_STATE_TIMEOUT);
 	}
 
 	@Override

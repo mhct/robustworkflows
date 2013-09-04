@@ -4,32 +4,21 @@ import java.io.Serializable;
 
 import be.kuleuven.robustworkflows.model.AgentAttributes;
 
+/**
+ * Message used to request the deploy of an Agent 
+ * @author mario
+ *
+ */
 public class DeployAgent implements Serializable {
 
 	private static final long serialVersionUID = 201301311L;
 
-//	private final String name;
-//	private String agentType;
-
-	private AgentAttributes attributes;
-	
-//	private DeployAgent(String agentType, String name) {
-//		if(agentType == null || name == null || "".equals(agentType) || "".equals(name)) {
-//			throw new IllegalArgumentException("AgentType and name should not be null or empty");
-//		}
-//		
-//		this.agentType = agentType;
-//		this.name = name;
-//	}
+	private final AgentAttributes attributes;
 	
 	private DeployAgent(AgentAttributes attributes) {
 		this.attributes = attributes;
 	}
 	
-	public static DeployAgent getInstance(AgentAttributes attributes) {
-		return new DeployAgent(attributes);
-	}
-
 	/**
 	 * Tries to convert a message to a DeployAgent type
 	 * @param message
@@ -44,15 +33,11 @@ public class DeployAgent implements Serializable {
 		}
 	}
 
-//	public String getAgentType() {
-//		return agentType;
-//	}
-//
-//	public String getName() {
-//		return name;
-//	}
-	
 	public AgentAttributes attributes() {
 		return attributes;
+	}
+	
+	public static DeployAgent getInstance(AgentAttributes attributes) {
+		return new DeployAgent(attributes);
 	}
 }

@@ -9,6 +9,9 @@ package be.kuleuven.robustworkflows.model;
 public class NodeAttributes {
 	public static final String NodeType = "NodeType";
 	public static final String ComputationalResourceProfile = "ComputationalResourceProfile";
+	public static final String ProcessingTimePerRequest = "ProcessingTimePerRequest";
+	public static final String ExplorationStateTimeout = "ExplorationStateTimeout";
+	public static final String AntExplorationTimeout = "AntExplorationTimeout";
 	public static final String Seed = "Seed";
 	public static final String ServiceType = "ServiceType";
 }

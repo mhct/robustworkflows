@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import akka.actor.Actor;
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
-import be.kuleuven.robustworkflows.model.factoryagent.ExponentialProfile;
 import be.kuleuven.robustworkflows.model.factoryagent.FactoryAgent;
 
 import com.mongodb.DB;

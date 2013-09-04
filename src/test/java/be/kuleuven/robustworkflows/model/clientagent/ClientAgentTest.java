@@ -80,7 +80,7 @@ public class ClientAgentTest {
 			@Override
 			public Actor create() throws Exception {
 				List<ActorRef> refs = new ArrayList<ActorRef>();
-				return new ClientAgent(db, refs);
+				return new ClientAgent(db, refs, null);
 			}
 		});
 		

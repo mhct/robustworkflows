@@ -2,15 +2,12 @@ package be.kuleuven.robustworkflows.infrastructure;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.gephi.graph.api.DirectedGraph;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
-
-import scala.concurrent.duration.Duration;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
@@ -25,6 +22,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mongodb.DBCursor;
 
+/**
+ * Actor responsible for loading new agents.
+ * 
+ * @author mario
+ *
+ */
 public class GraphLoaderActor extends UntypedActor {
 	
 	private static final int SEED_SORCERER_SELECTION = 76544344;
@@ -37,29 +40,17 @@ public class GraphLoaderActor extends UntypedActor {
 	private InfrastructureStorage storage;
 	
 	public GraphLoaderActor(InfrastructureStorage storage, DirectedGraph networkModel, AgentFactory agentFactory) {
-
 		log.debug("LOADED GraphLoaderActor");
-//		this.agentFactory = agentFactory;
+		
 		if (storage == null || networkModel == null) {
 			throw new IllegalArgumentException("Sorcerers Path can not be null");
 		}
+		
 		this.storage = storage;
 		random = new RandomDataGenerator(new MersenneTwister(SEED_SORCERER_SELECTION)); 
 		sorcerers = loadSorcerers(getSorcerersPaths(storage));
 		this.networkModel = networkModel;
 		this.actors = Maps.newTreeMap();
-		
-//		this was just to facilitate some tests
-//		context().system().scheduler().scheduleOnce(Duration.create(20, TimeUnit.SECONDS), 
-//				new Runnable() {
-//
-//					@Override
-//					public void run() {
-//						System.out.println("Enviando Compose Message");
-//						getClientAgent().tell("Compose", self());
-//					}
-//			
-//		}, context().system().dispatcher());
 	}
 	
 	@Override
@@ -91,22 +82,6 @@ public class GraphLoaderActor extends UntypedActor {
 		
 	}
 	
-	/**
-	 * FIXME this code is iterating over all ClientAgents and returning the last one... 
-	 * improve this.. perhaps remove this from here.
-	 * 
-	 * @return
-	 */
-//	public ActorRef getClientAgent() {
-//		DBCursor cursor = storage.getClientAgent().find();
-//		String ref = "";
-//		while (cursor.hasNext()) {	
-//			ref = (String) cursor.next().get("address");
-//		}
-//		
-//		System.out.println("ClientActor: " + ref);
-//		return context().system().actorFor(ref);
-//	}
 	
 	/**
 	 * Creates a list of sorcerers actors available on remote machines
@@ -115,7 +90,6 @@ public class GraphLoaderActor extends UntypedActor {
 	 * 
 	 */
 	private List<ActorRef> loadSorcerers(List<String> sorcerersPaths) {
-		
 		List<ActorRef> ret = Lists.newArrayList();
 		
 		for (String sorcererPath: sorcerersPaths) {
@@ -137,7 +111,6 @@ public class GraphLoaderActor extends UntypedActor {
 	}
 
 	private ActorRef getRandomSorcerer() {
-		
 		if (sorcerers.size() == 0) {
 			throw new RuntimeException("There are no sorcerers available");
 		
@@ -153,7 +126,6 @@ public class GraphLoaderActor extends UntypedActor {
 	private List<String> getSorcerersPaths(InfrastructureStorage storage) {
 		List<String> sorcerersPaths = Lists.newArrayList();
 		
-//		DBCursor cursor = db.getCollection("sorcerers").find();
 		DBCursor cursor = storage.getSorcerers().find();
 		while (cursor.hasNext()) {
 			String sorcererPath = (String) cursor.next().get("sorcererPath");
@@ -173,12 +145,13 @@ public class GraphLoaderActor extends UntypedActor {
 	 * 
 	 */
 	private void loadActorsGraph() throws Exception {
-		
 		//load actors remotely corresponding to each NodeType
 		for(Node n: networkModel.getNodes()) {
 			log.debug("node: " + n.getId());
 			ActorRef sorcerer = getRandomSorcerer();
-			sorcerer.tell(DeployAgent.getInstance(AgentAttributes.getInstance(n.getNodeData().getAttributes(), n.getNodeData().getId())), getSelf()); //blocking operation
+
+			//n.getNodeData() is a blocking operation
+			sorcerer.tell(DeployAgent.getInstance(AgentAttributes.getInstance(n.getNodeData().getAttributes(), n.getNodeData().getId())), getSelf());
 		}
 	}
 }

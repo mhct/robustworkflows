@@ -12,7 +12,6 @@ import be.kuleuven.robustworkflows.infrastructure.messages.AgentDeployed;
 import be.kuleuven.robustworkflows.infrastructure.messages.DeployAgent;
 
 import com.mongodb.DB;
-import com.mongodb.MongoClient;
 
 /**
  * The SorcererActor is responsible for creating other actors
@@ -41,8 +40,6 @@ public class SorcererActor extends UntypedActor {
 	public void onReceive(Object message) {
 		if(message.equals("start")) {
 			log.info("Sorcerer started" + getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
-//			DBCollection collection = adminDB.getCollection("sorcerers");
-//			collection.insert(new BasicDBObject("sorcererPath", getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress())));
 			storage.persistSorcererAddress(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
 			
 		} else if (DeployAgent.class.isInstance(message)) {

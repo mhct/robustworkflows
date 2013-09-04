@@ -11,6 +11,7 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
+import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
@@ -21,6 +22,8 @@ import com.google.common.collect.Lists;
 import com.mongodb.DB;
 
 /**
+ * This class represents a composite service. The ClientAgent tries to find suitable services to participate in the service
+ * composition defined by Workflow
  * 
  * @author mario
  *
@@ -33,10 +36,11 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private InfrastructureStorage storage;
 	private ModelStorage modelStorage;
 	private AntAPI antApi;
-
 	private Workflow workflow;
+
+	private AgentAttributes attributes;
 	
-	public ClientAgent(DB db, List<ActorRef> neighbors) {
+	public ClientAgent(DB db, List<ActorRef> neighbors, AgentAttributes attributes) {
 		log.info("C L I E N T started");
 		
 		this.neighbors = neighbors;
@@ -44,12 +48,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		this.modelStorage = new ModelStorage(db);
 		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
 		this.antApi = AntAPI.getInstance(self(), context(), modelStorage);
-
-		//simple hack... for some tests.
-		//FIXME indicate the workflow at the GEXF file (agent configuration file)
-		
+		this.attributes = attributes;
 		this.workflow = Workflow.getLinear1(); 
-		
 	}
 	
 	@Override
@@ -60,18 +60,22 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
-		//Add reference to current actor
+
 		if(ActorRef.class.isInstance(message)) {
 			log.debug("\n\n\nAdding neighbor to neighborlist" + message);
 			neighbors.add((ActorRef) message);
+			
 		} else if (EventType.NeihgborListRequest.equals(message)){
 			log.debug(self() + " got " + message);
 			sender().tell(getNeighbors(), self());
+			
 		} else if ("expirationTimer".equals(message)) {
 			log.debug(message + ". from " + sender());
 			addExpirationTimer(10, "test");
+			
 		} else if ("test".equals(message)) {
 			log.debug(message.toString());
+			
 		}
 		else {
 			log.debug("\n\n\nClientAgent, received ." + message + ". from " + sender());
@@ -83,25 +87,13 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		unhandled(message);
 	}
 
-	/**
-	 * Broadcasts a message to all neighbors
-	 * 
-	 * @param msg
-	 */
-//	public void broadcastToNeighbors(Object msg) {
-//		for (ActorRef neighbor: neighbors) {
-//			neighbor.tell(msg, self());
-//		}
-//	}
-	
 	private Neighbors getNeighbors() {
 		return Neighbors.getInstance(Lists.newArrayList(neighbors));
 	}
 	
 	public void setState(ClientAgentState state) {
 		this.currentState = state;
-//		this.currentState.run();
-		addExpirationTimer(1, ClientAgentState.RUN); //this way I avoid having infinite calls for changing states after state
+		addExpirationTimer(1, ClientAgentState.RUN);
 	}
 	
 	protected void addNeighbor(ActorRef actor) {
@@ -114,10 +106,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		return modelStorage;
 	}
 
-	//FIXME add this method to akka utils
 	@Override
 	public void addExpirationTimer(long time, final String message) {
-//		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), getClientAgent(), system.dispatcher(), null);
 		final ActorRef selfReference = self();
 		
 		context().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 
@@ -166,6 +156,11 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	@Override
 	public AntAPI getAntAPI() {
 		return antApi;
+	}
+	
+	@Override
+	public AgentAttributes getAttributes() {
+		return attributes;
 	}
 	
 }
