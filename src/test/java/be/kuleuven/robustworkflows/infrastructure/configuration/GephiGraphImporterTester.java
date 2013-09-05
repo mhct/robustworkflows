@@ -14,16 +14,19 @@ import org.gephi.graph.api.Node;
 import org.junit.Before;
 import org.junit.Test;
 
+import be.kuleuven.robustworkflows.model.NodeAttributes;
+
 public class GephiGraphImporterTester {
 
 
-	private String graphPath;
+	private String graphPath = null;
 
 	private static File loadFileFromPath(String filename) {
 		File ret = null;
 		try {
 			ret = new File(GephiGraphImporterTester.class.getResource(filename).toURI());
 		} catch (URISyntaxException e) {
+			System.out.println("Shit happens");
 			e.printStackTrace();
 		}
 		System.out.println("Abs: path" + ret.getAbsolutePath());
@@ -32,24 +35,25 @@ public class GephiGraphImporterTester {
 	
 	@Before
 	public void setGraphPath() {
-		this.graphPath = "/simple1.gexf";
+		this.graphPath = "1c-1f.gexf";
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testLoadDirectedGraphFromNull() {
+	public void loadDirectedGraphFromNull() {
 		assertNotNull(GephiGraphImporter.loadDirectedGraphFrom(null));
 	}
 
 	@Test
-	public void testLoadDirectedGraphFrom() {
-		assertNotNull(GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath(graphPath)));
+	public void loadDirectedGraphFrom() {
+		File graph = loadFileFromPath(graphPath);
+		assertNotNull(GephiGraphImporter.loadDirectedGraphFrom(graph));
 	}
 
 	@Test
-	public void testLoadDirectedGraph() {
+	public void loadDirectedGraph() {
 		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath(graphPath));
 		
-		Node n = graph.getNode("60");
+		Node n = graph.getNode("1");
 		Attributes a = n.getAttributes();
 		a.setValue("ActorRef", "BBBB");
 //		for (Node n: graph.getNodes()) {
@@ -61,29 +65,32 @@ public class GephiGraphImporterTester {
 			System.out.printf("Node: %s -> %s\n", e.getSource().getNodeData().getId(), e.getTarget().getNodeData().getId());
 		}
 		
-		System.out.println("ACtorRef: " + graph.getNode(6).getAttributes().getValue("ActorRef"));
+		System.out.println("ACtorRef: " + graph.getNode("1").getAttributes().getValue("ActorRef"));
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void testNonExistingFile() {
+	public void nonExistingFile() {
 		GephiGraphImporter.loadDirectedGraphFrom(new File(UUID.randomUUID().toString().concat(".fakefile")));
 	}
 	
 	@Test
-	public void testAttributes() {
+	public void checkAttributes() {
 		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath(graphPath));
-		Node n = graph.getNode("60");
+		Node n = graph.getNode("1");
 		
-		assertEquals("676", n.getAttributes().getValue("Seed"));
-		assertEquals("Exponential", n.getAttributes().getValue("ComputationalResourceProfile"));
+		assertEquals("440", n.getAttributes().getValue(NodeAttributes.ProcessingTimePerRequest));
 		
-		assertEquals("50000", graph.getNode("64").getAttributes().getValue("ProcessingTimePerRequest"));
+		assertEquals("B", n.getAttributes().getValue(NodeAttributes.ServiceType));
 	}
 	
-	public static void main(String[] args) {
-//		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("/scenario1/internet_routers-22july06.gml"));
-		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("/simple1.gexf"));
-		System.out.println(graph.getNodeCount());
+	@Test
+	public void checkClientAgentAttributes() {
+		//FIXME this is testing the cloudcreator.. in reality 
+		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("1c-2f.gexf"));
+		Node n = graph.getNode("3");
+
+		assertEquals(1100l, n.getAttributes().getValue(NodeAttributes.ExplorationStateTimeout));
+		assertEquals(100l, n.getAttributes().getValue(NodeAttributes.AntExplorationTimeout));
 	}
 
 }

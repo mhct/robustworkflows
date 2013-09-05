@@ -11,6 +11,16 @@ dropall = function() {
         db.model_events.drop();
         db.model_factory_agents.drop();
         
-        Date();
+        print("Cleaned db");
 }
 
+experiment_data = function(dbName) {
+    use dbName;
+    sorcerers = db.sorcerers.find().size();
+    clients = db.clientAgents.find().size();
+    factories = db.factry_agents.find().size();
+    
+    print("Sorcers: " + sorcerers);
+    print("ClientAgents: " + clients);
+    print("Factories: " + factories);
+}

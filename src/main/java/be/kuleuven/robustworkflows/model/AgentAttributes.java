@@ -72,12 +72,12 @@ public class AgentAttributes implements Serializable {
 				
 			} else if ("FixedProcessingTime".equals((String) attributes.getValue(NodeAttributes.ComputationalResourceProfile))) {
 				ServiceType st = ServiceType.valueOf((String) attributes.getValue(NodeAttributes.ServiceType));
-				profile = ComputationalResourceProfile.fixedProcessingTime(Integer.valueOf((String) attributes.getValue("ProcessingTimePerRequest")), st);
+				profile = ComputationalResourceProfile.fixedProcessingTime(Integer.valueOf((String) attributes.getValue(NodeAttributes.ProcessingTimePerRequest)), st);
 				
 			} 
 		} else if ("Client".equals((String) attributes.getValue(NodeAttributes.NodeType))) {
-			explorationStateTimeout = (Long) attributes.getValue("ExploringStateTimeout");
-			antExplorationTimeout = (Long) attributes.getValue("AntExplorationTimeout");
+			explorationStateTimeout = (Long) attributes.getValue(NodeAttributes.ExplorationStateTimeout);
+			antExplorationTimeout = (Long) attributes.getValue(NodeAttributes.AntExplorationTimeout);
 		}
 		
 		return new AgentAttributes(nodeType, nodeId, profile, explorationStateTimeout, antExplorationTimeout);
