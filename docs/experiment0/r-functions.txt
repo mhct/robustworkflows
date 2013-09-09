@@ -3,7 +3,7 @@ plot histogram of Frequencies on a table
 ggplot(data=services_eng) + geom_histogram(aes(x=Freq))
 
 ====================================
-agg <- function(experiment_ame) {
+agg <- function(experiment_name) {
     # assuming data in CSV format: time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT,SERVICES_ENGAGED
     raw_data <- read.csv(file=experiment_name)
     agg_data_time <- aggregate(data=raw_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION) ~ time_block, mean)
@@ -11,9 +11,12 @@ agg <- function(experiment_ame) {
     #agg_data_services_engaged <- aggregate(data=raw_data, cbind() 
     
     bla <- as.data.frame(table(raw_data$CLIENT_AGENT))
-    executed_compositions_per_service <- ggplot(data=bla) + geom_histogram(aes(x=Freq, y=..density..), color= "black", binwidth=5) + labs(title="Executed compositions per service", x="Number of Compositions", y="Density of services")
+    executed_compositions_per_service <- ggplot(data=bla) + geom_histogram(aes(x=Freq, y=..density..), color= "black", binwidth=2) + labs(title="Executed compositions per service (AntExplorationTimeout = 100)", x="Number of Compositions", y="Density of services")
 
+    ret.executed_compositions_per_service <- executed_compositions_per_service
+    ret.agg_data_time <- agg_data_time
+    ret.raw_data <- raw_data
 
-    return (executed_compositions_per_service)    
+    return ret
 }
 

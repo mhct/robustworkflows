@@ -16,6 +16,7 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 import akka.testkit.TestActorRef;
+import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 
 import com.google.common.collect.Lists;
@@ -88,5 +89,6 @@ public class ClientAgentTest {
 		client.tell("expirationTimer", system.deadLetters());
 		Thread.sleep(100);
 	}
+	
 	
 }

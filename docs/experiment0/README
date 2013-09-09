@@ -47,3 +47,8 @@ results: exp3.csv
 Experiment 4
 datafile: 1000c-100f-long-times-exp_timeout-100.gexf
 Number of Sorcerer machines: 
+
+==============
+Experiment 5
+datafile: exp5/t100.gexf
+Number of Sorcerer machines: 

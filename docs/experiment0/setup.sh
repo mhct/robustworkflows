@@ -54,6 +54,20 @@ function loadSorcerer {
 }
 
 
+
+#
+# Retrieves the list of active computers at the computer labs
+#
+# @Return Space separated string with the computer names which are Up
+#
+function getListActiveComputers {
+    numberOfpcs=$1
+    machinesToIgnore="-e mol -e andenne -e arenberg -e baba -e bibi -e brussel -e heverlee -e matata -e jambo -e leuven -e tabor"
+    local pcs=$(ssh u0061821@andenne.cs.kotnet.kuleuven.be ruptime | awk '{if ("up" == $2) { print $1}}'|grep -v $machinesToIgnore | head -$numberOfpcs)
+
+    echo "$pcs"
+}
+
 #
 # Load All neded sorcerers
 #
@@ -61,12 +75,12 @@ function loadSorcerer {
 #
 function loadNeededSorcerers {
     numberOfpcs=$1
-    pcs=$(head -$numberOfpcs ./pc_lab_computer_names.txt)
-        for pc in $pcs;
+    local pcs=$(getListActiveComputers $numberOfpcs)
+    for pc in $pcs;
         do
             echo loading sorcerer at $pc".cs.kotnet.kuleuven.be"
             loadSorcerer $pc".cs.kotnet.kuleuven.be" $pc
-            sleep 2
+            #sleep 2
         done
     
 }
@@ -82,3 +96,13 @@ function stopIt {
     ssh -oStrictHostKeyChecking=no $SSH_USER@$machine.cs.kotnet.kuleuven.be killall $job
 }
 
+function stopAll {
+    local numberOfpcs=$1
+    local pcs=$(getListActiveComputers $numberOfpcs)
+    for pc in $pcs;
+        do
+                echo stoping sorcerer at $pc
+                stopIt $pc java
+        done
+
+}

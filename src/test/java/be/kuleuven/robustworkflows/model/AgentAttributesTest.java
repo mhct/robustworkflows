@@ -36,6 +36,17 @@ public class AgentAttributesTest {
 	public void testComputationalProfile() {
 		assertEquals(exponentialProfile.expectedTimeToServeRequest(), AgentAttributes.getInstance(nodeAttributes, "1").getComputationalProfile().expectedTimeToServeRequest());
 	}
+	
+	@Test
+	public void clientAgentAttributes() {
+		nodeAttributes = mock(Attributes.class);
+		when(nodeAttributes.getValue(NodeAttributes.ServiceType)).thenReturn("Client");
+		when(nodeAttributes.getValue(NodeAttributes.ExplorationStateTimeout)).thenReturn(1800);
+		when(nodeAttributes.getValue(NodeAttributes.AntExplorationTimeout)).thenReturn(111);
+		
+		assertNotNull(AgentAttributes.getInstance(nodeAttributes, "1"));
+		
+	}
 
 }
 
