@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2" xmlns:viz="http://www.gexf.net/1.2draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
+  <meta lastmodifieddate="2013-09-09">
+    <creator>Gephi 0.8.1</creator>
+    <description></description>
+  </meta>
+  <graph defaultedgetype="directed" mode="static">
+    <attributes class="node" mode="static">
+      <attribute id="NodeType" title="NodeType" type="string"></attribute>
+      <attribute id="ComputationalResourceProfile" title="ComputationalResourceProfile" type="string"></attribute>
+      <attribute id="ProcessingTimePerRequest" title="ProcessingTimePerRequest" type="string"></attribute>
+      <attribute id="ServiceType" title="ServiceType" type="string"></attribute>
+      <attribute id="ExplorationStateTimeout" title="ExplorationStateTimeout" type="long"></attribute>
+      <attribute id="AntExplorationTimeout" title="AntExplorationTimeout" type="long"></attribute>
+    </attributes>
+    <nodes>
+      <node id="1">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="43956"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="32.14557" y="92.755615" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="2">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="57173"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="258.96503" y="364.4643" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="3">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="16622"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-18.118347" y="22.532715" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="4">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="28910"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="200.12299" y="121.00842" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="5">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="31023"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="360.81378" y="-381.1665" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="6">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="54930"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-197.76697" y="-420.56378" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="7">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="19684"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="257.9702" y="-113.88904" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="8">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="26590"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-95.37628" y="215.21448" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="9">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="42889"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-41.074066" y="451.66962" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="10">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="31498"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-6.133484" y="-48.619446" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="11">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-258.54517" y="-82.81946" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="12">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="429.29395" y="101.24255" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="13">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-390.67932" y="347.9884" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="14">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-116.779205" y="496.0669" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="15">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="16.604004" y="-457.30347" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="16">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="222.58441" y="-6.53833" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="17">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="147.66034" y="58.524353" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="18">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-475.46133" y="-26.70111" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="19">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-13.252106" y="-292.81012" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="20">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="40.608215" y="-254.60046" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="21">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="236.56012" y="381.57703" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="22">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-297.67236" y="16.83966" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="23">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="126.34277" y="-374.79462" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="24">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="195.86389" y="-303.38217" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="25">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="287.9709" y="314.52832" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="26">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-276.06345" y="351.557" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="27">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="172.30579" y="188.34277" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="28">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="320.42407" y="-430.30267" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="29">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-71.6514" y="-270.89807" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="30">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-13.636597" y="336.0686" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="31">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="274.151" y="77.68024" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="32">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-24.380188" y="280.614" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="33">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-348.86005" y="246.14679" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="34">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="274.32532" y="319.16962" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="35">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-127.54205" y="-117.6369" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="36">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-309.74603" y="-224.21243" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="37">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-448.88364" y="235.72595" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="38">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-3.3779602" y="-451.6776" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="39">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="-174.79623" y="-224.86203" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="40">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1100"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="100"></attvalue>
+        </attvalues>
+        <viz:size value="1.0"></viz:size>
+        <viz:position x="259.37274" y="259.08362" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+    </nodes>
+    <edges></edges>
+  </graph>
+</gexf>
