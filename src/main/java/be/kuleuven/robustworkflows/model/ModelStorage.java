@@ -30,7 +30,7 @@ import com.mongodb.DBObject;
 public class ModelStorage {
 	private final static String EVENTS_COLLECTION = "model_events";
 	private final static String FACTORY_AGENTS_COLLECTION = "model_factory_agents";
-	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss");
+	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss_SSS");
 	private DB db;
 	
 	

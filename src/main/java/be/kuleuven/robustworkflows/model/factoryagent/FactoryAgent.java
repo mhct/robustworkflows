@@ -18,7 +18,9 @@ import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBObject;
 
 /**
  * Provides computational services to any clients
@@ -83,7 +85,10 @@ public class FactoryAgent extends UntypedActor {
 			
 		} else if (ServiceRequest.class.isInstance(message)) {
 			ServiceRequest sr = (ServiceRequest) message;
+			modelStorage.persistEvent(toDBObject(sr));
+			
 			if (sr.typeOf(computationalProfile.getServiceType())) {
+				System.out.println("A");
 				computationalProfile.add(ReceivedServiceRequest.getInstance((ServiceRequest) message, sender()));
 			} else {
 				//TODO reply saying this factory does not serve this type of service
@@ -129,6 +134,14 @@ public class FactoryAgent extends UntypedActor {
 		}, context().system().dispatcher());
 	}
 
-
+	private DBObject toDBObject(ServiceRequest msg) {
+		BasicDBObject obj = new BasicDBObject();
+		obj.append("EventType", ServiceRequest.eventType);
+		obj.append("ClientAgent", getSender().toString());
+		obj.append("FactoryAgent", getSelf().toString());
+		obj.append("CreationTime",msg.getCreationTime());
+		
+		return obj;
+	}
 
 }

@@ -44,7 +44,7 @@ public class EngagingInServiceComposition extends ClientAgentState {
 	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (RUN.equals(message)) {
-			persistEvent("Engaging in Service Composition: " + selectedComposition.toString()); // + t.getAgent().path().name()); //FIXME add ClientAgent name
+//			persistEvent("Engaging in Service Composition: " + selectedComposition.toString()); // + t.getAgent().path().name()); //FIXME add ClientAgent name
 
 			startTimeSelectedComposition = System.currentTimeMillis();
 			servicesEngaged = "";
@@ -57,12 +57,9 @@ public class EngagingInServiceComposition extends ClientAgentState {
 			servicesEngaged += ";" + msg.getFactoryAgentName();
 			
 			if (!itr.hasNext()) {
-				persistEvent("ServiceComposition FINISHED");
 				persistEvent(summaryEngagement());
-				//TODO add more information about this particular event.
-				//TODO, look a better way to persist different objects.... via reflection? etc.
-//				setState(WaitingTaskState.getInstance(getClientAgentProxy()));
-				setState(ExploringState.getInstance(getClientAgentProxy()));
+				setState(WaitingTaskState.getInstance(getClientAgentProxy()));
+//				setState(ExploringState.getInstance(getClientAgentProxy()));
 			} else {
 				engageWithServiceProvider();
 			}

@@ -2,7 +2,11 @@ package be.kuleuven.robustworkflows.model.messages;
 
 import java.io.Serializable;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+
 import be.kuleuven.robustworkflows.model.ServiceType;
+import be.kuleuven.robustworkflows.model.clientagent.EventType;
 
 /**
  * Represents a service request from a ClientAgent
@@ -12,7 +16,7 @@ import be.kuleuven.robustworkflows.model.ServiceType;
  */
 public class ServiceRequest implements Serializable {
 	private static final long serialVersionUID = 20130821L;
-	
+	public static final String eventType = "ServiceRequest";
 	private ServiceType serviceType;
 	private final long creationTime;
 	private int id;
@@ -40,7 +44,12 @@ public class ServiceRequest implements Serializable {
 		return new ServiceRequest(id, serviceType);
 	}
 
+	public long getCreationTime() {
+		return creationTime;
+	}
+	
 	public int getId() {
 		return id;
 	}
+	
 }

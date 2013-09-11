@@ -20,3 +20,9 @@ agg <- function(experiment_name) {
     return ret
 }
 
+
+
+#replace factors for strings
+i <- sapply(bob, is.factor)
+bob[i] <- lapply(bob[i], as.character)
+
