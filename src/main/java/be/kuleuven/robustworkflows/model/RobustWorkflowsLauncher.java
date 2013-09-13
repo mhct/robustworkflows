@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomDataGenerator;
+
 import scala.concurrent.duration.Duration;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -28,7 +31,8 @@ public class RobustWorkflowsLauncher implements Bootable {
 	private static final String DB_NAME = config.getString("db-name");
 	private static final String DB_USER = config.getString("db-user");
 	private static final String DB_PASS = config.getString("db-pass");
-
+	private static final Long SEED = 898989l;
+	
 	private final ActorSystem system;
 	private DB db;
 	private MongoClient mongoClient;
@@ -68,10 +72,12 @@ public class RobustWorkflowsLauncher implements Bootable {
 		log.debug("Searching Clients to send Compose Message");
 		DBCursor cursor = storage.getClientAgent().find();
 		String ref = "";
-		long i=5;
+
+		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED));
+		
 		while (cursor.hasNext()) {	
 			ref = (String) cursor.next().get("address");
-			sendComposeMessage(system.actorFor(ref), i);
+			sendComposeMessage(system.actorFor(ref), random.nextPoisson(8));
 //			i += 0;
 		}
 	}
@@ -98,9 +104,14 @@ public class RobustWorkflowsLauncher implements Bootable {
 		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
 		wf.startup();
 		wf.sendComposeToAllClientAgents();
+//		
 //		Interpreter bsh = new Interpreter(new InputStreamReader(System.in), System.out, System.err, true);
 //		bsh.run();
 //		System.in.read();
 //		wf.shutdown();
+//		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(8989));
+//		for (int i=0; i<20; i++) {
+//			System.out.println(i + ": " + random.nextPoisson(8));
+//		}
 	}
 }
