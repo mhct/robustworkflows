@@ -23,7 +23,7 @@ public class CloudCreator {
 	private static RandomDataGenerator random2 = new RandomDataGenerator(new MersenneTwister(SEED));
 
 	private static final int NUMBER_OF_FACTORIES = 10;
-	private static final int NUMBER_OF_CLIENTS = 30;
+	private static final int NUMBER_OF_CLIENTS = 40;
 	private static final long EXPLORATION_TIMEOUT = 1100;
 	private static final long ANT_EXPLORATION_TIMEOUT = 100;
 	

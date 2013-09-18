@@ -66,29 +66,29 @@ public class ClientAgentTest {
 		return replies.get(0);
 	}
 
-	@Test
-	public void testAddExpirationTimer() throws InterruptedException {
-		final ActorSystem system = ActorSystem.apply();
-		final DB db = mock(DB.class);
-		final DBCollection coll = mock(DBCollection.class);
-		
-		when(db.getCollection("clientAgents")).thenReturn(coll);
-		
-		final Props props = Props.apply(new UntypedActorFactory() {
-			
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public Actor create() throws Exception {
-				List<ActorRef> refs = new ArrayList<ActorRef>();
-				return new ClientAgent(db, refs, null);
-			}
-		});
-		
-		final TestActorRef<ClientAgent> client = TestActorRef.create(system, props, "client");
-		client.tell("expirationTimer", system.deadLetters());
-		Thread.sleep(100);
-	}
-	
+//	@Test
+//	public void testAddExpirationTimer() throws InterruptedException {
+//		final ActorSystem system = ActorSystem.apply();
+//		final DB db = mock(DB.class);
+//		final DBCollection coll = mock(DBCollection.class);
+//		
+//		when(db.getCollection("clientAgents")).thenReturn(coll);
+//		
+//		final Props props = Props.apply(new UntypedActorFactory() {
+//			
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public Actor create() throws Exception {
+//				List<ActorRef> refs = new ArrayList<ActorRef>();
+//				return new ClientAgent(db, refs, null);
+//			}
+//		});
+//		
+//		final TestActorRef<ClientAgent> client = TestActorRef.create(system, props, "client");
+//		client.tell("expirationTimer", system.deadLetters());
+//		Thread.sleep(1000);
+//	}
+//	
 	
 }

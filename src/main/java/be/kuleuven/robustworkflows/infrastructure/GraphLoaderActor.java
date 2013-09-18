@@ -17,6 +17,7 @@ import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 import be.kuleuven.robustworkflows.infrastructure.messages.AgentDeployed;
 import be.kuleuven.robustworkflows.infrastructure.messages.DeployAgent;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
+import be.kuleuven.robustworkflows.model.NodeAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -59,7 +60,9 @@ public class GraphLoaderActor extends UntypedActor {
 		if (message.equals("start")) {
 			log.info("GraphLoaderActor Started");
 			
-			loadActorsGraph();
+			//FIXME normally..should load agents on random nodes
+//			loadActorsGraph();
+			loadOneAgentPerSorcerer();
 			
 		} else if (AgentDeployed.class.isInstance(message)) {
 			AgentDeployed ref = (AgentDeployed) message;
@@ -139,7 +142,7 @@ public class GraphLoaderActor extends UntypedActor {
 	
 	/**
 	 * loads actors on remote machines according to the structure defined in networkModel
-	 * 
+	 * FIXME the infrastructure (GraphLoader) has to inspect the Model to deploy different types of actors on different sorcerers
 	 * TODO how many actors per remote machine?
 	 * @throws Exception in the case it is not possible to load one of the actors
 	 * 
@@ -153,5 +156,21 @@ public class GraphLoaderActor extends UntypedActor {
 			//n.getNodeData() is a blocking operation
 			sorcerer.tell(DeployAgent.getInstance(AgentAttributes.getInstance(n.getNodeData().getAttributes(), n.getNodeData().getId())), getSelf());
 		}
+		
+	}
+
+	/**
+	 * Loads one agent per sorcerer... 
+	 * FIXME this is a temporary code.
+	 */
+	private void loadOneAgentPerSorcerer() {
+		int i=0;
+		for(Node n: networkModel.getNodes()) {
+			log.debug("node: " + n.getId());
+			ActorRef sorcerer = sorcerers.get(i%sorcerers.size());
+			sorcerer.tell(DeployAgent.getInstance(AgentAttributes.getInstance(n.getNodeData().getAttributes(), n.getNodeData().getId())), getSelf());
+			i++;
+		}
+		
 	}
 }

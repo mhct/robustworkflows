@@ -3,6 +3,9 @@ package be.kuleuven.robustworkflows.model.ant;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomDataGenerator;
+
 import scala.concurrent.duration.Duration;
 import akka.actor.Actor;
 import akka.actor.ActorRef;
@@ -32,6 +35,7 @@ public class ExplorationAnt extends UntypedActor {
 	private int waitForReply = 0;
 	private String cachedName;
 	private final long explorationTimeout;
+	private final RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister());
 
 	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
 		this.master = master;
@@ -40,7 +44,7 @@ public class ExplorationAnt extends UntypedActor {
 		this.explorationTimeout = explorationTimeout;
 	}
 
-	private String selfName() {
+	private String masterName() {
 		if (cachedName == null) {
 			cachedName = master.path().name();
 		}
@@ -52,7 +56,7 @@ public class ExplorationAnt extends UntypedActor {
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if (EventType.RUN.equals(message)) {
-			modelStorage.persistEvent(selfName() + " received " + message);
+//			modelStorage.persistEvent(selfName() + " received " + message);
 			
 			serviceMatcher = WorkflowServiceMatcher.getInstance(workflow);
 			for (ServiceType st: serviceMatcher.getNeededServiceTypes()) {
@@ -88,13 +92,27 @@ public class ExplorationAnt extends UntypedActor {
 	 */
 	private void askQoS(List<String> agentPaths, ServiceType serviceType) {
 		for (String agentPath: agentPaths) {
-			ActorRef agent = context().actorFor(agentPath);
-			if (agent != null) {
-				agent.tell(ExplorationRequest.getInstance(explorationCounter++, serviceType, 10, self()), self());
-				waitForReply++;
+			if (sampling()) {
+				ActorRef agent = context().actorFor(agentPath);
+				if (agent != null) {
+					agent.tell(ExplorationRequest.getInstance(explorationCounter++, serviceType, 10, self(), masterName()), self());
+					waitForReply++;
+				}
 			}
 		}
 		
+	}
+	/**
+	 * Defines if a value should be used or not. returns true with a probability of 33%.
+	 * Uniform sampling
+	 * @return
+	 */
+	private boolean sampling() {
+		if (random.nextUniform(0, 1) >= 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public void addExpirationTimer(long time, final EventType message) {

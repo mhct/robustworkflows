@@ -24,19 +24,14 @@ public class FixedProcessingTimeProfile extends ComputationalResourceProfile imp
 	
 	public FixedProcessingTimeProfile(int processingTimePerRequest, ServiceType serviceType) {
 		super(serviceType);
+		//Add probability to the processing time per request
 		this.processingTimePerRequest = processingTimePerRequest;
 		this.serviceRequests = new LinkedList<ReceivedServiceRequest>();
 	}
 
 	@Override
 	public long expectedTimeToServeRequest() {
-		int size;
-		if (serviceRequests.size() == 0) {
-			size = 1;
-		} else {
-			size = serviceRequests.size();
-		}
-		return processingTimePerRequest * size;
+		return processingTimePerRequest + processingTimePerRequest * serviceRequests.size();
 	}
 
 	@Override

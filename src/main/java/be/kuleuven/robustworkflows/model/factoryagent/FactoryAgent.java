@@ -79,6 +79,8 @@ public class FactoryAgent extends UntypedActor {
 			ExplorationRequest msg = (ExplorationRequest) message;
 			//TODO QoSData should be created by computationalProfile, since it has all the needed data to create it.
 			if (msg.getServiceType().equals(computationalProfile.getServiceType())) {
+				ExplorationRequest sr = (ExplorationRequest) message;
+				modelStorage.persistEvent(toDBObject(sr));
 				sender().tell(ExplorationReply.getInstance(msg, computationalProfile.expectedTimeToServeRequest()), self());
 			}
 			
@@ -140,6 +142,14 @@ public class FactoryAgent extends UntypedActor {
 		obj.append("ClientAgent", getSender().toString());
 		obj.append("FactoryAgent", getSelf().toString());
 		obj.append("CreationTime",msg.getCreationTime());
+		
+		return obj;
+	}
+	private DBObject toDBObject(ExplorationRequest msg) {
+		BasicDBObject obj = new BasicDBObject();
+		obj.append("EventType", ExplorationRequest.eventType);
+		obj.append("ClientAgent", getSender().toString());
+		obj.append("FactoryAgent", getSelf().toString());
 		
 		return obj;
 	}

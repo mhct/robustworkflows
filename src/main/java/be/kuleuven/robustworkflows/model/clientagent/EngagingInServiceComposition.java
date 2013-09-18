@@ -90,7 +90,8 @@ public class EngagingInServiceComposition extends ClientAgentState {
 		
 		obj.append(EXPECTED_TIME_TO_SERVE_REQUEST, String.valueOf(currentTask.getQoS().getComputationTime())); 
 		obj.append(REAL_TIME_TO_SERVE_REQUEST, String.valueOf(System.currentTimeMillis() - startTimeCurrentTask));
-		obj.append("factoryAgentName", req.getFactoryAgentName());
+		obj.append("FACTORY_AGENT", req.getFactoryAgentName());
+		obj.append("CLIENT_AGENT", getClientAgentProxy().self().path().name());
 		return obj;
 	}
 

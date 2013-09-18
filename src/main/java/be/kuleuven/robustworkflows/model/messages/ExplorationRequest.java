@@ -14,17 +14,22 @@ import akka.actor.ActorRef;
 public class ExplorationRequest implements Serializable {
 
 	private static final long serialVersionUID = 20130821L;
+
+	public static String eventType = "ExplorationRequest";
 	
 	private final ServiceType serviceType;
 	private final Integer numberOfHopsToTravel;
 	private final ActorRef origin;
 	private final long id;
 
-	public ExplorationRequest(long id, ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
+	private String clientAgentName;
+
+	public ExplorationRequest(long id, ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin, String clientAgentName) {
 		this.id = id;
 		this.serviceType = serviceType;
 		this.numberOfHopsToTravel = numberOfHopsToTravel;
 		this.origin = origin;
+		this.clientAgentName = clientAgentName;
 	}
 	
 
@@ -41,15 +46,15 @@ public class ExplorationRequest implements Serializable {
 	}
 
 	public String getOriginName() {
-		return origin.path().name();
+		return clientAgentName;
 	}
 	
 	public long getId() {
 		return id;
 	}
 	
-	public static ExplorationRequest getInstance(long id, ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin) {
-		return new ExplorationRequest(id, serviceType, numberOfHopsToTravel, origin);
+	public static ExplorationRequest getInstance(long id, ServiceType serviceType, Integer numberOfHopsToTravel, ActorRef origin, String clientAgentName) {
+		return new ExplorationRequest(id, serviceType, numberOfHopsToTravel, origin, clientAgentName);
 	}
 
 	/**
@@ -59,7 +64,7 @@ public class ExplorationRequest implements Serializable {
 	 * @return
 	 */
 	public static ExplorationRequest getInstanceRemovingHop(ExplorationRequest msg) {
-		return new ExplorationRequest(msg.getId(), msg.getServiceType(), msg.getNumberOfHopsToTravel() - 1, msg.getOrigin());
+		return new ExplorationRequest(msg.getId(), msg.getServiceType(), msg.getNumberOfHopsToTravel() - 1, msg.getOrigin(), msg.getOriginName());
 	}
 
 

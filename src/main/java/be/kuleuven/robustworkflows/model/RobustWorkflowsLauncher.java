@@ -74,11 +74,11 @@ public class RobustWorkflowsLauncher implements Bootable {
 		String ref = "";
 
 		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED));
-		
+		int i=0;
 		while (cursor.hasNext()) {	
 			ref = (String) cursor.next().get("address");
-			sendComposeMessage(system.actorFor(ref), random.nextPoisson(8));
-//			i += 0;
+			sendComposeMessage(system.actorFor(ref), i);
+			i += 2;
 		}
 	}
 	
