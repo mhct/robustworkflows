@@ -7,7 +7,12 @@ agg <- function(experiment_name) {
   #agg_data_services_engaged <- aggregate(data=raw_data, cbind()
   
   bla <- as.data.frame(table(raw_data$CLIENT_AGENT))
-  plot <- ggplot(data=bla) + geom_histogram(aes(x=Freq, y=..density..), color= "black", binwidth=5) + labs(title="Executed compositions per service", x="Number of Compositions", y="Density of services")
+  
  
-  return(list("raw" = raw_data, "agg" = agg_data_time, "plot" = plot))
+  return(list("raw" = raw_data, "agg" = agg_data_time))
+}
+
+plotHistogram <- function(data_to_plot) {
+  plot <- ggplot(data=data_to_plot) + geom_histogram(aes(x=Freq, y=..density..), color= "black", binwidth=5) + 
+    labs(title="Executed compositions per service", x="Number of Compositions", y="Density of services")
 }

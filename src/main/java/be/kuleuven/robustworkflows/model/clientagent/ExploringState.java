@@ -23,9 +23,9 @@ public class ExploringState extends ClientAgentState {
 		replies = Lists.newArrayList();
 		if (getClientAgentProxy().getAntAPI().explorationAnts() == 0) {
 			getClientAgentProxy().getAntAPI().createExplorationAnt(getClientAgentProxy().getWorkflow(), getClientAgentProxy().getAttributes().getAntExplorationTimeout());
-		} else {
-			getClientAgentProxy().getAntAPI().explore();
 		}
+		
+		getClientAgentProxy().getAntAPI().explore();
 
 		//TODO create new exploration ANTS NOW..? at at ClientAgent creation
 		addExpirationTimer(getClientAgentProxy().getAttributes().getExplorationStateTimeout(), EXPLORING_STATE_TIMEOUT);
