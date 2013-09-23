@@ -1,8 +1,10 @@
-package be.kuleuven.robustworkflows.model.clientagent;
+package be.kuleuven.robustworkflows.model.clientagent.compositeexplorationbehavior;
 
 import java.util.List;
 
 import akka.actor.ActorRef;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 
 //FIXME perhaps I don't really need to model this state as a class

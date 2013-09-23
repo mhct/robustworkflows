@@ -40,14 +40,14 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 
 	private AgentAttributes attributes;
 	
-	public ClientAgent(DB db, List<ActorRef> neighbors, AgentAttributes attributes) {
+	public ClientAgent(DB db, List<ActorRef> neighbors, AgentAttributes attributes, ExplorationBehaviorFactory behaviorFactory) {
 		log.info("C L I E N T started");
 		
 		this.neighbors = neighbors;
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = new ModelStorage(db);
-		this.currentState = WaitingTaskState.getInstance((ClientAgentProxy) this);
-		this.antApi = AntAPI.getInstance(self(), context(), modelStorage);
+		this.currentState = behaviorFactory.createWaitingState((ClientAgentProxy) this);
+		this.antApi = AntAPI.getInstance(behaviorFactory, self(), context(), modelStorage);
 		this.attributes = attributes;
 		this.workflow = Workflow.getLinear1(); 
 	}

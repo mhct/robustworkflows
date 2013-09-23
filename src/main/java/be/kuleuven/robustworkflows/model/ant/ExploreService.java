@@ -17,7 +17,7 @@ public class ExploreService implements Serializable {
 		this.serviceType = serviceType;
 	}
 	
-	public ExploreService type(ServiceType serviceType) {
+	public static ExploreService type(ServiceType serviceType) {
 		return new ExploreService(serviceType);
 	}
 

@@ -7,7 +7,6 @@ import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import scala.concurrent.duration.Duration;
-import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.model.ModelStorage;
@@ -25,7 +24,7 @@ import be.kuleuven.robustworkflows.model.messages.Workflow;
  * @author mario
  *
  */
-public class ExplorationAnt extends UntypedActor {
+public class CompositeExplorationAnt extends UntypedActor {
 	
 	private final ModelStorage modelStorage;
 	private WorkflowServiceMatcher serviceMatcher;
@@ -37,7 +36,7 @@ public class ExplorationAnt extends UntypedActor {
 	private final long explorationTimeout;
 	private final RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister());
 
-	public ExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
+	public CompositeExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
 		this.master = master;
 		this.modelStorage = modelStorage;
 		this.workflow = workflow;
@@ -102,6 +101,7 @@ public class ExplorationAnt extends UntypedActor {
 		}
 		
 	}
+	
 	/**
 	 * Defines if a value should be used or not. returns true with a probability of 33%.
 	 * Uniform sampling
@@ -126,8 +126,8 @@ public class ExplorationAnt extends UntypedActor {
 		}, context().system().dispatcher());
 	}
 	
-	public static Actor getInstance(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
-		return new ExplorationAnt(master, modelStorage, workflow, explorationTimeout);
+	public static UntypedActor getInstance(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
+		return new CompositeExplorationAnt(master, modelStorage, workflow, explorationTimeout);
 	}
 
 }

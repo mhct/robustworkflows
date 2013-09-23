@@ -17,6 +17,6 @@ public class ClientAgentHandler extends AgentHandlerChain {
 
 	@Override
 	public Actor createInstance(AgentAttributes attributes, DB db) {
-		return new ClientAgent(db, new ArrayList<ActorRef>(), attributes);
+		return new ClientAgent(db, new ArrayList<ActorRef>(), attributes, attributes.getBehaviorFactory());
 	}
 }

@@ -8,8 +8,10 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 import be.kuleuven.robustworkflows.model.ModelStorage;
+import be.kuleuven.robustworkflows.model.clientagent.ExplorationBehaviorFactory;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
+import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
 import com.google.common.collect.Lists;
 
@@ -24,8 +26,10 @@ public class AntAPI {
 	private ActorContext context;
 	private final ModelStorage modelStorage;
 	private final ActorRef master;
+	private ExplorationBehaviorFactory behaviorFactory;
 	
-	private AntAPI(ActorRef master, ActorContext context, ModelStorage modelStorage) {
+	private AntAPI(ExplorationBehaviorFactory behaviorFactory, ActorRef master, ActorContext context, ModelStorage modelStorage) {
+		this.behaviorFactory = behaviorFactory;
 		this.master = master;
 		this.context = context;
 		this.modelStorage = modelStorage;
@@ -39,14 +43,13 @@ public class AntAPI {
 
 			@Override
 			public Actor create() throws Exception {
-				return ExplorationAnt.getInstance(master, modelStorage, workflow, explorationTimeout);
+//				return ExplorationAnt.getInstance(master, modelStorage, workflow, explorationTimeout);
+				return behaviorFactory.createExplorationAnt(master, modelStorage, workflow, explorationTimeout);
 			}
 
 		}), "explorationAnt" + explorationAnts.size()));
 		
-		startExplorationAnts();
-		
-
+//		startExplorationAnts();
 	}
 
 	private void startExplorationAnts() {
@@ -55,8 +58,8 @@ public class AntAPI {
 		}
 	}
 	
-	public static AntAPI getInstance(ActorRef master, ActorContext context, ModelStorage storage) {
-		return new AntAPI(master, context, storage);
+	public static AntAPI getInstance(ExplorationBehaviorFactory behaviorFactory, ActorRef master, ActorContext context, ModelStorage storage) {
+		return new AntAPI(behaviorFactory, master, context, storage);
 	}
 
 	public int explorationAnts() {
@@ -65,5 +68,17 @@ public class AntAPI {
 
 	public void explore() {
 		startExplorationAnts();
+	}
+
+	/**
+	 * Sends a message to all exploration ants
+	 * 
+	 * @param message
+	 * @param workflowTask
+	 */
+	public void tellAll(Object message) {
+		for (ActorRef ant: explorationAnts) {
+			ant.tell(message, master);
+		}
 	}
 }

@@ -1,9 +1,11 @@
-package be.kuleuven.robustworkflows.model.clientagent;
+package be.kuleuven.robustworkflows.model.clientagent.compositeexplorationbehavior;
 
 import java.util.Iterator;
 
 import akka.actor.ActorRef;
-import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
+import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
 import be.kuleuven.robustworkflows.model.messages.Workflow;

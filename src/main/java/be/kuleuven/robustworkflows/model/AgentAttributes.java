@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 import org.gephi.graph.api.Attributes;
 
+import be.kuleuven.robustworkflows.model.clientagent.ExplorationBehaviorFactory;
+import be.kuleuven.robustworkflows.model.clientagent.CompositeExplorationFactory;
+import be.kuleuven.robustworkflows.model.clientagent.SimpleExplorationFactory;
 import be.kuleuven.robustworkflows.model.factoryagent.ComputationalResourceProfile;
 
 /**
@@ -28,12 +31,15 @@ public class AgentAttributes implements Serializable {
 
 	private long antExplorationTimeout;
 
-	private AgentAttributes(String agentType, String agentId, ComputationalResourceProfile profile, long explorationStateTimeout, long antExplorationTimeout) {
+	private ExplorationBehaviorFactory behaviorFactory;
+
+	private AgentAttributes(String agentType, String agentId, ComputationalResourceProfile profile, long explorationStateTimeout, long antExplorationTimeout, ExplorationBehaviorFactory behaviorFactory) {
 		this.agentType = agentType;
 		this.agentId = agentId;
 		this.profile = profile;
 		this.explorationStateTimeout = explorationStateTimeout;
 		this.antExplorationTimeout = antExplorationTimeout;
+		this.behaviorFactory = behaviorFactory;
 	}
 
 
@@ -57,12 +63,17 @@ public class AgentAttributes implements Serializable {
 		return profile;
 	}
 
+	public ExplorationBehaviorFactory getBehaviorFactory() {
+		return behaviorFactory;
+	}
 	//FIXME I can use a abstract factory here... but, which are the implications for sending this over the wire?
+
 	public static AgentAttributes getInstance(Attributes attributes, String nodeId) {
 		String nodeType = (String) attributes.getValue(NodeAttributes.NodeType);
 		ComputationalResourceProfile profile = null;
 		long antExplorationTimeout=0;
 		long explorationStateTimeout=0;
+		ExplorationBehaviorFactory behaviorFactory = null;
 		
 		//FIXME TODO parse the nodeAttribute and load the correct type of resource
 		if ("Factory".equals((String) attributes.getValue(NodeAttributes.NodeType))) {
@@ -78,8 +89,16 @@ public class AgentAttributes implements Serializable {
 		} else if ("Client".equals((String) attributes.getValue(NodeAttributes.NodeType))) {
 			explorationStateTimeout = (Long) attributes.getValue(NodeAttributes.ExplorationStateTimeout);
 			antExplorationTimeout = (Long) attributes.getValue(NodeAttributes.AntExplorationTimeout);
+			
+			if (SimpleExplorationFactory.class.getName().equals(attributes.getValue(NodeAttributes.ExplorationBehaviorFactory))) {
+				behaviorFactory = new SimpleExplorationFactory();
+			} else {
+				behaviorFactory = new CompositeExplorationFactory();
+			}
 		}
 		
-		return new AgentAttributes(nodeType, nodeId, profile, explorationStateTimeout, antExplorationTimeout);
+		return new AgentAttributes(nodeType, nodeId, profile, explorationStateTimeout, antExplorationTimeout, behaviorFactory);
 	}
+
+
 }

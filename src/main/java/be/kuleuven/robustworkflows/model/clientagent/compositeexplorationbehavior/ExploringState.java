@@ -1,13 +1,22 @@
-package be.kuleuven.robustworkflows.model.clientagent;
+package be.kuleuven.robustworkflows.model.clientagent.compositeexplorationbehavior;
 
 import java.util.List;
 
 import akka.actor.ActorRef;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 
 import com.google.common.collect.Lists;
 import com.mongodb.DBObject;
 
+/**
+ * === InboundMessages ===
+ * - '''ExplorationResult''' Results from CompositeExplorationAnts 
+ * - 
+ * @author mario
+ *
+ */
 public class ExploringState extends ClientAgentState {
 	
 	private final String EXPLORING_STATE_TIMEOUT = "ExploringStateTimeout";
