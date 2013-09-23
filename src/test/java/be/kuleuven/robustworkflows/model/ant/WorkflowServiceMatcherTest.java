@@ -100,8 +100,8 @@ public class WorkflowServiceMatcherTest {
 		final TestActorRef<MyActor> ac2 = TestActorRef.create(system, props, "ac2");
 		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getInstance(Workflow.getLinear1());
 		
-		ExplorationRequest er0 = ExplorationRequest.getInstance(0, ServiceType.A, 10, ac0);
-		ExplorationRequest er1 = ExplorationRequest.getInstance(0, ServiceType.B, 10, ac1);
+		ExplorationRequest er0 = ExplorationRequest.getInstance(0, ServiceType.A, 10, ac0, "0");
+		ExplorationRequest er1 = ExplorationRequest.getInstance(0, ServiceType.B, 10, ac1, "1");
 
 		ExplorationReply res0 = ExplorationReply.getInstance(er0, 1);
 		ExplorationReply res1 = ExplorationReply.getInstance(er1, 3);

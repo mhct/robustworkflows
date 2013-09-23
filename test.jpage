@@ -1,0 +1,5 @@
+ org.apache.commons.math3.random.RandomDataGenerator random = new org.apache.commons.math3.random.RandomDataGenerator(new org.apache.commons.math3.random.MersenneTwister(898989l));
+ for( int i=0; i<10; i++ ) {
+ System.out.print(random.nextPoisson(10) + ",");
+ }
+ 

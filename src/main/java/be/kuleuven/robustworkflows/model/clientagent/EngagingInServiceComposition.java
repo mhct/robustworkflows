@@ -78,7 +78,7 @@ public class EngagingInServiceComposition extends ClientAgentState {
 	}
 	
 	/**
-	 * Creates a summary of the finished in a format accepted by the ModelStorage
+	 * Creates a summary of the finished request in a format accepted by the ModelStorage
 	obj.append(REAL_TIME_TO_SERVE_REQUEST, String.valueOf(req.getServiceRequest().totalTimeToServeRequest()));
 	 * 
 	 * @param req

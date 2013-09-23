@@ -74,22 +74,22 @@ public class RobustWorkflowsLauncher implements Bootable {
 		String ref = "";
 
 		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED));
-		int i=0;
+//		int i=0;
 		while (cursor.hasNext()) {	
 			ref = (String) cursor.next().get("address");
-			sendComposeMessage(system.actorFor(ref), i);
-			i += 2;
+			sendComposeMessage(system.actorFor(ref), random.nextPoisson(40));
+//			i += 2;
 		}
 	}
 	
 	private void sendComposeMessage(final ActorRef ref, long time) {
-		log.debug("Sending ComposeMessage");
+		log.debug("Sending ComposeMessage to be executed in : " + time + " s");
 		system.scheduler().scheduleOnce(Duration.create(time, TimeUnit.SECONDS), 
 				new Runnable() {
 
 					@Override
 					public void run() {
-						System.out.println("Enviando Compose Message");
+						System.out.println("Enviando Compose Message: " + System.currentTimeMillis());
 						ref.tell("Compose", system.deadLetters());
 					}
 			
@@ -100,11 +100,11 @@ public class RobustWorkflowsLauncher implements Bootable {
 		return system;
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
 		wf.startup();
 		wf.sendComposeToAllClientAgents();
-//		
+		Thread.sleep(600000);
 //		Interpreter bsh = new Interpreter(new InputStreamReader(System.in), System.out, System.err, true);
 //		bsh.run();
 //		System.in.read();
