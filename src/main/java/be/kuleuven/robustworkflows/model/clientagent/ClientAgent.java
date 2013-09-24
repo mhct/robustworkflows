@@ -41,7 +41,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private AgentAttributes attributes;
 	
 	public ClientAgent(DB db, List<ActorRef> neighbors, AgentAttributes attributes, ExplorationBehaviorFactory behaviorFactory) {
-		log.info("C L I E N T started");
+		log.info("C L I E N T started\nBehavior Factory: " + behaviorFactory.getClass().getName());
 		
 		this.neighbors = neighbors;
 		this.storage = new InfrastructureStorage(db);
@@ -78,7 +78,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 			
 		}
 		else {
-			log.debug("\n\n\nClientAgent, received ." + message + ". from " + sender());
+//			log.debug("\n\n\nClientAgent, received ." + message + ". from " + sender());
 			currentState.onReceive(message, sender());
 		}
 	}
@@ -129,13 +129,13 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		Collections.sort(replies, new Comparator<ExplorationResult>() {
 
 			@Override
-			public int compare(ExplorationResult o1, ExplorationResult o2) {
-				final long o1Time = o1.totalComputationTime();
-				final long o2Time = o2.totalComputationTime();
+			public int compare(ExplorationResult obj1, ExplorationResult obj2) {
+				final long o1 = obj1.totalComputationTime();
+				final long o2 = obj2.totalComputationTime();
 				
-				if (o1Time < o2Time) {
+				if (o1 < o2) {
 					return -1;
-				} else if (o2Time > o2Time) {
+				} else if (o1 > o2) {
 					return 1;
 				}
 					

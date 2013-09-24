@@ -58,13 +58,13 @@ public class SimpleExploringState extends ClientAgentState {
 		Collections.sort(results, new Comparator<SimpleExplorationResult>() {
 
 			@Override
-			public int compare(SimpleExplorationResult o1, SimpleExplorationResult o2) {
-				final long o1Time = o1.computationTime();
-				final long o2Time = o2.computationTime();
+			public int compare(SimpleExplorationResult obj1, SimpleExplorationResult obj2) {
+				final long o1 = obj1.computationTime();
+				final long o2 = obj2.computationTime();
 				
-				if (o1Time < o2Time) {
+				if (o1 < o2) {
 					return -1;
-				} else if (o2Time > o2Time) {
+				} else if (o1 > o2) {
 					return 1;
 				}
 					
@@ -74,9 +74,10 @@ public class SimpleExploringState extends ClientAgentState {
 		});
 		
 		if (results.size() >= 1) {
-			//TODO move to EngageState
-			
-			getClientAgentProxy().setState(WaitingTaskState.getInstance(getClientAgentProxy()));
+			getClientAgentProxy().setState(SimpleEngagingInServiceComposition.getInstance(getClientAgentProxy(), results.get(0)));
+			results.clear();
+		} else {
+			persistEvent("ClientAgent could not find suitable services...");
 		}
 	}
 	

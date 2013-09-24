@@ -1,5 +1,7 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
+import java.io.Serializable;
+
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.model.ModelStorage;
@@ -8,7 +10,9 @@ import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 public class SimpleExplorationFactory extends
-		ExplorationBehaviorFactory {
+		ExplorationBehaviorFactory implements Serializable {
+
+	private static final long serialVersionUID = 24092013L;
 
 	@Override
 	public ClientAgentState createWaitingState(ClientAgentProxy clientAgentProxy) {

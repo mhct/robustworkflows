@@ -43,16 +43,12 @@ public class SimpleExplorationAnt extends UntypedActor {
 	private int waitForReply = 0;
 	private final RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister());
 	private List<ExplorationReplyWrapper> replies = new ArrayList<ExplorationReplyWrapper>();
-	
-	public SimpleExplorationAnt(ActorRef master, ModelStorage modelStorage, long explorationTimeout) {
-		this.master = master;
-		this.modelStorage = modelStorage;
-		addExpirationTimer(explorationTimeout, EventType.ExploringStateTimeout);
-	}
+	private long explorationTimeout;
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if (ExploreService.class.isInstance(message)) {
+			addExpirationTimer(explorationTimeout, EventType.ExploringStateTimeout);
 			ExploreService msg = (ExploreService) message;
 			
 			askQoS(modelStorage.getFactoryAgents(msg.getServiceType()), msg.getServiceType());
@@ -63,15 +59,17 @@ public class SimpleExplorationAnt extends UntypedActor {
 
 			replies.add(new ExplorationReplyWrapper(sender(), qos));
 			
-			waitForReply--;
-			if (waitForReply == 0) {
-				addExpirationTimer(0, EventType.ExplorationFinished);
-			}
+//			waitForReply--;
+//			if (waitForReply == 0) {
+//				addExpirationTimer(0, EventType.ExplorationFinished);
+//			}
 			
 			
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
 			modelStorage.persistEvent("ExpAnt Timeout"); //add complete summary of the state of explorationant
-			master.tell(bestReply(), self());
+			SimpleExplorationResult bla = bestReply();
+			replies.clear();
+			master.tell(bla, self());
 		}
 	}
 	
@@ -79,13 +77,13 @@ public class SimpleExplorationAnt extends UntypedActor {
 		Collections.sort(replies, new Comparator<ExplorationReplyWrapper>() {
 
 			@Override
-			public int compare(ExplorationReplyWrapper o1, ExplorationReplyWrapper o2) {
-				final long o1Time = o1.getReply().getComputationTime();
-				final long o2Time = o2.getReply().getComputationTime();
+			public int compare(ExplorationReplyWrapper obj1, ExplorationReplyWrapper obj2) {
+				final long o1 = obj1.getReply().getComputationTime();
+				final long o2 = obj2.getReply().getComputationTime();
 				
-				if (o1Time < o2Time) {
+				if (o1 < o2) {
 					return -1;
-				} else if (o2Time > o2Time) {
+				} else if (o1 > o2) {
 					return 1;
 				}
 					
@@ -95,8 +93,14 @@ public class SimpleExplorationAnt extends UntypedActor {
 		});
 		
 		if (replies.size() >= 1) {
-			//TODO move to EngageState
-			return SimpleExplorationResult.getInstance(replies.get(0).getActor(), replies.get(0).getReply().getComputationTime());
+//			System.out.println("Best reply (sorted): " + replies.get(0));
+//			System.out.println("#Replies: " + replies.size());
+//			for (ExplorationReplyWrapper bla: replies) {
+//				System.out.println("actor: " + bla.getActor() + " c:" + bla.getReply().getComputationTime());
+//			}
+			return SimpleExplorationResult.getInstance(replies.get(0).getActor(), replies.get(0).getReply().getComputationTime(), replies.get(0).getReply().getRequestExploration().getServiceType());
+		} else {
+			modelStorage.persistEvent("ExpAnt, dont have replies");
 		}
 		
 		return null;
@@ -146,6 +150,12 @@ public class SimpleExplorationAnt extends UntypedActor {
 		}, context().system().dispatcher());
 	}
 
+	public SimpleExplorationAnt(ActorRef master, ModelStorage modelStorage, long explorationTimeout) {
+		this.master = master;
+		this.modelStorage = modelStorage;
+		this.explorationTimeout = explorationTimeout;
+	}
+	
 	public static UntypedActor getInstance(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
 		return new SimpleExplorationAnt(master, modelStorage, explorationTimeout);
 	}
@@ -166,4 +176,12 @@ class ExplorationReplyWrapper {
 		this.actor = actor;
 		this.reply = reply;
 	}
+
+	@Override
+	public String toString() {
+		return "ExplorationReplyWrapper [reply=" + reply + ", actor=" + actor
+				+ "]";
+	}
+	
+	
 }

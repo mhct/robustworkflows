@@ -17,7 +17,6 @@ public class ExperimentLaucher {
 		graphLoader.startup();
 		Thread.sleep(5000);
 		wf.startup();
-		wf.sendComposeToAllClientAgents();
 
 		System.in.read();
 		sorcerer.shutdown();

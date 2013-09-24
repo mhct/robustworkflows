@@ -2,6 +2,8 @@ package be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour
 
 import java.io.Serializable;
 
+import be.kuleuven.robustworkflows.model.ServiceType;
+
 import akka.actor.ActorRef;
 
 /**
@@ -15,7 +17,8 @@ public class SimpleExplorationResult implements Serializable {
 	private static final long serialVersionUID = 20130923L;
 	private final long computationTime;
 	private final ActorRef actor;
-
+	private final ServiceType serviceType;
+	
 	public long computationTime() {
 		return computationTime;
 	}
@@ -24,13 +27,18 @@ public class SimpleExplorationResult implements Serializable {
 		return actor;
 	}
 	
-	private SimpleExplorationResult(ActorRef actor, long computationTime) {
-		this.actor = actor;
-		this.computationTime = computationTime;
+	public ServiceType serviceType() {
+		return serviceType;
 	}
 	
-	public static SimpleExplorationResult getInstance(ActorRef actor, long computationTime) {
-		return new SimpleExplorationResult(actor, computationTime);
+	private SimpleExplorationResult(ActorRef actor, long computationTime, ServiceType serviceType) {
+		this.actor = actor;
+		this.computationTime = computationTime;
+		this.serviceType = serviceType;
+	}
+	
+	public static SimpleExplorationResult getInstance(ActorRef actor, long computationTime, ServiceType serviceType) {
+		return new SimpleExplorationResult(actor, computationTime, serviceType);
 	}
 
 }

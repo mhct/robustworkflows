@@ -22,8 +22,8 @@ public class CloudCreator {
 	private static RandomDataGenerator random1 = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator random2 = new RandomDataGenerator(new MersenneTwister(SEED));
 
-	private static final int NUMBER_OF_FACTORIES = 10;
-	private static final int NUMBER_OF_CLIENTS = 40;
+	private static final int NUMBER_OF_FACTORIES = 4;
+	private static final int NUMBER_OF_CLIENTS = 1;
 	private static final long EXPLORATION_TIMEOUT = 1100;
 	private static final long ANT_EXPLORATION_TIMEOUT = 100;
 	
@@ -101,6 +101,7 @@ public class CloudCreator {
 		n.getAttributes().setValue(NodeAttributes.NodeType, "Client");
 		n.getAttributes().setValue(NodeAttributes.ExplorationStateTimeout, EXPLORATION_TIMEOUT);
 		n.getAttributes().setValue(NodeAttributes.AntExplorationTimeout, ANT_EXPLORATION_TIMEOUT);
+		n.getAttributes().setValue(NodeAttributes.ExplorationBehaviorFactory, "be.kuleuven.robustworkflows.model.clientagent.SimpleExplorationFactory");
 		
 		return n;
 	}

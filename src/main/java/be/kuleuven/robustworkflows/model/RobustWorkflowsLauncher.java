@@ -64,11 +64,10 @@ public class RobustWorkflowsLauncher implements Bootable {
 			e.printStackTrace();
 		}
 		storage = new InfrastructureStorage(db);
-		
 		sendComposeToAllClientAgents();
 	}
 	
-	public void sendComposeToAllClientAgents() {
+	private void sendComposeToAllClientAgents() {
 		log.debug("Searching Clients to send Compose Message");
 		DBCursor cursor = storage.getClientAgent().find();
 		String ref = "";
@@ -77,7 +76,7 @@ public class RobustWorkflowsLauncher implements Bootable {
 //		int i=0;
 		while (cursor.hasNext()) {	
 			ref = (String) cursor.next().get("address");
-			sendComposeMessage(system.actorFor(ref), random.nextPoisson(40));
+			sendComposeMessage(system.actorFor(ref), random.nextPoisson(10));
 //			i += 2;
 		}
 	}
