@@ -16,7 +16,7 @@ import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequestCompleted;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -99,7 +99,7 @@ public class FactoryAgent extends UntypedActor {
 		} else if (FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED.equals(message)) {
 			ReceivedServiceRequest rsr = computationalProfile.poll();
 			if (rsr != null) {
-				rsr.actor().tell(ServiceRequestFinished.getInstance(rsr.sr(), getName()), self());
+				rsr.actor().tell(ServiceRequestCompleted.getInstance(rsr.sr(), getName()), self());
 			}
 			else {
 				log.info("trying to work on empty ServiceRequest list");

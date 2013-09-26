@@ -1,5 +1,6 @@
 package be.kuleuven.robustworkflows.model.clientagent;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -14,6 +15,7 @@ import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
@@ -39,6 +41,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private Workflow workflow;
 
 	private AgentAttributes attributes;
+
+	private List<RequestExecutionData> requestsExecutionData;
 	
 	public ClientAgent(DB db, List<ActorRef> neighbors, AgentAttributes attributes, ExplorationBehaviorFactory behaviorFactory) {
 		log.info("C L I E N T started\nBehavior Factory: " + behaviorFactory.getClass().getName());
@@ -49,13 +53,14 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		this.currentState = behaviorFactory.createWaitingState((ClientAgentProxy) this);
 		this.antApi = AntAPI.getInstance(behaviorFactory, self(), context(), modelStorage);
 		this.attributes = attributes;
-		this.workflow = Workflow.getLinear1(); 
+		this.workflow = Workflow.getLinear1();
+		requestsExecutionData = new ArrayList<RequestExecutionData>();
 	}
 	
 	@Override
 	public void preStart() {
 		log.debug("----->>>>" + self().path().toStringWithAddress(getContext().provider().getDefaultAddress()) + "<<<<<<<<-----");
-		storage.persistClientAgentAddress(self().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
+		storage.persistClientAgentAddress(self().path().toStringWithAddress(getContext().provider().getDefaultAddress()), self().path().name());
 	}
 	
 	@Override
@@ -162,5 +167,31 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	public AgentAttributes getAttributes() {
 		return attributes;
 	}
+
+	@Override
+	public String clientAgentName() {
+		return self().path().name();
+	}
+
+	@Override
+	public String clientAgentCompleteName() {
+		return self().path().address().toString();
+	}
+
+	@Override
+	public List<RequestExecutionData> getRequestsData() {
+		return new ArrayList<RequestExecutionData>(requestsExecutionData);
+	}
+
+	@Override
+	public void addRequestsExecutionData(RequestExecutionData requestData) {
+		requestsExecutionData.add(requestData);
+	}
+
+	@Override
+	public void clearRequestsData() {
+		requestsExecutionData.clear();
+	}
+	
 	
 }

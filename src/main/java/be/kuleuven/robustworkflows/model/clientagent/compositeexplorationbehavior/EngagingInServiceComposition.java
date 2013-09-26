@@ -7,7 +7,7 @@ import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequestCompleted;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
@@ -53,10 +53,10 @@ public class EngagingInServiceComposition extends ClientAgentState {
 			itr = selectedComposition.iterator();
 			engageWithServiceProvider();
 		} 
-		else if (ServiceRequestFinished.class.isInstance(message)){
-			final ServiceRequestFinished msg = (ServiceRequestFinished) message;
+		else if (ServiceRequestCompleted.class.isInstance(message)){
+			final ServiceRequestCompleted msg = (ServiceRequestCompleted) message;
 			persistEvent(summaryServiceRequest(msg));
-			servicesEngaged += ";" + msg.getFactoryAgentName();
+			servicesEngaged += ";" + msg.factoryAgentName();
 			
 			if (!itr.hasNext()) {
 				persistEvent(summaryEngagement());
@@ -86,13 +86,13 @@ public class EngagingInServiceComposition extends ClientAgentState {
 	 * @param req
 	 * @return
 	 */
-	private BasicDBObject summaryServiceRequest(ServiceRequestFinished req) {
+	private BasicDBObject summaryServiceRequest(ServiceRequestCompleted req) {
 		BasicDBObject obj = new BasicDBObject();
 		obj.append("EventType", EventType.SERVICE_REQUEST_SUMMARY.toString());
 		
 		obj.append(EXPECTED_TIME_TO_SERVE_REQUEST, String.valueOf(currentTask.getQoS().getComputationTime())); 
 		obj.append(REAL_TIME_TO_SERVE_REQUEST, String.valueOf(System.currentTimeMillis() - startTimeCurrentTask));
-		obj.append("FACTORY_AGENT", req.getFactoryAgentName());
+		obj.append("FACTORY_AGENT", req.factoryAgentName());
 		obj.append("CLIENT_AGENT", getClientAgentProxy().self().path().name());
 		return obj;
 	}

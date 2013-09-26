@@ -25,7 +25,7 @@ public class CloudCreator {
 	private static final int NUMBER_OF_FACTORIES = 4;
 	private static final int NUMBER_OF_CLIENTS = 1;
 	private static final long EXPLORATION_TIMEOUT = 1100;
-	private static final long ANT_EXPLORATION_TIMEOUT = 100;
+	private static final long ANT_EXPLORATION_TIMEOUT = 500;
 	
 	/**
 	 * @param args
@@ -54,7 +54,7 @@ public class CloudCreator {
 		
 		final ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
-			String graphFilename = "/tmp/" + NUMBER_OF_CLIENTS + "c-" + NUMBER_OF_FACTORIES + "f-long-times-exp_timeout-" + ANT_EXPLORATION_TIMEOUT + ".gexf";
+			String graphFilename = "/tmp/" + NUMBER_OF_CLIENTS + "c-" + NUMBER_OF_FACTORIES + "f-" + ANT_EXPLORATION_TIMEOUT + "t.gexf";
 			ec.exportFile(new File(graphFilename));
 		} catch (IOException e) {
 			System.err.println(e);

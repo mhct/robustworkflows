@@ -7,7 +7,7 @@ import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
-import be.kuleuven.robustworkflows.model.messages.ServiceRequestFinished;
+import be.kuleuven.robustworkflows.model.messages.ServiceRequestCompleted;
 
 import com.mongodb.BasicDBObject;
 
@@ -37,6 +37,7 @@ public class SimpleEngagingInServiceComposition extends ClientAgentState {
 	private ActorRef selectedService;
 	private long expectedTimeToExecuteTask;
 	private ServiceType serviceType;
+	private long realTimeToServeRequest;
 	
 	private SimpleEngagingInServiceComposition(ClientAgentProxy clientAgentProxy, SimpleExplorationResult simpleExplorationResult) {
 		super(clientAgentProxy);
@@ -50,9 +51,13 @@ public class SimpleEngagingInServiceComposition extends ClientAgentState {
 		if (RUN.equals(message)) {
 			engageWithServiceProvider();
 		} 
-		else if (ServiceRequestFinished.class.isInstance(message)){
-			final ServiceRequestFinished msg = (ServiceRequestFinished) message;
-			persistEvent(summaryServiceRequest(msg));
+		else if (ServiceRequestCompleted.class.isInstance(message)){
+			realTimeToServeRequest = System.currentTimeMillis() - startTimeCurrentTask;
+			final ServiceRequestCompleted msg = (ServiceRequestCompleted) message;
+			
+			RequestExecutionData requestExecutionData = RequestExecutionData.getInstance(getClientAgentProxy().clientAgentName(), msg.factoryAgentName(), expectedTimeToExecuteTask, realTimeToServeRequest);
+			addRequestExecutionData(requestExecutionData);
+			persistEvent(summaryServiceRequest(requestExecutionData));
 			setState(RunningCompositionState.getInstance(getClientAgentProxy()));
 			
 		} else {
@@ -62,6 +67,7 @@ public class SimpleEngagingInServiceComposition extends ClientAgentState {
 
 	private void engageWithServiceProvider() {
 		startTimeCurrentTask = System.currentTimeMillis();
+		realTimeToServeRequest = 0;
 		serviceRequestCounter = serviceRequestCounter + 1;
 		
 		selectedService.tell(ServiceRequest.getInstance(serviceRequestCounter, serviceType), getClientAgentProxy().self());
@@ -74,14 +80,14 @@ public class SimpleEngagingInServiceComposition extends ClientAgentState {
 	 * @param req
 	 * @return
 	 */
-	private BasicDBObject summaryServiceRequest(ServiceRequestFinished req) {
+	private BasicDBObject summaryServiceRequest(RequestExecutionData requestData) {
 		BasicDBObject obj = new BasicDBObject();
 		obj.append("EventType", EventType.SERVICE_REQUEST_SUMMARY.toString());
 		
-		obj.append(EXPECTED_TIME_TO_SERVE_REQUEST, String.valueOf(expectedTimeToExecuteTask)); 
-		obj.append(REAL_TIME_TO_SERVE_REQUEST, String.valueOf(System.currentTimeMillis() - startTimeCurrentTask));
-		obj.append("FACTORY_AGENT", req.getFactoryAgentName());
-		obj.append("CLIENT_AGENT", getClientAgentProxy().self().path().name());
+		obj.append(EXPECTED_TIME_TO_SERVE_REQUEST, requestData.getExpectedTimeToExecuteTask()); 
+		obj.append(REAL_TIME_TO_SERVE_REQUEST, requestData.getRealTimeToServeRequest());
+		obj.append("FACTORY_AGENT", requestData.getFactoryAgentName());
+		obj.append("CLIENT_AGENT", requestData.getClientAgentName());
 		return obj;
 	}
 

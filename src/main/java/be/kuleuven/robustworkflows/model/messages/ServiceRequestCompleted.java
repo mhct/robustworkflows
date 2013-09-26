@@ -8,13 +8,13 @@ import java.io.Serializable;
  * @author mario
  *
  */
-public class ServiceRequestFinished implements Serializable {
+public class ServiceRequestCompleted implements Serializable {
 	private static final long serialVersionUID = 20130821L;
 	
 	private final ServiceRequest serviceRequest;
 	private final String factoryAgentName;
 
-	private ServiceRequestFinished(ServiceRequest serviceRequest, String factoryAgentName) {
+	private ServiceRequestCompleted(ServiceRequest serviceRequest, String factoryAgentName) {
 		this.serviceRequest = serviceRequest;
 		this.factoryAgentName = factoryAgentName;
 	}
@@ -23,12 +23,12 @@ public class ServiceRequestFinished implements Serializable {
 		return serviceRequest;
 	}
 	
-	public String getFactoryAgentName() {
+	public String factoryAgentName() {
 		return factoryAgentName;
 	}
 	
-	public static ServiceRequestFinished getInstance(ServiceRequest serviceRequest, String factoryAgentName) {
-		return new ServiceRequestFinished(serviceRequest, factoryAgentName);
+	public static ServiceRequestCompleted getInstance(ServiceRequest serviceRequest, String factoryAgentName) {
+		return new ServiceRequestCompleted(serviceRequest, factoryAgentName);
 	}
 
 }

@@ -15,11 +15,12 @@ GRAPH_LOADER_SERVER="verviers.cs.kotnet.kuleuven.be"
 DB_SERVER="andenne.cs.kotnet.kuleuven.be"
 DB_SERVER_PORT="27017"
 
+SSH_OPTIONS=" -o PasswordAuthentication=no -o StrictHostKeyChecking=no " 
 #
 # Loads the database
 #
 function loadDatabase {
-    ssh $SSH_USER@$DB_SERVER LC_ALL=C \$HOME/mongo/bin/mongod --auth --dbpath \$HOME/robustworkflows/db_storage \& echo PID: \$!
+    ssh $SSH_OPTIONS  $SSH_USER@$DB_SERVER LC_ALL=C \$HOME/mongo/bin/mongod --auth --dbpath \$HOME/robustworkflows/db_storage \& echo PID: \$!
     #\& pidstat -r -p \$! 1 86400 
 }
 
@@ -29,7 +30,7 @@ function loadDatabase {
 #
 function loadGraphLoader {
     network_model=$1
-    ssh -oStrictHostKeyChecking=no $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER NETWORK_MODEL=$network_model PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startGraphLoaderApp \& echo PID: \$! & 
+    ssh $SSH_OPTIONS  $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER NETWORK_MODEL=$network_model PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startGraphLoaderApp \& echo PID: \$! & 
 }
 
 
@@ -37,7 +38,7 @@ function loadGraphLoader {
 # Loads RobustWorkflows launcher application
 #
 function loadRobustWorkflowsApp {
-    ssh -oStrictHostKeyChecking=no $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startRobustWorkflowsLauncher \& echo PID: \$! 
+    ssh  $SSH_OPTIONS $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startRobustWorkflowsLauncher \& echo PID: \$! 
 }
 
 
@@ -50,7 +51,7 @@ function loadRobustWorkflowsApp {
 function loadSorcerer {
     sorcerer_server=$1
     sorcerer_name=$2
-    ssh -oStrictHostKeyChecking=no -n $SSH_USER@$sorcerer_server DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SORCERER_NAME=$sorcerer_name SYSTEM_HOSTNAME=$sorcerer_server PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startSorcerer \>\> /home/u0061821/robustworkflows/logs 2\>\&1  \& echo PID: \$! & 
+    ssh $SSH_OPTIONS $SSH_USER@$sorcerer_server DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SORCERER_NAME=$sorcerer_name SYSTEM_HOSTNAME=$sorcerer_server PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startSorcerer \>\> /home/u0061821/robustworkflows/logs 2\>\&1  \& echo PID: \$! & 
 }
 
 
@@ -93,7 +94,7 @@ function showVars {
 function stopIt {
     machine=$1
     job=$2
-    ssh -oStrictHostKeyChecking=no $SSH_USER@$machine.cs.kotnet.kuleuven.be killall $job
+    ssh $SSH_OPTIONS $SSH_USER@$machine.cs.kotnet.kuleuven.be killall $job
 }
 
 function stopAll {
@@ -105,4 +106,18 @@ function stopAll {
                 stopIt $pc java
         done
 
+}
+
+function exp {
+    loadDatabase
+    loadNeededSorcerers 50
+    sleep 10
+    loadGraphLoader $1 
+    sleep 10
+    loadRobustWorkflowsApp
+}
+
+function stopE {
+    stopAll 50
+    stopIt verviers java
 }

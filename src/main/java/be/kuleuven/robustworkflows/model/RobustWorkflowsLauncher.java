@@ -4,19 +4,17 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.math3.random.MersenneTwister;
-import org.apache.commons.math3.random.RandomDataGenerator;
-
 import scala.concurrent.duration.Duration;
+import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.actor.UntypedActorFactory;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.kernel.Bootable;
-import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 
 import com.mongodb.DB;
-import com.mongodb.DBCursor;
 import com.mongodb.MongoClient;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -31,12 +29,11 @@ public class RobustWorkflowsLauncher implements Bootable {
 	private static final String DB_NAME = config.getString("db-name");
 	private static final String DB_USER = config.getString("db-user");
 	private static final String DB_PASS = config.getString("db-pass");
-	private static final Long SEED = 898989l;
+	
+	private static final int CHECK_COMPLETION_RUN_INTERVAL = 5;
 	
 	private final ActorSystem system;
-	private DB db;
 	private MongoClient mongoClient;
-	private InfrastructureStorage storage;
 	
 	public RobustWorkflowsLauncher() {
 		system = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
@@ -55,46 +52,43 @@ public class RobustWorkflowsLauncher implements Bootable {
 	public void startup() {
 		try {
 			mongoClient = new MongoClient(DB_SERVER_IP, DB_SERVER_PORT);
-			db = mongoClient.getDB(DB_NAME);
+			final DB db = mongoClient.getDB(DB_NAME);
 			if ( (!DB_USER.equals("") && !DB_PASS.equals("")) && !db.authenticate(DB_USER, DB_PASS.toCharArray()) ) {
 				throw new RuntimeException("Couldn't authenticate to the Mongodb server");
 			}
+
+			final ActorRef loader = system.actorOf(
+					new Props(
+						new UntypedActorFactory() {
+							private static final long serialVersionUID = 20130926L;
+
+							@Override
+							public Actor create() throws Exception {
+								return new RobustWorkflowsActor(db);
+							}
+						}));
+			
+			system.scheduler().scheduleOnce(Duration.Zero(),
+					new Runnable() {
+						@Override
+						public void run() {
+							loader.tell("Start", system.deadLetters());
+						}
+			}, system.dispatcher());
+			
+			system.scheduler().schedule(Duration.Zero(), Duration.create(CHECK_COMPLETION_RUN_INTERVAL, TimeUnit.SECONDS),
+					new Runnable() {
+						@Override
+							public void run() {
+							loader.tell("CheckExecution", system.deadLetters());
+						}
+			}, system.dispatcher());
+			
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		storage = new InfrastructureStorage(db);
-		sendComposeToAllClientAgents();
 	}
 	
-	private void sendComposeToAllClientAgents() {
-		log.debug("Searching Clients to send Compose Message");
-		DBCursor cursor = storage.getClientAgent().find();
-		String ref = "";
-
-		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED));
-//		int i=0;
-		while (cursor.hasNext()) {	
-			ref = (String) cursor.next().get("address");
-			sendComposeMessage(system.actorFor(ref), random.nextPoisson(10));
-//			i += 2;
-		}
-	}
-	
-	private void sendComposeMessage(final ActorRef ref, long time) {
-		log.debug("Sending ComposeMessage to be executed in : " + time + " s");
-		system.scheduler().scheduleOnce(Duration.create(time, TimeUnit.SECONDS), 
-				new Runnable() {
-
-					@Override
-					public void run() {
-						System.out.println("Enviando Compose Message: " + System.currentTimeMillis());
-						ref.tell("Compose", system.deadLetters());
-					}
-			
-		}, system.dispatcher());		
-	}
-
 	public ActorSystem getSystem() {
 		return system;
 	}
@@ -102,7 +96,6 @@ public class RobustWorkflowsLauncher implements Bootable {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
 		wf.startup();
-		wf.sendComposeToAllClientAgents();
 		Thread.sleep(600000);
 //		Interpreter bsh = new Interpreter(new InputStreamReader(System.in), System.out, System.err, true);
 //		bsh.run();

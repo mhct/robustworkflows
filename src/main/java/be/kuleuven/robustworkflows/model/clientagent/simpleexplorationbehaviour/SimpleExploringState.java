@@ -48,13 +48,21 @@ public class SimpleExploringState extends ClientAgentState {
 			SimpleExplorationResult msg = (SimpleExplorationResult) message;
 			results.add(msg);
 		} else if ("EXPLORATION_TIMEOUT".equals(message)) {
-			finishExploration();
+			SimpleExplorationResult selectedExplorationResult = selectLowerExplorationResult();
+			
+			if (selectedExplorationResult != null) {
+				getClientAgentProxy().setState(SimpleEngagingInServiceComposition.getInstance(getClientAgentProxy(), selectedExplorationResult));
+			} else {
+				//FIXME should not use this persistEvent(String) method anymore...
+				persistEvent("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
+			}
+			
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
 		}
 	}
 
-	private void finishExploration() {
+	private SimpleExplorationResult selectLowerExplorationResult() {
 		Collections.sort(results, new Comparator<SimpleExplorationResult>() {
 
 			@Override
@@ -73,12 +81,14 @@ public class SimpleExploringState extends ClientAgentState {
 			
 		});
 		
+		SimpleExplorationResult selectedExplorationResult = null;
+		
 		if (results.size() >= 1) {
-			getClientAgentProxy().setState(SimpleEngagingInServiceComposition.getInstance(getClientAgentProxy(), results.get(0)));
+			selectedExplorationResult = results.get(0);
 			results.clear();
-		} else {
-			persistEvent("ClientAgent could not find suitable services...");
-		}
+		}			
+		
+		return selectedExplorationResult;
 	}
 	
 	public SimpleExploringState(ClientAgentProxy clientAgentProxy, WorkflowTask workflowTask) {

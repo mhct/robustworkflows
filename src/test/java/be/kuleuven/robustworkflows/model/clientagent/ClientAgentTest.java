@@ -34,37 +34,18 @@ public class ClientAgentTest {
 		ExplorationResult er2 = mock(ExplorationResult.class);
 		when(er2.totalComputationTime()).thenReturn(101l);
 		
-		ExplorationResult selected = evaluateComposition(Lists.newArrayList(er1, er2));
+//		ExplorationResult selected = evaluateComposition(Lists.newArrayList(er1, er2));
 		
 //		assertEquals(er1, selected);
-		System.out.println(selected.totalComputationTime());
+//		System.out.println(selected.totalComputationTime());
 		
 	}
 
 	//TODO added this algorithm here, only to test if it was ok.. it seems so.. 
-	private ExplorationResult evaluateComposition(List<ExplorationResult> replies) {
+//	private ExplorationResult evaluateComposition(List<ExplorationResult> replies) {
 		
-		Collections.sort(replies, new Comparator<ExplorationResult>() {
-
-			@Override
-			public int compare(ExplorationResult o1, ExplorationResult o2) {
-				final long o1Time = o1.totalComputationTime();
-				final long o2Time = o2.totalComputationTime();
-				
-				if (o1Time < o2Time) {
-					return -1;
-				} else if (o2Time > o2Time) {
-					return 1;
-				}
-					
-				return 0;
-			}
-			
-		});
-		
-		assert replies.get(0) != null;
-		return replies.get(0);
-	}
+//		assert replies.get(0) != null;
+//		return replies.get(0);
 
 //	@Test
 //	public void testAddExpirationTimer() throws InterruptedException {

@@ -1,11 +1,8 @@
 package be.kuleuven.robustworkflows.model;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 
-import org.bson.BSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -13,6 +10,7 @@ import org.joda.time.format.DateTimeFormatter;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -31,13 +29,34 @@ public class ModelStorage {
 	private final static String EVENTS_COLLECTION = "model_events";
 	private final static String FACTORY_AGENTS_COLLECTION = "model_factory_agents";
 	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss_SSS");
-	private DB db;
+	
+	private final DB db;
+	private Map<String, Object> extraFields;
 	
 	
 	public ModelStorage(DB db) {
 		this.db = db;
+		extraFields = Maps.newHashMap();
 	}
 
+	public void addField(String key, Object value) {
+		extraFields.put(key, value);
+	}
+	
+	/**
+	 * This method adds extra fields, needed for running multiple experiments, to the persisted object.
+	 * 
+	 * @param coll
+	 * @param obj
+	 */
+	private void insert(DBCollection coll, DBObject obj) {
+		for (Map.Entry<String, Object> e: extraFields.entrySet()) {
+			obj.put(e.getKey(), e.getValue());
+		}
+		
+		coll.insert(obj);
+	}
+	
 	/**
 	 * Persists an event in the database
 	 * 
@@ -48,7 +67,7 @@ public class ModelStorage {
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
 		obj.append("EventType", event);
-		coll.insert(obj);
+		insert(coll, obj);
 	}
 
 	public void persistEvent(EventType eventType, String event) {
@@ -56,13 +75,13 @@ public class ModelStorage {
 		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
 		obj.append("EventType", eventType.toString());
 		obj.append(eventType.toString(), event);
-		coll.insert(obj);
+		insert(coll, obj);
 	}
 	
 	public void persistEvent(DBObject obj) {
 		obj.put("time_block", dtf.print(new DateTime()));
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
-		coll.insert(obj);
+		insert(coll, obj);
 	}
 
 	public void registerFactoryAgent(String path, ServiceType serviceType) {
@@ -70,7 +89,7 @@ public class ModelStorage {
 		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
 		obj.append("FactoryAgentPath", path);
 		obj.append("ServiceType", serviceType.toString());
-		coll.insert(obj);
+		insert(coll, obj);
 	}
 
 	public List<String> getFactoryAgents(ServiceType st) {
@@ -92,6 +111,24 @@ public class ModelStorage {
 		BasicDBObject query = new BasicDBObject("FactoryAgentPath", path);
 		
 		coll.remove(query);
+	}
+	
+	public boolean finishedAllCompositions(String run) {
+		System.out.println("finishedComp called run:" + run );
+		
+		final DBCollection coll = db.getCollection(EVENTS_COLLECTION);
+		final BasicDBObject query = new BasicDBObject("run", run);
+		query.append("EventType", "SERVICE_COMPOSITION_SUMMARY");
+		
+		final int clientAgents = db.getCollection("clientAgents").find().size();
+		final int completedCompositions = coll.find(query).size();
+		
+		if (clientAgents == completedCompositions) {
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 	
 }

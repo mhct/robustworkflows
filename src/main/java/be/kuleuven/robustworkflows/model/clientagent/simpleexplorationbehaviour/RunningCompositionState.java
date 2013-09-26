@@ -16,26 +16,33 @@ public class RunningCompositionState extends ClientAgentState {
 	private static final String REAL_TIME_TO_SERVE_COMPOSITION = "REAL_TIME_TO_SERVE_COMPOSITION";
 	
 	private static ClientAgentState instance;
-	private Iterator<WorkflowTask> itr;
+	private Iterator<WorkflowTask> tasksIterator;
 	private long startTimeSelectedComposition;
-	private String servicesEngaged = "";
-
+	private boolean beginingComposition = true;
+	
 	private RunningCompositionState(ClientAgentProxy clientAgentProxy) {
 		super(clientAgentProxy);
-		itr = getClientAgentProxy().getWorkflow().iterator();
+		tasksIterator = getClientAgentProxy().getWorkflow().iterator();
 	}
 
 	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (RUN.equals(message)) {
-			startTimeSelectedComposition = System.currentTimeMillis();
+			if (beginingComposition == true) {
+				startTimeSelectedComposition = System.currentTimeMillis();
+			}
 			
-			if (itr.hasNext()) {
-//				servicesEngaged += ";" + task.getAgent().path().name();
-				setState(SimpleExploringState.getInstance(getClientAgentProxy(), itr.next()));
+			if (tasksIterator.hasNext()) {
+				beginingComposition = false;
+				WorkflowTask task = tasksIterator.next();
+				setState(SimpleExploringState.getInstance(getClientAgentProxy(), task));
 			}
 			else {
-				persistEvent(summaryEngagement());
+				beginingComposition = true;
+				long realTimeToServeComposition = System.currentTimeMillis() - startTimeSelectedComposition;
+				ServiceCompositionData serviceCompositionData = ServiceCompositionData.getInstance(getClientAgentProxy().clientAgentName(), getRequestsData(), realTimeToServeComposition);
+				clearRequests();
+				persistEvent(summaryEngagement(serviceCompositionData));
 				setState(WaitingTaskState.getInstance(getClientAgentProxy()));
 			}
 		} else {
@@ -43,6 +50,7 @@ public class RunningCompositionState extends ClientAgentState {
 		}
 	}
 
+	
 	/**
 	 * Creates a summary of the finished in a format accepted by the ModelStorage
 	obj.append(REAL_TIME_TO_SERVE_REQUEST, String.valueOf(req.getServiceRequest().totalTimeToServeRequest()));
@@ -50,14 +58,14 @@ public class RunningCompositionState extends ClientAgentState {
 	 * @param req
 	 * @return
 	 */
-	private BasicDBObject summaryEngagement() {
+	private BasicDBObject summaryEngagement(ServiceCompositionData serviceCompositionData) {
 		BasicDBObject obj = new BasicDBObject();
 		obj.append("EventType", EventType.SERVICE_COMPOSITION_SUMMARY.toString());
 		
-		obj.append(EXPECTED_TIME_TO_SERVE_COMPOSITION, String.valueOf(getClientAgentProxy().getWorkflow().totalComputationTime())); 
-		obj.append(REAL_TIME_TO_SERVE_COMPOSITION, String.valueOf(System.currentTimeMillis() - startTimeSelectedComposition));
-		obj.append("CLIENT_AGENT", getClientAgentProxy().self().path().name());
-		obj.append("SERVICES_ENGAGED", servicesEngaged);
+		obj.append(EXPECTED_TIME_TO_SERVE_COMPOSITION, serviceCompositionData.getExpectedTimeToServeComposition()); 
+		obj.append(REAL_TIME_TO_SERVE_COMPOSITION, serviceCompositionData.getRealTimeToServeComposition());
+		obj.append("CLIENT_AGENT", serviceCompositionData.getClientAgentName());
+		obj.append("SERVICES_ENGAGED", serviceCompositionData.getServicesEngaged());
 		
 		return obj;
 	}

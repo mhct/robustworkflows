@@ -24,7 +24,6 @@ public class ExperimentLauncher {
 		Thread.sleep(10000);
 		
 		robustWorkflows.startup();
-		robustWorkflows.sendComposeToAllClientAgents();
 		Thread.sleep(10000);
 		
 		System.in.read();
