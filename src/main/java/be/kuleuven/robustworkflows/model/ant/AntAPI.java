@@ -8,12 +8,12 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 import be.kuleuven.robustworkflows.model.ModelStorage;
-import be.kuleuven.robustworkflows.model.clientagent.ExplorationBehaviorFactory;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
+import be.kuleuven.robustworkflows.model.clientagent.ExplorationBehaviorFactory;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
-import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
 import com.google.common.collect.Lists;
+import com.mongodb.DB;
 
 /**
  * API to interact with Ants
@@ -24,32 +24,31 @@ import com.google.common.collect.Lists;
 public class AntAPI {
 	private List<ActorRef> explorationAnts;
 	private ActorContext context;
-	private final ModelStorage modelStorage;
 	private final ActorRef master;
 	private ExplorationBehaviorFactory behaviorFactory;
+	private final DB db;
 	
-	private AntAPI(ExplorationBehaviorFactory behaviorFactory, ActorRef master, ActorContext context, ModelStorage modelStorage) {
+	private AntAPI(ExplorationBehaviorFactory behaviorFactory, ActorRef master, ActorContext context, DB db) {
 		this.behaviorFactory = behaviorFactory;
 		this.master = master;
 		this.context = context;
-		this.modelStorage = modelStorage;
+		this.db = db;
 		this.explorationAnts = Lists.newArrayList();
 	}
 	
 	public void createExplorationAnt(final Workflow workflow, final long explorationTimeout) {
+		
 		explorationAnts.add(context.actorOf(new Props(new UntypedActorFactory() {
 			
 			private static final long serialVersionUID = 2013021401L;
 
 			@Override
 			public Actor create() throws Exception {
-//				return ExplorationAnt.getInstance(master, modelStorage, workflow, explorationTimeout);
-				return behaviorFactory.createExplorationAnt(master, modelStorage, workflow, explorationTimeout);
+				return behaviorFactory.createExplorationAnt(master, ModelStorage.getInstance(db), workflow, explorationTimeout);
 			}
 
 		}), "explorationAnt" + explorationAnts.size()));
 		
-//		startExplorationAnts();
 	}
 
 	private void startExplorationAnts() {
@@ -58,8 +57,8 @@ public class AntAPI {
 		}
 	}
 	
-	public static AntAPI getInstance(ExplorationBehaviorFactory behaviorFactory, ActorRef master, ActorContext context, ModelStorage storage) {
-		return new AntAPI(behaviorFactory, master, context, storage);
+	public static AntAPI getInstance(ExplorationBehaviorFactory behaviorFactory, ActorRef master, ActorContext context, DB db) {
+		return new AntAPI(behaviorFactory, master, context, db);
 	}
 
 	public int explorationAnts() {

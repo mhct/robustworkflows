@@ -18,6 +18,7 @@ import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
+import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 import com.google.common.collect.Lists;
@@ -49,9 +50,9 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		
 		this.neighbors = neighbors;
 		this.storage = new InfrastructureStorage(db);
-		this.modelStorage = new ModelStorage(db);
+		this.modelStorage = ModelStorage.getInstance(db);
 		this.currentState = behaviorFactory.createWaitingState((ClientAgentProxy) this);
-		this.antApi = AntAPI.getInstance(behaviorFactory, self(), context(), modelStorage);
+		this.antApi = AntAPI.getInstance(behaviorFactory, self(), context(), db);
 		this.attributes = attributes;
 		this.workflow = Workflow.getLinear1();
 		requestsExecutionData = new ArrayList<RequestExecutionData>();
@@ -64,11 +65,22 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	}
 	
 	@Override
+	public void postStop() {
+		log.debug("ClientAgent stoped");
+	}
+	
+	@Override
 	public void onReceive(Object message) throws Exception {
 
 		if(ActorRef.class.isInstance(message)) {
 			log.debug("\n\n\nAdding neighbor to neighborlist" + message);
 			neighbors.add((ActorRef) message);
+			
+		} else if (StartExperimentRun.class.isInstance(message)) {
+			StartExperimentRun msg = (StartExperimentRun) message;
+			
+			modelStorage.addField("run", msg.getRun());
+			getAntAPI().tellAll(msg);
 			
 		} else if (EventType.NeihgborListRequest.equals(message)){
 			log.debug(self() + " got " + message);

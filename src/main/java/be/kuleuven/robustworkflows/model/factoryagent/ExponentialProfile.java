@@ -9,9 +9,11 @@ public class ExponentialProfile extends ComputationalResourceProfile implements 
 	
 	private static final long serialVersionUID = 2013052301L;
 	private RandomDataGenerator random;
+	private int seed;
 
 	protected ExponentialProfile(int seed) {
 		super(null);
+		this.seed = seed;
 		this.random = new RandomDataGenerator(new MersenneTwister(seed));
 	}
 
@@ -36,6 +38,10 @@ public class ExponentialProfile extends ComputationalResourceProfile implements 
 			return false;
 		return true;
 	}
-	
-	
+
+	@Override
+	public void reset() {
+		random = new RandomDataGenerator(new MersenneTwister(seed));
+	}
+
 }

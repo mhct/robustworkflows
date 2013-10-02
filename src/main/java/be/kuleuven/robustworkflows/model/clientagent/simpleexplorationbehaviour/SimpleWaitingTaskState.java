@@ -3,14 +3,13 @@ package be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
-import be.kuleuven.robustworkflows.model.messages.Compose;
 
 
-public class WaitingTaskState extends ClientAgentState {
+public class SimpleWaitingTaskState extends ClientAgentState {
 
 //	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-	private WaitingTaskState(ClientAgentProxy clientAgentProxy) {
+	private SimpleWaitingTaskState(ClientAgentProxy clientAgentProxy) {
 		super(clientAgentProxy);
 	}
 
@@ -19,17 +18,15 @@ public class WaitingTaskState extends ClientAgentState {
 		if (RUN.equals(message)) {
 			persistEvent("WaitingTaskState: " + RUN);
 			
-		} else if (Compose.class.isInstance(message)) {
-			persistEvent("Received a compose message");
-			Compose msg = (Compose) message;
-			getClientAgentProxy().getModelStorage().addField("run", msg.getRun());
+		} else if (COMPOSE.equals(message)) {
 			setState(RunningCompositionState.getInstance(getClientAgentProxy()));
+			
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
 		}
 	}
 
 	public static ClientAgentState getInstance(ClientAgentProxy clientAgentProxy) {
-		return new WaitingTaskState(clientAgentProxy);
+		return new SimpleWaitingTaskState(clientAgentProxy);
 	}
 }

@@ -38,12 +38,12 @@ public class RunningCompositionState extends ClientAgentState {
 				setState(SimpleExploringState.getInstance(getClientAgentProxy(), task));
 			}
 			else {
-				beginingComposition = true;
 				long realTimeToServeComposition = System.currentTimeMillis() - startTimeSelectedComposition;
 				ServiceCompositionData serviceCompositionData = ServiceCompositionData.getInstance(getClientAgentProxy().clientAgentName(), getRequestsData(), realTimeToServeComposition);
 				clearRequests();
+				beginingComposition = true;
 				persistEvent(summaryEngagement(serviceCompositionData));
-				setState(WaitingTaskState.getInstance(getClientAgentProxy()));
+				setState(SimpleWaitingTaskState.getInstance(getClientAgentProxy()));
 			}
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
@@ -71,11 +71,14 @@ public class RunningCompositionState extends ClientAgentState {
 	}
 	
 	public static ClientAgentState getInstance(ClientAgentProxy clientAgentProxy) {
+		instance = new RunningCompositionState(clientAgentProxy);
+		return instance;
+	}
+	
+	public static ClientAgentState getActiveInstance(ClientAgentProxy clientAgentProxy) {
 		if (instance == null) {
-			instance = new RunningCompositionState(clientAgentProxy);
-			return instance;
-		}
-		else {
+			throw new RuntimeException("RunningCompositionState is null, but it should not be null");
+		} else {
 			return instance;
 		}
 	}

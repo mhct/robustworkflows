@@ -20,7 +20,7 @@ public class FixedProcessingTimeProfile extends ComputationalResourceProfile imp
 	private static final long serialVersionUID = 20130613L;
 
 	private final long processingTimePerRequest;
-	private final Queue<ReceivedServiceRequest> serviceRequests;
+	private Queue<ReceivedServiceRequest> serviceRequests;
 	
 	public FixedProcessingTimeProfile(int processingTimePerRequest, ServiceType serviceType) {
 		super(serviceType);
@@ -62,6 +62,11 @@ public class FixedProcessingTimeProfile extends ComputationalResourceProfile imp
 	public boolean equals(Object obj) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void reset() {
+		serviceRequests = new LinkedList<ReceivedServiceRequest>();		
 	}
 
 }

@@ -2,12 +2,12 @@ package be.kuleuven.robustworkflows.model.messages;
 
 import java.io.Serializable;
 
-public class Compose implements Serializable {
+public class StartExperimentRun implements Serializable {
 
 	private static final long serialVersionUID = 20130926L;
 	private String run;
 
-	public Compose(String run) {
+	public StartExperimentRun(String run) {
 		this.run = run;
 	}
 
@@ -15,7 +15,7 @@ public class Compose implements Serializable {
 		return run;
 	}
 	
-	public static Compose getInstance(String run) {
-		return new Compose(run);
+	public static StartExperimentRun getInstance(String run) {
+		return new StartExperimentRun(run);
 	}
 }

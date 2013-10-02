@@ -58,7 +58,7 @@ public class SimpleEngagingInServiceComposition extends ClientAgentState {
 			RequestExecutionData requestExecutionData = RequestExecutionData.getInstance(getClientAgentProxy().clientAgentName(), msg.factoryAgentName(), expectedTimeToExecuteTask, realTimeToServeRequest);
 			addRequestExecutionData(requestExecutionData);
 			persistEvent(summaryServiceRequest(requestExecutionData));
-			setState(RunningCompositionState.getInstance(getClientAgentProxy()));
+			setState(RunningCompositionState.getActiveInstance(getClientAgentProxy()));
 			
 		} else {
 			getClientAgentProxy().unhandledMessage(message);
@@ -87,7 +87,7 @@ public class SimpleEngagingInServiceComposition extends ClientAgentState {
 		obj.append(EXPECTED_TIME_TO_SERVE_REQUEST, requestData.getExpectedTimeToExecuteTask()); 
 		obj.append(REAL_TIME_TO_SERVE_REQUEST, requestData.getRealTimeToServeRequest());
 		obj.append("FACTORY_AGENT", requestData.getFactoryAgentName());
-		obj.append("CLIENT_AGENT", requestData.getClientAgentName());
+		obj.append("CLIENT_AGENT---------------------------------------------", requestData.getClientAgentName());
 		return obj;
 	}
 

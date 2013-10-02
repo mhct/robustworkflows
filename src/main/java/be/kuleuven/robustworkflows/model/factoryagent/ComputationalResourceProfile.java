@@ -89,8 +89,7 @@ public abstract class ComputationalResourceProfile implements Serializable {
 		return false;
 	}
 
-
-
+	public abstract void reset();
 
 }
 

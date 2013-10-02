@@ -16,6 +16,7 @@ import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
+import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
@@ -30,6 +31,7 @@ import be.kuleuven.robustworkflows.model.messages.Workflow;
  * - ''' ExplorationReply '''
  * - ''' ExploringStateTimeout '''
  * - ''' ExplorationFinished '''
+ * - ''' Compose ''' tell the explorationAnt to mark all its events as bellonging to another RUN of the emulation
  * 
  * === Outbound messages ===
  * - ''' SimpleExplorationResult '''
@@ -59,12 +61,9 @@ public class SimpleExplorationAnt extends UntypedActor {
 
 			replies.add(new ExplorationReplyWrapper(sender(), qos));
 			
-//			waitForReply--;
-//			if (waitForReply == 0) {
-//				addExpirationTimer(0, EventType.ExplorationFinished);
-//			}
-			
-			
+		} else if (StartExperimentRun.class.isInstance(message)) {
+			StartExperimentRun msg = (StartExperimentRun) message;
+			modelStorage.addField("run", msg.getRun());
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
 			modelStorage.persistEvent("ExpAnt Timeout"); //add complete summary of the state of explorationant
 			SimpleExplorationResult bla = bestReply();

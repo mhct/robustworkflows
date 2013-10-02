@@ -7,7 +7,8 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 
 import scala.concurrent.duration.Duration;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
-import be.kuleuven.robustworkflows.model.messages.Compose;
+import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
+import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
@@ -31,7 +32,7 @@ import akka.actor.UntypedActor;
 public class RobustWorkflowsActor extends UntypedActor {
 
 	private static final int AVERAGE_ARRIVAL_INTERVAL = 10;
-	private static final int NUMBER_OF_RUNS = 30;
+	private static final int NUMBER_OF_RUNS = 1;
 	private static final Long SEED = 898989l;
 	
 	private final ModelStorage modelStorage;
@@ -39,7 +40,7 @@ public class RobustWorkflowsActor extends UntypedActor {
 	private int currentRun;
 	
 	public RobustWorkflowsActor(DB db) {
-		this.modelStorage = new ModelStorage(db);
+		this.modelStorage = ModelStorage.getInstance(db);
 		this.infrastructureStorage = new InfrastructureStorage(db);
 		currentRun = 0;
 	}
@@ -48,11 +49,14 @@ public class RobustWorkflowsActor extends UntypedActor {
 	public void onReceive(Object message) throws Exception {
 		
 		if ("Start".equals(message)) {
+//			sendComposeToAllClientAgents();
+			startNewExperimentRun();
 			sendComposeToAllClientAgents();
 		} else if ("CheckExecution".equals(message)) {
 			System.out.println("CheckExecution received");
 			if (modelStorage.finishedAllCompositions(String.valueOf(currentRun-1))) {
-				System.out.println("FINISHED ALL COMP.. starting new run");
+				System.out.println("FINISHED ALL COMP");
+				startNewExperimentRun();
 				sendComposeToAllClientAgents();
 			} else {
 				//do nothing
@@ -62,40 +66,42 @@ public class RobustWorkflowsActor extends UntypedActor {
 		}
 	}
 	
-	private void sendComposeToAllClientAgents() {
-//		log.debug("Searching Clients to send Compose Message");
-//		if (true) {
-//			DBObject obj = storage.getClientAgent("389");
-//			if (obj == null) {
-//				System.out.println("Could not find ClientAgent");
-//			} else {
-//				sendComposeMessage(system.actorFor((String) obj.get("actorAddress")), 1);
-//			}
-//			return;
-//		}
-		String ref = "";
+	private void startNewExperimentRun() {
+		System.out.println("Starting new Experiment RUN");
 
-		if (currentRun <= NUMBER_OF_RUNS) {
-			RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED*currentRun));
-			
-			DBCursor cursor = infrastructureStorage.getClientAgent().find();
-			while (cursor.hasNext()) {	
-				ref = (String) cursor.next().get("actorAddress");
-				sendComposeMessage(getContext().system().actorFor(ref), random.nextPoisson(AVERAGE_ARRIVAL_INTERVAL), String.valueOf(currentRun));
-			}
-			currentRun++;
+		if (currentRun == NUMBER_OF_RUNS) { 
+			return; //end soft execution
+		}
+		
+		DBCursor cursor = infrastructureStorage.getActors().find();
+		
+		while (cursor.hasNext()) {	
+			String actorAddress = (String) cursor.next().get("actorAddress");
+			ActorRef ref = getContext().system().actorFor(actorAddress);
+			ref.tell(StartExperimentRun.getInstance(String.valueOf(currentRun)), self());
+		}
+		currentRun++;
+		
+	}
+	
+	private void sendComposeToAllClientAgents() {
+		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED*currentRun));
+		
+		DBCursor cursor = infrastructureStorage.getClientAgent().find();
+		while (cursor.hasNext()) {	
+			String ref = (String) cursor.next().get("actorAddress");
+			scheduleComposeMessage(getContext().system().actorFor(ref), random.nextPoisson(AVERAGE_ARRIVAL_INTERVAL), String.valueOf(currentRun));
 		}
 	}
 	
-	private void sendComposeMessage(final ActorRef ref, final long time, final String run) {
-//		log.debug("Sending ComposeMessage to be executed in : " + time + " s");
+	private void scheduleComposeMessage(final ActorRef ref, final long time, final String run) {
 		getContext().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.SECONDS), 
 				new Runnable() {
 
 					@Override
 					public void run() {
 						System.out.println("Enviando Compose Message: " + System.currentTimeMillis());
-						ref.tell(Compose.getInstance(run), self());
+						ref.tell(ClientAgentState.COMPOSE, self());
 					}
 			
 		}, getContext().system().dispatcher());		

@@ -10,6 +10,7 @@ import com.mongodb.DBObject;
 public abstract class ClientAgentState {
 	
 	public static final String RUN = "run";
+	public static final String COMPOSE = "compose";
 	
 	private ClientAgentProxy clientAgentProxy;
 

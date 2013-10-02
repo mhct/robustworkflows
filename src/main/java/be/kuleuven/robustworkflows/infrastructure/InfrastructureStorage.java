@@ -30,6 +30,7 @@ public class InfrastructureStorage {
 		return db.getCollection("sorcerers");
 	}
 	
+	//TODO should return collection here, or a cursor?
 	public DBCollection getActors() {
 		return db.getCollection("actors");
 	}

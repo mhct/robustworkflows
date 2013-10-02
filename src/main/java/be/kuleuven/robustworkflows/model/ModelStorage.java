@@ -34,9 +34,10 @@ public class ModelStorage {
 	private Map<String, Object> extraFields;
 	
 	
-	public ModelStorage(DB db) {
+	private ModelStorage(DB db) {
 		this.db = db;
 		extraFields = Maps.newHashMap();
+		System.out.println("mark");
 	}
 
 	public void addField(String key, Object value) {
@@ -50,8 +51,13 @@ public class ModelStorage {
 	 * @param obj
 	 */
 	private void insert(DBCollection coll, DBObject obj) {
+		String val = (String) obj.get("EventType");
+		if("SERVICE_REQUEST_SUMMARY".equals(val)) {
+			System.out.println("DO");
+		}
 		for (Map.Entry<String, Object> e: extraFields.entrySet()) {
 			obj.put(e.getKey(), e.getValue());
+			
 		}
 		
 		coll.insert(obj);
@@ -114,7 +120,7 @@ public class ModelStorage {
 	}
 	
 	public boolean finishedAllCompositions(String run) {
-		System.out.println("finishedComp called run:" + run );
+		System.out.println("Checking run:" + run );
 		
 		final DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		final BasicDBObject query = new BasicDBObject("run", run);
@@ -123,12 +129,16 @@ public class ModelStorage {
 		final int clientAgents = db.getCollection("clientAgents").find().size();
 		final int completedCompositions = coll.find(query).size();
 		
-		if (clientAgents == completedCompositions) {
+		if (completedCompositions > 0 && clientAgents == completedCompositions) {
 			return true;
 		} else {
 			return false;
 		}
 		
+	}
+
+	public static ModelStorage getInstance(DB db) {
+		return new ModelStorage(db);
 	}
 	
 }

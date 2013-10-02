@@ -11,6 +11,7 @@ import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
+import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
@@ -57,10 +58,10 @@ public class FactoryAgent extends UntypedActor {
 		log.info("FactoryAgent started");
 		
 		this.storage = new InfrastructureStorage(db);
-		this.modelStorage = new ModelStorage(db);
+		this.modelStorage = ModelStorage.getInstance(db);
+		modelStorage.addField("run", 0);
 		this.neigbhors = neighbors;
-		this.computationalProfile = computationalProfile;
-		
+		this.computationalProfile = computationalProfile; //TODO make a prototype of the computational profile...
 	}
 
 	
@@ -75,6 +76,10 @@ public class FactoryAgent extends UntypedActor {
 			log.debug("Adding neighbor to neighborlist" + message);
 			neigbhors.add((ActorRef) message);
 			
+		} else if (StartExperimentRun.class.isInstance(message)) {
+			StartExperimentRun msg = (StartExperimentRun) message;
+			modelStorage.addField("run", msg.getRun());
+			computationalProfile.reset();
 		} else if (ExplorationRequest.class.isInstance(message)) {
 			ExplorationRequest msg = (ExplorationRequest) message;
 			//TODO QoSData should be created by computationalProfile, since it has all the needed data to create it.

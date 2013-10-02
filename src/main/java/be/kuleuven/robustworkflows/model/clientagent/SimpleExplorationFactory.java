@@ -6,7 +6,7 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.SimpleExplorationAnt;
-import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.WaitingTaskState;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.SimpleWaitingTaskState;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 public class SimpleExplorationFactory extends
@@ -16,7 +16,7 @@ public class SimpleExplorationFactory extends
 
 	@Override
 	public ClientAgentState createWaitingState(ClientAgentProxy clientAgentProxy) {
-		return WaitingTaskState.getInstance(clientAgentProxy);
+		return SimpleWaitingTaskState.getInstance(clientAgentProxy);
 	}
 
 	@Override
