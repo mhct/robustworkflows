@@ -44,6 +44,10 @@ public class ModelStorage {
 		extraFields.put(key, value);
 	}
 	
+	public Object getField(String key) {
+		return extraFields.get(key);
+	}
+	
 	/**
 	 * This method adds extra fields, needed for running multiple experiments, to the persisted object.
 	 * 

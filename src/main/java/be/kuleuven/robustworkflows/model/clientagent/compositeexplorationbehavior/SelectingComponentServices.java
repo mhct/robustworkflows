@@ -36,4 +36,10 @@ public class SelectingComponentServices extends ClientAgentState {
 		return new SelectingComponentServices(clientAgentProxy, replies);
 	}
 
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

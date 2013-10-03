@@ -32,7 +32,7 @@ import akka.actor.UntypedActor;
 public class RobustWorkflowsActor extends UntypedActor {
 
 	private static final int AVERAGE_ARRIVAL_INTERVAL = 10;
-	private static final int NUMBER_OF_RUNS = 1;
+	private static final int NUMBER_OF_RUNS = 30;
 	private static final Long SEED = 898989l;
 	
 	private final ModelStorage modelStorage;
@@ -51,13 +51,11 @@ public class RobustWorkflowsActor extends UntypedActor {
 		if ("Start".equals(message)) {
 //			sendComposeToAllClientAgents();
 			startNewExperimentRun();
-			sendComposeToAllClientAgents();
 		} else if ("CheckExecution".equals(message)) {
 			System.out.println("CheckExecution received");
-			if (modelStorage.finishedAllCompositions(String.valueOf(currentRun-1))) {
+			if (modelStorage.finishedAllCompositions(String.valueOf(previousRun()))) {
 				System.out.println("FINISHED ALL COMP");
 				startNewExperimentRun();
-				sendComposeToAllClientAgents();
 			} else {
 				//do nothing
 			}
@@ -66,12 +64,20 @@ public class RobustWorkflowsActor extends UntypedActor {
 		}
 	}
 	
+	private int previousRun() {
+		if (currentRun == 0) {
+			return 0;
+		} else {
+			return currentRun - 1;
+		}
+	}
+	
 	private void startNewExperimentRun() {
-		System.out.println("Starting new Experiment RUN");
 
-		if (currentRun == NUMBER_OF_RUNS) { 
+		if (currentRun == NUMBER_OF_RUNS-1) { 
 			return; //end soft execution
 		}
+		System.out.println("Starting new Experiment RUN");
 		
 		DBCursor cursor = infrastructureStorage.getActors().find();
 		
@@ -80,8 +86,9 @@ public class RobustWorkflowsActor extends UntypedActor {
 			ActorRef ref = getContext().system().actorFor(actorAddress);
 			ref.tell(StartExperimentRun.getInstance(String.valueOf(currentRun)), self());
 		}
-		currentRun++;
+		sendComposeToAllClientAgents();
 		
+		currentRun++;
 	}
 	
 	private void sendComposeToAllClientAgents() {

@@ -27,4 +27,10 @@ public class WaitingTaskState extends ClientAgentState {
 	public static ClientAgentState getInstance(ClientAgentProxy clientAgentProxy) {
 		return new WaitingTaskState(clientAgentProxy);
 	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
 }

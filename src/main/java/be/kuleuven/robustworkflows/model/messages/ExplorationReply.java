@@ -62,4 +62,40 @@ public class ExplorationReply implements Serializable {
 		
 		return obj;
 	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ (int) (computationTime ^ (computationTime >>> 32));
+		result = prime
+				* result
+				+ ((requestExploration == null) ? 0 : requestExploration
+						.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ExplorationReply other = (ExplorationReply) obj;
+		if (computationTime != other.computationTime)
+			return false;
+		if (requestExploration == null) {
+			if (other.requestExploration != null)
+				return false;
+		} else if (!requestExploration.equals(other.requestExploration))
+			return false;
+		return true;
+	}
+	
+	
 }

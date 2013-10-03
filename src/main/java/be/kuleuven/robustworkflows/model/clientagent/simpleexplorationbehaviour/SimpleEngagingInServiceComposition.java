@@ -20,9 +20,10 @@ import com.mongodb.BasicDBObject;
  * TODO check ExplorationResult
  * 
  * === Inbound Messages ===
+ * - ''' ServiceRequestCompleted '''
  * 
  * === Outbound Messages ===
- * 
+ * - ''' ServiceRequest '''
  * 
  * @author mario
  *
@@ -47,18 +48,20 @@ public class SimpleEngagingInServiceComposition extends ClientAgentState {
 	}
 
 	@Override
+	public void run() {
+		engageWithServiceProvider();
+	}
+	
+	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
-		if (RUN.equals(message)) {
-			engageWithServiceProvider();
-		} 
-		else if (ServiceRequestCompleted.class.isInstance(message)){
+		if (ServiceRequestCompleted.class.isInstance(message)){
 			realTimeToServeRequest = System.currentTimeMillis() - startTimeCurrentTask;
 			final ServiceRequestCompleted msg = (ServiceRequestCompleted) message;
 			
 			RequestExecutionData requestExecutionData = RequestExecutionData.getInstance(getClientAgentProxy().clientAgentName(), msg.factoryAgentName(), expectedTimeToExecuteTask, realTimeToServeRequest);
 			addRequestExecutionData(requestExecutionData);
 			persistEvent(summaryServiceRequest(requestExecutionData));
-			setState(RunningCompositionState.getActiveInstance(getClientAgentProxy()));
+			setState(getClientAgentProxy().getHackingState());
 			
 		} else {
 			getClientAgentProxy().unhandledMessage(message);

@@ -17,12 +17,11 @@ import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
  * 
  *
  * === Inbound Messages ===
- * - ''' RUN '''
  * - ''' SimpleExplorationResult ''' the best possible Agent to be engaged
  * - ''' EXPLORATION_TIMEOUT '''
  * 
  * === Outbound Messages ===
- * - ''' ExploreService '''
+ * - ''' ExploreService ''' tell ExplorationAnts to explore the environment, for services of the required WorkflowTask Type
  * 
  * @author mario
  *
@@ -34,27 +33,25 @@ public class SimpleExploringState extends ClientAgentState {
 	private List<SimpleExplorationResult> results = new ArrayList<SimpleExplorationResult>();
 
 	@Override
+	public void run() {
+		getClientAgentProxy().getAntAPI().tellAll(ExploreService.type(workflowTask.getType()));
+		getClientAgentProxy().addExpirationTimer(getClientAgentProxy().getAttributes().getExplorationStateTimeout(), SimpleExploringState.EXPLORATION_TIMEOUT);
+	}
+	
+	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
-		if (RUN.equals(message)) {
-			if (getClientAgentProxy().getAntAPI().explorationAnts() != 1) {
-				getClientAgentProxy().getAntAPI().createExplorationAnt(null, getClientAgentProxy().getAttributes().getAntExplorationTimeout());
-			}
-
-			getClientAgentProxy().getAntAPI().explore();
-			getClientAgentProxy().getAntAPI().tellAll(ExploreService.type(workflowTask.getType()));
-			getClientAgentProxy().addExpirationTimer(getClientAgentProxy().getAttributes().getExplorationStateTimeout(), SimpleExploringState.EXPLORATION_TIMEOUT);
-			
-		} else if (SimpleExplorationResult.class.isInstance(message)) {
+		if (SimpleExplorationResult.class.isInstance(message)) {
 			SimpleExplorationResult msg = (SimpleExplorationResult) message;
 			results.add(msg);
 		} else if ("EXPLORATION_TIMEOUT".equals(message)) {
 			SimpleExplorationResult selectedExplorationResult = selectLowerExplorationResult();
 			
-			if (selectedExplorationResult != null) {
+			if (selectedExplorationResult != null && !selectedExplorationResult.isEmpty()) {
 				getClientAgentProxy().setState(SimpleEngagingInServiceComposition.getInstance(getClientAgentProxy(), selectedExplorationResult));
 			} else {
 				//FIXME should not use this persistEvent(String) method anymore...
 				persistEvent("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
+				//TODO go back to RunningCompositionState
 			}
 			
 		} else {

@@ -120,4 +120,10 @@ public class EngagingInServiceComposition extends ClientAgentState {
 		return new EngagingInServiceComposition(clientAgentProxy, selected);
 	}
 
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

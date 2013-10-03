@@ -42,14 +42,19 @@ public class SimpleExplorationAnt extends UntypedActor {
 
 	private final ActorRef master;
 	private final ModelStorage modelStorage;
-	private int waitForReply = 0;
-	private final RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister());
+	private RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister());
 	private List<ExplorationReplyWrapper> replies = new ArrayList<ExplorationReplyWrapper>();
 	private long explorationTimeout;
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
-		if (ExploreService.class.isInstance(message)) {
+		if (StartExperimentRun.class.isInstance(message)) {
+			StartExperimentRun msg = (StartExperimentRun) message;
+			modelStorage.addField("run", msg.getRun());
+			random = new RandomDataGenerator(new MersenneTwister());
+			replies = new ArrayList<ExplorationReplyWrapper>();
+			
+		} else if (ExploreService.class.isInstance(message)) {
 			addExpirationTimer(explorationTimeout, EventType.ExploringStateTimeout);
 			ExploreService msg = (ExploreService) message;
 			
@@ -61,9 +66,6 @@ public class SimpleExplorationAnt extends UntypedActor {
 
 			replies.add(new ExplorationReplyWrapper(sender(), qos));
 			
-		} else if (StartExperimentRun.class.isInstance(message)) {
-			StartExperimentRun msg = (StartExperimentRun) message;
-			modelStorage.addField("run", msg.getRun());
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
 			modelStorage.persistEvent("ExpAnt Timeout"); //add complete summary of the state of explorationant
 			SimpleExplorationResult bla = bestReply();
@@ -118,7 +120,6 @@ public class SimpleExplorationAnt extends UntypedActor {
 				ActorRef agent = context().actorFor(agentPath);
 				if (agent != null) {
 					agent.tell(ExplorationRequest.getInstance(0, serviceType, 10, self(), master.path().name()), self());
-					waitForReply ++;
 				}
 			}
 		}

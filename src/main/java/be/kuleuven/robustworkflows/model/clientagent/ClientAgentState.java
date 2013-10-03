@@ -55,4 +55,7 @@ public abstract class ClientAgentState {
 	protected void addExpirationTimer(long time, String message) {
 		clientAgentProxy.addExpirationTimer(time, message);
 	}
+
+	public abstract void run();
+	
 }

@@ -41,4 +41,12 @@ public class SimpleExplorationResult implements Serializable {
 		return new SimpleExplorationResult(actor, computationTime, serviceType);
 	}
 
+	public boolean isEmpty() {
+		if (computationTime != 0 && actor != null && serviceType != null) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 }

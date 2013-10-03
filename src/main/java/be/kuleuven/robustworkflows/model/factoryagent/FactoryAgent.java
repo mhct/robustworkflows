@@ -26,6 +26,7 @@ import com.mongodb.DBObject;
 /**
  * Provides computational services to any clients
  * version 0.1 doesn't have any capacity constraints, only a particular Average computational time
+ * 
  * @author mario
  *
  */
@@ -59,11 +60,23 @@ public class FactoryAgent extends UntypedActor {
 		
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = ModelStorage.getInstance(db);
-		modelStorage.addField("run", 0);
 		this.neigbhors = neighbors;
 		this.computationalProfile = computationalProfile; //TODO make a prototype of the computational profile...
 	}
 
+	/**
+	 * Tests if the agent is participating in the execution of an experiment
+	 * TODO, this information does not really belong to the model, but to the infrastructure... anyway...
+	 * 
+	 * @return
+	 */
+	public boolean isRunningExperiment() {
+		if (modelStorage.getField("run") != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
@@ -76,10 +89,17 @@ public class FactoryAgent extends UntypedActor {
 			log.debug("Adding neighbor to neighborlist" + message);
 			neigbhors.add((ActorRef) message);
 			
-		} else if (StartExperimentRun.class.isInstance(message)) {
+		} 
+		if (StartExperimentRun.class.isInstance(message)) {
 			StartExperimentRun msg = (StartExperimentRun) message;
+			if ("".equals(msg.getRun()) || msg.getRun() == null) {
+				throw new RuntimeException("StartExperimentRun has no run code");
+			}
 			modelStorage.addField("run", msg.getRun());
 			computationalProfile.reset();
+			sender().tell("OK", self());
+		} else if (!isRunningExperiment()) {
+			unhandled(message);
 		} else if (ExplorationRequest.class.isInstance(message)) {
 			ExplorationRequest msg = (ExplorationRequest) message;
 			//TODO QoSData should be created by computationalProfile, since it has all the needed data to create it.
@@ -123,6 +143,9 @@ public class FactoryAgent extends UntypedActor {
 		}
 	}
 	
+	public Object currentRun() {
+		return modelStorage.getField("run");
+	}
 	private Neighbors getNeighbors() {
 		return Neighbors.getInstance(neigbhors);
 	}

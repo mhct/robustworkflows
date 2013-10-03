@@ -74,6 +74,56 @@ public class ExplorationRequest implements Serializable {
 				+ ", numberOfHopsToTravel=" + numberOfHopsToTravel
 				+ ", origin=" + origin + ", id=" + id + "]";
 	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((clientAgentName == null) ? 0 : clientAgentName.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime
+				* result
+				+ ((numberOfHopsToTravel == null) ? 0 : numberOfHopsToTravel
+						.hashCode());
+		result = prime * result + ((origin == null) ? 0 : origin.hashCode());
+		result = prime * result
+				+ ((serviceType == null) ? 0 : serviceType.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ExplorationRequest other = (ExplorationRequest) obj;
+		if (clientAgentName == null) {
+			if (other.clientAgentName != null)
+				return false;
+		} else if (!clientAgentName.equals(other.clientAgentName))
+			return false;
+		if (id != other.id)
+			return false;
+		if (numberOfHopsToTravel == null) {
+			if (other.numberOfHopsToTravel != null)
+				return false;
+		} else if (!numberOfHopsToTravel.equals(other.numberOfHopsToTravel))
+			return false;
+		if (origin == null) {
+			if (other.origin != null)
+				return false;
+		} else if (!origin.equals(other.origin))
+			return false;
+		if (serviceType != other.serviceType)
+			return false;
+		return true;
+	}
 	
 	
 }

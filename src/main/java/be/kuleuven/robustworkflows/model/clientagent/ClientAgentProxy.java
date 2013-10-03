@@ -44,4 +44,8 @@ public interface ClientAgentProxy {
 	public void addRequestsExecutionData(RequestExecutionData requestData);
 
 	public void clearRequestsData();
+
+	public void setHackingState(ClientAgentState bla);
+	
+	public ClientAgentState getHackingState();
 }

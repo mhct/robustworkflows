@@ -10,12 +10,21 @@ import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
 import com.mongodb.BasicDBObject;
 
-
+/**
+ * 
+ * === Inbound Mesages ===
+ * - NO MESSAGES
+ * 
+ * === Outbound Messages ===
+ * - NO MESSAGES
+ * 
+ * @author mario
+ *
+ */
 public class RunningCompositionState extends ClientAgentState {
 	private static final String EXPECTED_TIME_TO_SERVE_COMPOSITION = "EXPECTED_TIME_TO_SERVE_COMPOSITION";
 	private static final String REAL_TIME_TO_SERVE_COMPOSITION = "REAL_TIME_TO_SERVE_COMPOSITION";
 	
-	private static ClientAgentState instance;
 	private Iterator<WorkflowTask> tasksIterator;
 	private long startTimeSelectedComposition;
 	private boolean beginingComposition = true;
@@ -26,28 +35,28 @@ public class RunningCompositionState extends ClientAgentState {
 	}
 
 	@Override
-	public void onReceive(Object message, ActorRef actorRef) throws Exception {
-		if (RUN.equals(message)) {
-			if (beginingComposition == true) {
-				startTimeSelectedComposition = System.currentTimeMillis();
-			}
-			
-			if (tasksIterator.hasNext()) {
-				beginingComposition = false;
-				WorkflowTask task = tasksIterator.next();
-				setState(SimpleExploringState.getInstance(getClientAgentProxy(), task));
-			}
-			else {
-				long realTimeToServeComposition = System.currentTimeMillis() - startTimeSelectedComposition;
-				ServiceCompositionData serviceCompositionData = ServiceCompositionData.getInstance(getClientAgentProxy().clientAgentName(), getRequestsData(), realTimeToServeComposition);
-				clearRequests();
-				beginingComposition = true;
-				persistEvent(summaryEngagement(serviceCompositionData));
-				setState(SimpleWaitingTaskState.getInstance(getClientAgentProxy()));
-			}
-		} else {
-			getClientAgentProxy().unhandledMessage(message);
+	public void run() {
+		if (beginingComposition == true) {
+			startTimeSelectedComposition = System.currentTimeMillis();
 		}
+		if (tasksIterator.hasNext()) {
+			beginingComposition = false;
+			WorkflowTask task = tasksIterator.next();
+			setState(SimpleExploringState.getInstance(getClientAgentProxy(), task));
+		}
+		else {
+			long realTimeToServeComposition = System.currentTimeMillis() - startTimeSelectedComposition;
+			ServiceCompositionData serviceCompositionData = ServiceCompositionData.getInstance(getClientAgentProxy().clientAgentName(), getRequestsData(), realTimeToServeComposition);
+			clearRequests();
+			beginingComposition = true;
+			persistEvent(summaryEngagement(serviceCompositionData));
+			setState(SimpleWaitingTaskState.getInstance(getClientAgentProxy()));
+		}
+	}
+	
+	@Override
+	public void onReceive(Object message, ActorRef actorRef) throws Exception {
+		getClientAgentProxy().unhandledMessage(message);
 	}
 
 	
@@ -71,15 +80,6 @@ public class RunningCompositionState extends ClientAgentState {
 	}
 	
 	public static ClientAgentState getInstance(ClientAgentProxy clientAgentProxy) {
-		instance = new RunningCompositionState(clientAgentProxy);
-		return instance;
-	}
-	
-	public static ClientAgentState getActiveInstance(ClientAgentProxy clientAgentProxy) {
-		if (instance == null) {
-			throw new RuntimeException("RunningCompositionState is null, but it should not be null");
-		} else {
-			return instance;
-		}
+		return new RunningCompositionState(clientAgentProxy);
 	}
 }

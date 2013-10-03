@@ -16,6 +16,7 @@ import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RunningCompositionState;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
@@ -44,6 +45,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private AgentAttributes attributes;
 
 	private List<RequestExecutionData> requestsExecutionData;
+
+	private ClientAgentState hackState;
 	
 	public ClientAgent(DB db, List<ActorRef> neighbors, AgentAttributes attributes, ExplorationBehaviorFactory behaviorFactory) {
 		log.info("C L I E N T started\nBehavior Factory: " + behaviorFactory.getClass().getName());
@@ -76,12 +79,6 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 			log.debug("\n\n\nAdding neighbor to neighborlist" + message);
 			neighbors.add((ActorRef) message);
 			
-		} else if (StartExperimentRun.class.isInstance(message)) {
-			StartExperimentRun msg = (StartExperimentRun) message;
-			
-			modelStorage.addField("run", msg.getRun());
-			getAntAPI().tellAll(msg);
-			
 		} else if (EventType.NeihgborListRequest.equals(message)){
 			log.debug(self() + " got " + message);
 			sender().tell(getNeighbors(), self());
@@ -110,7 +107,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	
 	public void setState(ClientAgentState state) {
 		this.currentState = state;
-		addExpirationTimer(1, ClientAgentState.RUN);
+		currentState.run();
+//		addExpirationTimer(1, ClientAgentState.RUN);
 	}
 	
 	protected void addNeighbor(ActorRef actor) {
@@ -203,7 +201,17 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	@Override
 	public void clearRequestsData() {
 		requestsExecutionData.clear();
+		assert requestsExecutionData.isEmpty() == true;
 	}
-	
+
+	@Override
+	public void setHackingState(ClientAgentState bla) {
+		hackState = bla;
+	}
+
+	@Override
+	public ClientAgentState getHackingState() {
+		return hackState;
+	}
 	
 }

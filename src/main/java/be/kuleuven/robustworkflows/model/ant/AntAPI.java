@@ -51,22 +51,12 @@ public class AntAPI {
 		
 	}
 
-	private void startExplorationAnts() {
-		for (ActorRef ant: explorationAnts) {
-			ant.tell(EventType.RUN, master);
-		}
-	}
-	
 	public static AntAPI getInstance(ExplorationBehaviorFactory behaviorFactory, ActorRef master, ActorContext context, DB db) {
 		return new AntAPI(behaviorFactory, master, context, db);
 	}
 
 	public int explorationAnts() {
 		return explorationAnts.size();
-	}
-
-	public void explore() {
-		startExplorationAnts();
 	}
 
 	/**
