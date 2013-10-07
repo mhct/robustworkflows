@@ -1,6 +1,5 @@
 package be.kuleuven.robustworkflows.model;
 
-import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +19,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 public class RobustWorkflowsLauncher implements Bootable {
-	private LoggingAdapter log;
+//	private LoggingAdapter log;
 	
 	private static final Config config = ConfigFactory.load().getConfig("robust-workflows-launcher");
 	private static final String SYSTEM_NAME = config.getString("system-name");
@@ -37,7 +36,7 @@ public class RobustWorkflowsLauncher implements Bootable {
 	
 	public RobustWorkflowsLauncher() {
 		system = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
-		log = Logging.getLogger(system, this);
+//		log = Logging.getLogger(system, this);
 	}
 	
 	@Override
@@ -93,17 +92,17 @@ public class RobustWorkflowsLauncher implements Bootable {
 		return system;
 	}
 	
-	public static void main(String[] args) throws IOException, InterruptedException {
-		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
-		wf.startup();
-		Thread.sleep(600000);
-//		Interpreter bsh = new Interpreter(new InputStreamReader(System.in), System.out, System.err, true);
-//		bsh.run();
-//		System.in.read();
-//		wf.shutdown();
-//		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(8989));
-//		for (int i=0; i<20; i++) {
-//			System.out.println(i + ": " + random.nextPoisson(8));
-//		}
-	}
+//	public static void main(String[] args) throws IOException, InterruptedException {
+//		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
+//		wf.startup();
+//		Thread.sleep(600000);
+////		Interpreter bsh = new Interpreter(new InputStreamReader(System.in), System.out, System.err, true);
+////		bsh.run();
+////		System.in.read();
+////		wf.shutdown();
+////		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(8989));
+////		for (int i=0; i<20; i++) {
+////			System.out.println(i + ": " + random.nextPoisson(8));
+////		}
+//	}
 }

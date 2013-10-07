@@ -16,10 +16,8 @@ import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
-import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RunningCompositionState;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
-import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 import com.google.common.collect.Lists;
@@ -92,7 +90,6 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 			
 		}
 		else {
-//			log.debug("\n\n\nClientAgent, received ." + message + ". from " + sender());
 			currentState.onReceive(message, sender());
 		}
 	}
@@ -108,7 +105,6 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	public void setState(ClientAgentState state) {
 		this.currentState = state;
 		currentState.run();
-//		addExpirationTimer(1, ClientAgentState.RUN);
 	}
 	
 	protected void addNeighbor(ActorRef actor) {
@@ -117,7 +113,6 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 
 	@Override
 	public ModelStorage getModelStorage() {
-		log.debug("Getting Model Storage");
 		return modelStorage;
 	}
 

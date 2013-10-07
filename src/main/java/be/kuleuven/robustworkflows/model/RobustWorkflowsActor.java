@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
+import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
@@ -85,6 +86,7 @@ public class RobustWorkflowsActor extends UntypedActor {
 			String actorAddress = (String) cursor.next().get("actorAddress");
 			ActorRef ref = getContext().system().actorFor(actorAddress);
 			ref.tell(StartExperimentRun.getInstance(String.valueOf(currentRun)), self());
+//			Future<Object> ret = akka.pattern.Patterns.ask(ref, StartExperimentRun.getInstance(String.valueOf(currentRun)), self(), 1000);
 		}
 		sendComposeToAllClientAgents();
 		

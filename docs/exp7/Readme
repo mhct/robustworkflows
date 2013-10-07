@@ -9,4 +9,10 @@ datafile: datasets/exp7/10c-10f-t100.gexf
 db: e7t1
 db dump: dumps/e7t1.txt
 
+trial 5
+=======
+Number of hosts: 55
+datafile: datasets/exp7/100c-10f-t100.gexf
+db: e7t5
+
 

@@ -14,6 +14,8 @@ dropall = function() {
         print("Cleaned db");
 }
 
+
+
 experiment_data = function(dbName) {
     use dbName;
     sorcerers = db.sorcerers.find().size();

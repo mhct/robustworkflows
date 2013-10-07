@@ -20,7 +20,7 @@ SSH_OPTIONS=" -o PasswordAuthentication=no -o StrictHostKeyChecking=no "
 # Loads the database
 #
 function loadDatabase {
-    ssh $SSH_OPTIONS  $SSH_USER@$DB_SERVER LC_ALL=C \$HOME/mongo/bin/mongod --auth --dbpath \$HOME/robustworkflows/db_storage \& echo PID: \$!
+    ssh $SSH_OPTIONS  $SSH_USER@$DB_SERVER LC_ALL=C \$HOME/mongo/bin/mongod --auth --dbpath \$HOME/robustworkflows/db_storage \& & echo PID: \$!
     #\& pidstat -r -p \$! 1 86400 
 }
 
@@ -108,16 +108,38 @@ function stopAll {
 
 }
 
+function checkDBUser {
+    if [ -z "$DB_USER" ] || [ -z "$DB_PASS" ] || [ -z "$DB_ADMIN_USER" ] || [ -z "$DB_ADMIN_PASS" ]; then
+           echo "false"; 
+   else
+         echo "true"  
+   fi
+   
+}
+
+function  prepareDBPermissions {
+    dbName=$1
+    ssh $SSH_OPTIONS  $SSH_USER@$DB_SERVER LC_ALL=C \$HOME/mongo/bin/mongo $dbName --authenticationDatabase admin -u adm -p mario --eval \"db.addUser\(\'$DB_USER\',\'$DB_PASS\'\)\" 
+
+}
+
+
 function exp {
+if [ "true" == "$(checkDBUser)" ]; then
     loadDatabase
+    prepareDBPermissions $2
     loadNeededSorcerers 50
     sleep 10
     loadGraphLoader $1 
     sleep 10
     loadRobustWorkflowsApp
+else
+    echo "DB_USER, DB_PASS, DB_ADMIN_USER, DB_ADMIN_PASS should be set before executing this script"
+fi
 }
 
-function stopE {
+function stopExt {
     stopAll 50
     stopIt verviers java
+    stopIt andenne mongod
 }
