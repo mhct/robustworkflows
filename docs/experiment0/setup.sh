@@ -20,7 +20,7 @@ SSH_OPTIONS=" -o PasswordAuthentication=no -o StrictHostKeyChecking=no "
 # Loads the database
 #
 function loadDatabase {
-    ssh $SSH_OPTIONS  $SSH_USER@$DB_SERVER LC_ALL=C \$HOME/mongo/bin/mongod --auth --dbpath \$HOME/robustworkflows/db_storage \& & echo PID: \$!
+    ssh $SSH_OPTIONS  $SSH_USER@$DB_SERVER LC_ALL=C \$HOME/mongo/bin/mongod --auth --dbpath \$HOME/robustworkflows/db_storage \& echo PID: \$! &
     #\& pidstat -r -p \$! 1 86400 
 }
 
@@ -127,6 +127,7 @@ function  prepareDBPermissions {
 function exp {
 if [ "true" == "$(checkDBUser)" ]; then
     loadDatabase
+    sleep 15
     prepareDBPermissions $2
     loadNeededSorcerers 50
     sleep 10
