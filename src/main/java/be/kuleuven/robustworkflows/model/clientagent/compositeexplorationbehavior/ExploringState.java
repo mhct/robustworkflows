@@ -5,6 +5,7 @@ import java.util.List;
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
+import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 
 import com.google.common.collect.Lists;
@@ -31,10 +32,14 @@ public class ExploringState extends ClientAgentState {
 		persistEvent("ExploringState: " + RUN);
 		replies = Lists.newArrayList();
 		if (getClientAgentProxy().getAntAPI().explorationAnts() == 0) {
-			getClientAgentProxy().getAntAPI().createExplorationAnt(getClientAgentProxy().getWorkflow(), getClientAgentProxy().getAttributes().getAntExplorationTimeout());
+			getClientAgentProxy().getAntAPI().createExplorationAnt(new ExplorationAntParameter(getClientAgentProxy().self(), 
+					getClientAgentProxy().getModelStorage(), 
+					getClientAgentProxy().getWorkflow(), 
+					getClientAgentProxy().getAttributes().getAntExplorationTimeout(), 
+					getClientAgentProxy().getAttributes().getAntExplorationSamplingProbability())
+					);
 		}
 		
-
 		//TODO create new exploration ANTS NOW..? at at ClientAgent creation
 		addExpirationTimer(getClientAgentProxy().getAttributes().getExplorationStateTimeout(), EXPLORING_STATE_TIMEOUT);
 	}

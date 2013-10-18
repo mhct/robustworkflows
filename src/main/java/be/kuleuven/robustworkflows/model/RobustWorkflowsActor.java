@@ -5,17 +5,15 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
-import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
+import akka.actor.ActorRef;
+import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
-
-import akka.actor.ActorRef;
-import akka.actor.UntypedActor;
 
 /**
  * Loads experiments on the network...

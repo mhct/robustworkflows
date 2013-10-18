@@ -15,10 +15,13 @@ import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
+import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
-import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
+import be.kuleuven.robustworkflows.model.events.ExplorationAntEvents;
+import be.kuleuven.robustworkflows.model.events.ExplorationReplyEvent;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
+import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 /**
@@ -45,6 +48,7 @@ public class SimpleExplorationAnt extends UntypedActor {
 	private RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister());
 	private List<ExplorationReplyWrapper> replies = new ArrayList<ExplorationReplyWrapper>();
 	private long explorationTimeout;
+	private double samplingProbability;
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
@@ -61,13 +65,13 @@ public class SimpleExplorationAnt extends UntypedActor {
 			askQoS(modelStorage.getFactoryAgents(msg.getServiceType()), msg.getServiceType());
 			
 		} else if (ExplorationReply.class.isInstance(message)) {
-			ExplorationReply qos = (ExplorationReply) message;
-			modelStorage.persistEvent(qos.toDBObject(sender().path().name()));
+			ExplorationReply explorationReply = (ExplorationReply) message;
+			modelStorage.persistEvent(ExplorationReplyEvent.instance(explorationReply, sender().path().name()));
 
-			replies.add(new ExplorationReplyWrapper(sender(), qos));
+			replies.add(new ExplorationReplyWrapper(sender(), explorationReply));
 			
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
-			modelStorage.persistEvent("ExpAnt Timeout"); //add complete summary of the state of explorationant
+			modelStorage.persistEvent(ExplorationAntEvents.timeout());
 			SimpleExplorationResult bla = bestReply();
 			replies.clear();
 			master.tell(bla, self());
@@ -101,7 +105,7 @@ public class SimpleExplorationAnt extends UntypedActor {
 //			}
 			return SimpleExplorationResult.getInstance(replies.get(0).getActor(), replies.get(0).getReply().getComputationTime(), replies.get(0).getReply().getRequestExploration().getServiceType());
 		} else {
-			modelStorage.persistEvent("ExpAnt, dont have replies");
+			modelStorage.persistEvent(ExplorationAntEvents.noReplies());
 		}
 		
 		return null;
@@ -127,12 +131,12 @@ public class SimpleExplorationAnt extends UntypedActor {
 	}
 	
 	/**
-	 * Defines if a value should be used or not. returns true with a probability of 33%.
+	 * Defines if a value should be used or not. returns true with a probability of samplingProbability.
 	 * Uniform sampling
 	 * @return
 	 */
 	private boolean sampling() {
-		if (random.nextUniform(0, 1) >= 0) {
+		if (random.nextUniform(0, 1) <= samplingProbability) {
 			return true;
 		} else {
 			return false;
@@ -150,14 +154,22 @@ public class SimpleExplorationAnt extends UntypedActor {
 		}, context().system().dispatcher());
 	}
 
-	public SimpleExplorationAnt(ActorRef master, ModelStorage modelStorage, long explorationTimeout) {
+	public SimpleExplorationAnt(ActorRef master, ModelStorage modelStorage, long explorationTimeout, double samplingProbability) {
 		this.master = master;
 		this.modelStorage = modelStorage;
 		this.explorationTimeout = explorationTimeout;
+		this.samplingProbability = samplingProbability;
 	}
 	
-	public static UntypedActor getInstance(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
-		return new SimpleExplorationAnt(master, modelStorage, explorationTimeout);
+	public static UntypedActor getInstance(ActorRef master, Workflow workflow, ExplorationAntParameter parameterObject) {
+		return null;
+	}	
+	
+	public static UntypedActor getInstance(ExplorationAntParameter parameterObject) {
+		return new SimpleExplorationAnt(parameterObject.getMaster(),
+				parameterObject.getModelStorage(),
+				parameterObject.getExplorationTimeout(),
+				parameterObject.getSamplingProbability());
 	}
 }
 

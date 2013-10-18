@@ -50,7 +50,7 @@ public class SimpleExploringState extends ClientAgentState {
 				getClientAgentProxy().setState(SimpleEngagingInServiceComposition.getInstance(getClientAgentProxy(), selectedExplorationResult));
 			} else {
 				//FIXME should not use this persistEvent(String) method anymore...
-				persistEvent("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
+//				persistEvent("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
 				//TODO go back to RunningCompositionState
 			}
 			

@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.clientagent.compositeexplorationbehavior.WaitingTaskState;
+import be.kuleuven.robustworkflows.model.events.ModelEvent;
 import static org.mockito.Mockito.*;
 
 public class WaitingTaskStateTest {
@@ -25,7 +26,7 @@ public class WaitingTaskStateTest {
 		ClientAgentState cas = WaitingTaskState.getInstance(mock);
 		cas.onReceive("Compose", null);
 		
-		verify(storage).persistEvent(anyString());
+		verify(storage).persistEvent(mock(ModelEvent.class));
 	}
 
 	@Test

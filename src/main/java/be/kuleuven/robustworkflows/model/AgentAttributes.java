@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import org.gephi.graph.api.Attributes;
 
-import be.kuleuven.robustworkflows.model.clientagent.ExplorationBehaviorFactory;
 import be.kuleuven.robustworkflows.model.clientagent.CompositeExplorationFactory;
+import be.kuleuven.robustworkflows.model.clientagent.ExplorationBehaviorFactory;
 import be.kuleuven.robustworkflows.model.clientagent.SimpleExplorationFactory;
 import be.kuleuven.robustworkflows.model.factoryagent.ComputationalResourceProfile;
 
@@ -29,16 +29,27 @@ public class AgentAttributes implements Serializable {
 
 	private long explorationStateTimeout;
 
+	//FIXME refactor this out to a ExplorationAntXMLParameter class
 	private long antExplorationTimeout;
+	private double antExplorationSamplingProbability;
 
 	private ExplorationBehaviorFactory behaviorFactory;
 
-	private AgentAttributes(String agentType, String agentId, ComputationalResourceProfile profile, long explorationStateTimeout, long antExplorationTimeout, ExplorationBehaviorFactory behaviorFactory) {
+
+	private AgentAttributes(String agentType, 
+			String agentId, 
+			ComputationalResourceProfile profile, 
+			long explorationStateTimeout, 
+			long antExplorationTimeout, 
+			double antExplorationSamplingProbability, 
+			ExplorationBehaviorFactory behaviorFactory) {
+
 		this.agentType = agentType;
 		this.agentId = agentId;
 		this.profile = profile;
 		this.explorationStateTimeout = explorationStateTimeout;
 		this.antExplorationTimeout = antExplorationTimeout;
+		this.antExplorationSamplingProbability = antExplorationSamplingProbability;
 		this.behaviorFactory = behaviorFactory;
 	}
 
@@ -66,12 +77,17 @@ public class AgentAttributes implements Serializable {
 	public ExplorationBehaviorFactory getBehaviorFactory() {
 		return behaviorFactory;
 	}
+	
+	public double getAntExplorationSamplingProbability() {
+		return antExplorationSamplingProbability;
+	}
 	//FIXME I can use a abstract factory here... but, which are the implications for sending this over the wire?
 
 	public static AgentAttributes getInstance(Attributes attributes, String nodeId) {
 		String nodeType = (String) attributes.getValue(NodeAttributes.NodeType);
 		ComputationalResourceProfile profile = null;
 		long antExplorationTimeout=0;
+		double antExplorationSamplingProbability=0;
 		long explorationStateTimeout=0;
 		ExplorationBehaviorFactory behaviorFactory = null;
 		
@@ -89,6 +105,7 @@ public class AgentAttributes implements Serializable {
 		} else if ("Client".equals((String) attributes.getValue(NodeAttributes.NodeType))) {
 			explorationStateTimeout = (Long) attributes.getValue(NodeAttributes.ExplorationStateTimeout);
 			antExplorationTimeout = (Long) attributes.getValue(NodeAttributes.AntExplorationTimeout);
+			antExplorationSamplingProbability =  (Double) attributes.getValue(NodeAttributes.AntExplorationSamplingProbability);
 			
 			if (SimpleExplorationFactory.class.getName().equals(attributes.getValue(NodeAttributes.ExplorationBehaviorFactory))) {
 				behaviorFactory = new SimpleExplorationFactory();
@@ -97,8 +114,12 @@ public class AgentAttributes implements Serializable {
 			}
 		}
 		
-		return new AgentAttributes(nodeType, nodeId, profile, explorationStateTimeout, antExplorationTimeout, behaviorFactory);
+		return new AgentAttributes(nodeType, 
+				nodeId, 
+				profile, 
+				explorationStateTimeout, 
+				antExplorationTimeout, 
+				antExplorationSamplingProbability, 
+				behaviorFactory);
 	}
-
-
 }

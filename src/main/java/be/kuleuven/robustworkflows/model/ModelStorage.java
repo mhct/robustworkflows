@@ -8,6 +8,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
+import be.kuleuven.robustworkflows.model.events.ModelEvent;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -27,6 +28,7 @@ import com.mongodb.DBObject;
  */
 public class ModelStorage {
 	private final static String EVENTS_COLLECTION = "model_events";
+	private final static String EVENT_TYPE ="EventType";
 	private final static String FACTORY_AGENTS_COLLECTION = "model_factory_agents";
 	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss_SSS");
 	
@@ -55,7 +57,7 @@ public class ModelStorage {
 	 * @param obj
 	 */
 	private void insert(DBCollection coll, DBObject obj) {
-		String val = (String) obj.get("EventType");
+		String val = (String) obj.get(EVENT_TYPE);
 		if("SERVICE_REQUEST_SUMMARY".equals(val)) {
 			System.out.println("DO");
 		}
@@ -70,20 +72,20 @@ public class ModelStorage {
 	/**
 	 * Persists an event in the database
 	 * 
-	 * FIXME avoid this duplication of code in the two methods below
 	 * @param event
 	 */
-	public void persistEvent(String event) {
+	public void persistEvent(ModelEvent event) {
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
-		obj.append("EventType", event);
+		obj.append(EVENT_TYPE, event.eventType());
+		obj.putAll(event.values());
 		insert(coll, obj);
 	}
-
+	
 	public void persistEvent(EventType eventType, String event) {
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
-		obj.append("EventType", eventType.toString());
+		obj.append(EVENT_TYPE, eventType.toString());
 		obj.append(eventType.toString(), event);
 		insert(coll, obj);
 	}
@@ -94,6 +96,12 @@ public class ModelStorage {
 		insert(coll, obj);
 	}
 
+	/**
+	 * TODO refactor this method to a service class
+	 * 
+	 * @param path
+	 * @param serviceType
+	 */
 	public void registerFactoryAgent(String path, ServiceType serviceType) {
 		DBCollection coll = db.getCollection(FACTORY_AGENTS_COLLECTION);
 		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
@@ -102,6 +110,12 @@ public class ModelStorage {
 		insert(coll, obj);
 	}
 
+	/**
+	 * TODO refactor this method to a service class
+	 * 
+	 * @param st
+	 * @return
+	 */
 	public List<String> getFactoryAgents(ServiceType st) {
 		List<String> agentPaths = Lists.newArrayList();
 		
@@ -116,6 +130,11 @@ public class ModelStorage {
 		return agentPaths;
 	}
 
+	/**
+	 * TODO refactor this method to a service class
+	 * 
+	 * @param path
+	 */
 	public void unRegisterFactoryAgent(String path) {
 		DBCollection coll = db.getCollection(FACTORY_AGENTS_COLLECTION);
 		BasicDBObject query = new BasicDBObject("FactoryAgentPath", path);
@@ -123,12 +142,18 @@ public class ModelStorage {
 		coll.remove(query);
 	}
 	
+	/**
+	 * TODO refactor this method to a service class
+	 * 
+	 * @param run
+	 * @return
+	 */
 	public boolean finishedAllCompositions(String run) {
 		System.out.println("Checking run:" + run );
 		
 		final DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		final BasicDBObject query = new BasicDBObject("run", run);
-		query.append("EventType", "SERVICE_COMPOSITION_SUMMARY");
+		query.append(EVENT_TYPE, "SERVICE_COMPOSITION_SUMMARY");
 		
 		final int clientAgents = db.getCollection("clientAgents").find().size();
 		final int completedCompositions = coll.find(query).size();

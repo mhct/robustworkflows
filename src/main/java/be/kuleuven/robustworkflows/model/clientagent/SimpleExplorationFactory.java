@@ -2,12 +2,9 @@ package be.kuleuven.robustworkflows.model.clientagent;
 
 import java.io.Serializable;
 
-import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
-import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.SimpleExplorationAnt;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.SimpleWaitingTaskState;
-import be.kuleuven.robustworkflows.model.messages.Workflow;
 
 public class SimpleExplorationFactory extends
 		ExplorationBehaviorFactory implements Serializable {
@@ -20,10 +17,8 @@ public class SimpleExplorationFactory extends
 	}
 
 	@Override
-	public UntypedActor createExplorationAnt(ActorRef master,
-			ModelStorage modelStorage, Workflow workflow,
-			long explorationTimeout) {
-		return SimpleExplorationAnt.getInstance(master, modelStorage, null, explorationTimeout);
+	public UntypedActor createExplorationAnt(ExplorationAntParameter parameterObject) {
+		return SimpleExplorationAnt.getInstance(parameterObject);
 	}
 
 }

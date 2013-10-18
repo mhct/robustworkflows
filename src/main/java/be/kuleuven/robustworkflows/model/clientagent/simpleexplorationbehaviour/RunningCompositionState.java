@@ -5,10 +5,8 @@ import java.util.Iterator;
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
-import be.kuleuven.robustworkflows.model.clientagent.EventType;
+import be.kuleuven.robustworkflows.model.events.ServiceCompositionSummaryEvent;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
-
-import com.mongodb.BasicDBObject;
 
 /**
  * 
@@ -22,9 +20,7 @@ import com.mongodb.BasicDBObject;
  *
  */
 public class RunningCompositionState extends ClientAgentState {
-	private static final String EXPECTED_TIME_TO_SERVE_COMPOSITION = "EXPECTED_TIME_TO_SERVE_COMPOSITION";
-	private static final String REAL_TIME_TO_SERVE_COMPOSITION = "REAL_TIME_TO_SERVE_COMPOSITION";
-	
+
 	private Iterator<WorkflowTask> tasksIterator;
 	private long startTimeSelectedComposition;
 	private boolean beginingComposition = true;
@@ -67,16 +63,12 @@ public class RunningCompositionState extends ClientAgentState {
 	 * @param req
 	 * @return
 	 */
-	private BasicDBObject summaryEngagement(ServiceCompositionData serviceCompositionData) {
-		BasicDBObject obj = new BasicDBObject();
-		obj.append("EventType", EventType.SERVICE_COMPOSITION_SUMMARY.toString());
+	private ServiceCompositionSummaryEvent summaryEngagement(ServiceCompositionData serviceCompositionData) {
 		
-		obj.append(EXPECTED_TIME_TO_SERVE_COMPOSITION, serviceCompositionData.getExpectedTimeToServeComposition()); 
-		obj.append(REAL_TIME_TO_SERVE_COMPOSITION, serviceCompositionData.getRealTimeToServeComposition());
-		obj.append("CLIENT_AGENT", serviceCompositionData.getClientAgentName());
-		obj.append("SERVICES_ENGAGED", serviceCompositionData.getServicesEngaged());
-		
-		return obj;
+		return ServiceCompositionSummaryEvent.instance(serviceCompositionData.getExpectedTimeToServeComposition(),
+				serviceCompositionData.getRealTimeToServeComposition(),
+				serviceCompositionData.getClientAgentName(),
+				serviceCompositionData.getServicesEngaged());
 	}
 	
 	public static ClientAgentState getInstance(ClientAgentProxy clientAgentProxy) {

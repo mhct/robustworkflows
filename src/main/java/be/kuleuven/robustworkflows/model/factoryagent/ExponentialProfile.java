@@ -19,7 +19,8 @@ public class ExponentialProfile extends ComputationalResourceProfile implements 
 
 	@Override
 	public long expectedTimeToServeRequest() {
-		return random.nextPoisson(10); //FIXME the mean is fixed... should be an attribute from the profile 
+		//FIXME the mean is fixed... should be an attribute from the profile
+		return random.nextPoisson(10);
 	}
 
 	@Override

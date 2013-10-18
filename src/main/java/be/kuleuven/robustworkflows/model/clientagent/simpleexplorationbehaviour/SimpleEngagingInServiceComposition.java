@@ -4,12 +4,10 @@ import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
-import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
+import be.kuleuven.robustworkflows.model.events.ServiceRequestSummaryEvent;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestCompleted;
-
-import com.mongodb.BasicDBObject;
 
 /**
  * Engages with a simple service
@@ -29,8 +27,7 @@ import com.mongodb.BasicDBObject;
  *
  */
 public class SimpleEngagingInServiceComposition extends ClientAgentState {
-	private static final String EXPECTED_TIME_TO_SERVE_REQUEST = "EXPECTED_TIME_TO_SERVE_REQUEST";
-	private static final String REAL_TIME_TO_SERVE_REQUEST = "REAL_TIME_TO_SERVE_REQUEST"; 
+	
 	
 	private int serviceRequestCounter = 0;
 	private long startTimeCurrentTask;
@@ -83,15 +80,8 @@ public class SimpleEngagingInServiceComposition extends ClientAgentState {
 	 * @param req
 	 * @return
 	 */
-	private BasicDBObject summaryServiceRequest(RequestExecutionData requestData) {
-		BasicDBObject obj = new BasicDBObject();
-		obj.append("EventType", EventType.SERVICE_REQUEST_SUMMARY.toString());
-		
-		obj.append(EXPECTED_TIME_TO_SERVE_REQUEST, requestData.getExpectedTimeToExecuteTask()); 
-		obj.append(REAL_TIME_TO_SERVE_REQUEST, requestData.getRealTimeToServeRequest());
-		obj.append("FACTORY_AGENT", requestData.getFactoryAgentName());
-		obj.append("CLIENT_AGENT---------------------------------------------", requestData.getClientAgentName());
-		return obj;
+	private ServiceRequestSummaryEvent summaryServiceRequest(RequestExecutionData requestData) {
+		return ServiceRequestSummaryEvent.instance(requestData);
 	}
 
 	public static SimpleEngagingInServiceComposition getInstance(ClientAgentProxy clientAgentProxy, SimpleExplorationResult simpleExplorationResult) {

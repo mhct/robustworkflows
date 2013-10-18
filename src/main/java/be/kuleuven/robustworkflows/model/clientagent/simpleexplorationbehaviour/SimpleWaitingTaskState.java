@@ -3,6 +3,8 @@ package be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
+import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
+import be.kuleuven.robustworkflows.model.events.WaitingTaskStateEvents;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 
 /**
@@ -26,7 +28,7 @@ public class SimpleWaitingTaskState extends ClientAgentState {
 
 	@Override
 	public void run() {
-		persistEvent("WaitingTaskState: " + RUN);
+		persistEvent(WaitingTaskStateEvents.instance());
 	}
 	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
@@ -35,7 +37,13 @@ public class SimpleWaitingTaskState extends ClientAgentState {
 			
 			//FIXME create exploration ants here.. check a better place for this....
 			if (getClientAgentProxy().getAntAPI().explorationAnts() != 1) {
-				getClientAgentProxy().getAntAPI().createExplorationAnt(null, getClientAgentProxy().getAttributes().getAntExplorationTimeout());
+
+				getClientAgentProxy().getAntAPI().createExplorationAnt(new ExplorationAntParameter(getClientAgentProxy().self(), 
+						getClientAgentProxy().getModelStorage(), 
+						getClientAgentProxy().getWorkflow(), 
+						getClientAgentProxy().getAttributes().getAntExplorationTimeout(), 
+						getClientAgentProxy().getAttributes().getAntExplorationSamplingProbability())
+						);
 			}
 			
 			getClientAgentProxy().getModelStorage().addField("run", msg.getRun());

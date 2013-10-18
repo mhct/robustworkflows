@@ -12,6 +12,7 @@ public class NodeAttributes {
 	public static final String ProcessingTimePerRequest = "ProcessingTimePerRequest";
 	public static final String ExplorationStateTimeout = "ExplorationStateTimeout";
 	public static final String AntExplorationTimeout = "AntExplorationTimeout";
+	public static final String AntExplorationSamplingProbability = "AntExplorationSamplingProbability";
 	public static final String Seed = "Seed";
 	public static final String ServiceType = "ServiceType";
 	public static final String ExplorationBehaviorFactory = "ExplorationBehaviorFactory";

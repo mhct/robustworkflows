@@ -24,8 +24,13 @@ import com.google.common.collect.Lists;
 import com.mongodb.DB;
 
 /**
- * This class represents a composite service. The ClientAgent tries to find suitable services to participate in the service
- * composition defined by Workflow
+ * A ClientAgent represents a composite service. 
+ * 
+ * A ClientAgent tries to find suitable component services to participate in a service composition. A service composition is, in turn,
+ * defined by a {@link Workflow}.
+ * 
+ * A ClientAgent behavior is mainly defined by concrete implementations of {@link ClientAgentState}. The behaviors are instantiated
+ * using factories of {@ ExplorationBehaviorFactory}, such as {@link SimpleExplorationFactory} and {@link ExplorationBehaviorFactory}. 
  * 
  * @author mario
  *
@@ -39,11 +44,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private ModelStorage modelStorage;
 	private AntAPI antApi;
 	private Workflow workflow;
-
 	private AgentAttributes attributes;
-
 	private List<RequestExecutionData> requestsExecutionData;
-
 	private ClientAgentState hackState;
 	
 	public ClientAgent(DB db, List<ActorRef> neighbors, AgentAttributes attributes, ExplorationBehaviorFactory behaviorFactory) {
@@ -53,7 +55,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = ModelStorage.getInstance(db);
 		this.currentState = behaviorFactory.createWaitingState((ClientAgentProxy) this);
-		this.antApi = AntAPI.getInstance(behaviorFactory, self(), context(), db);
+		this.antApi = AntAPI.getInstance(behaviorFactory, self(), context());
 		this.attributes = attributes;
 		this.workflow = Workflow.getLinear1();
 		requestsExecutionData = new ArrayList<RequestExecutionData>();
