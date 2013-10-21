@@ -45,17 +45,25 @@ public class SimpleExplorationAnt extends UntypedActor {
 
 	private final ActorRef master;
 	private final ModelStorage modelStorage;
-	private RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister());
+	private RandomDataGenerator randomSampling = new RandomDataGenerator(new MersenneTwister());
+	private Integer linearID = 0;
 	private List<ExplorationReplyWrapper> replies = new ArrayList<ExplorationReplyWrapper>();
 	private long explorationTimeout;
 	private double samplingProbability;
-	
+
+	public SimpleExplorationAnt(ActorRef master, ModelStorage modelStorage, long explorationTimeout, double samplingProbability) {
+		this.master = master;
+		this.modelStorage = modelStorage;
+		this.explorationTimeout = explorationTimeout;
+		this.samplingProbability = samplingProbability;
+	}
+
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if (StartExperimentRun.class.isInstance(message)) {
 			StartExperimentRun msg = (StartExperimentRun) message;
 			modelStorage.addField("run", msg.getRun());
-			random = new RandomDataGenerator(new MersenneTwister());
+			randomSampling = new RandomDataGenerator(new MersenneTwister());
 			replies = new ArrayList<ExplorationReplyWrapper>();
 			
 		} else if (ExploreService.class.isInstance(message)) {
@@ -123,7 +131,7 @@ public class SimpleExplorationAnt extends UntypedActor {
 			if (sampling()) {
 				ActorRef agent = context().actorFor(agentPath);
 				if (agent != null) {
-					agent.tell(ExplorationRequest.getInstance(0, serviceType, 10, self(), master.path().name()), self());
+					agent.tell(ExplorationRequest.getInstance(linearID++, serviceType, 10, self(), master.path().name()), self());
 				}
 			}
 		}
@@ -136,7 +144,7 @@ public class SimpleExplorationAnt extends UntypedActor {
 	 * @return
 	 */
 	private boolean sampling() {
-		if (random.nextUniform(0, 1) <= samplingProbability) {
+		if (randomSampling.nextUniform(0, 1) <= samplingProbability) {
 			return true;
 		} else {
 			return false;
@@ -154,13 +162,6 @@ public class SimpleExplorationAnt extends UntypedActor {
 		}, context().system().dispatcher());
 	}
 
-	public SimpleExplorationAnt(ActorRef master, ModelStorage modelStorage, long explorationTimeout, double samplingProbability) {
-		this.master = master;
-		this.modelStorage = modelStorage;
-		this.explorationTimeout = explorationTimeout;
-		this.samplingProbability = samplingProbability;
-	}
-	
 	public static UntypedActor getInstance(ActorRef master, Workflow workflow, ExplorationAntParameter parameterObject) {
 		return null;
 	}	

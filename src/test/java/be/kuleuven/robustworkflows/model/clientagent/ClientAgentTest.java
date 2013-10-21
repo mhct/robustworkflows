@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import akka.actor.Actor;
 import akka.actor.ActorSystem;
@@ -48,6 +49,8 @@ public class ClientAgentTest {
 	public void testEvaluateComposition() {
 		TestActorRef<ClientAgent> clientActor = TestActorRef.create(system, clientAgentProps(), "c1");
 		ClientAgent clientAgent = clientActor.underlyingActor();
+		
+		System.out.println("clientAgent.path() " + clientActor.path().name());
 		
 		ExplorationResult er1 = mock(ExplorationResult.class);
 		when(er1.totalComputationTime()).thenReturn(100l);

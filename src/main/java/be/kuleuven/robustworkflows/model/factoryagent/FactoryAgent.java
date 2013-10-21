@@ -10,7 +10,9 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
+import be.kuleuven.robustworkflows.model.ModelStorageMap;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
+import be.kuleuven.robustworkflows.model.events.FactoryAgentEvents;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
@@ -122,6 +124,7 @@ public class FactoryAgent extends UntypedActor {
 			}
 
 		} else if (FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED.equals(message)) {
+			modelStorage.persistEvent(FactoryAgentEvents.TIME_TO_WORK_FOR_REQUEST_FINISHED());
 			ReceivedServiceRequest rsr = computationalProfile.poll();
 			if (rsr != null) {
 				rsr.actor().tell(ServiceRequestCompleted.getInstance(rsr.sr(), getName()), self());
@@ -166,18 +169,19 @@ public class FactoryAgent extends UntypedActor {
 
 	private DBObject toDBObject(ServiceRequest msg) {
 		BasicDBObject obj = new BasicDBObject();
-		obj.append("EventType", ServiceRequest.eventType);
-		obj.append("ClientAgent", getSender().toString());
-		obj.append("FactoryAgent", getSelf().toString());
-		obj.append("CreationTime",msg.getCreationTime());
+		obj.append(ModelStorageMap.EVENT_TYPE, ServiceRequest.eventType);
+		obj.append(ModelStorageMap.CLIENT_AGENT, sender().path().name());
+		obj.append(ModelStorageMap.FACTORY_AGENT, self().path().name());
+		obj.append(ModelStorageMap.CREATION_TIME, msg.getCreationTime());
 		
 		return obj;
 	}
 	private DBObject toDBObject(ExplorationRequest msg) {
 		BasicDBObject obj = new BasicDBObject();
-		obj.append("EventType", ExplorationRequest.eventType);
-		obj.append("ClientAgent", getSender().toString());
-		obj.append("FactoryAgent", getSelf().toString());
+		obj.append(ModelStorageMap.EVENT_TYPE, ExplorationRequest.eventType);
+		obj.append(ModelStorageMap.CLIENT_AGENT, msg.getOriginName());
+		obj.append(ModelStorageMap.FACTORY_AGENT, getSelf().path().name());
+		obj.append(ModelStorageMap.EXPLORATION_REQUEST_ID, msg.getId());
 		
 		return obj;
 	}

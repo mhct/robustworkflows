@@ -1,9 +1,11 @@
 package be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour;
 
 import akka.actor.ActorRef;
+import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
+import be.kuleuven.robustworkflows.model.events.ComposeEvent;
 import be.kuleuven.robustworkflows.model.events.WaitingTaskStateEvents;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 
@@ -50,6 +52,7 @@ public class SimpleWaitingTaskState extends ClientAgentState {
 			getClientAgentProxy().getAntAPI().tellAll(msg);
 			
 		} else if (COMPOSE.equals(message)) {
+			persistEvent(ComposeEvent.getInstance());
 			ClientAgentState bla = RunningCompositionState.getInstance(getClientAgentProxy());
 			getClientAgentProxy().setHackingState(bla);
 			setState(bla);

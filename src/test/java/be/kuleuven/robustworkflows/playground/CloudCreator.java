@@ -21,14 +21,14 @@ import be.kuleuven.robustworkflows.model.NodeAttributes;
 
 public class CloudCreator {
 
-	private static int SEED = 808080;
+	private static int SEED = 8080823;
 	private static RandomDataGenerator random1 = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator random2 = new RandomDataGenerator(new MersenneTwister(SEED));
 
-	private static final int NUMBER_OF_FACTORIES = 100;
-	private static final int NUMBER_OF_CLIENTS = 1000;
-	private static final long EXPLORATION_TIMEOUT = 10000;
-	private static final long ANT_EXPLORATION_TIMEOUT = 9000;
+	private static final int NUMBER_OF_FACTORIES = 10;
+	private static final int NUMBER_OF_CLIENTS = 100;
+	private static final long EXPLORATION_TIMEOUT = 1000;
+	private static final long ANT_EXPLORATION_TIMEOUT = 700;
 	private static  double ANT_SAMPLING_PROBABILITY;
 	
 	/**
@@ -36,7 +36,9 @@ public class CloudCreator {
 	 * @throws InterruptedException 
 	 */
 	public static void main(String[] args) throws InterruptedException {
-		List<Double> probs = Lists.newArrayList(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0);
+//		List<Double> probs = Lists.newArrayList(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0);
+		List<Double> probs = Lists.newArrayList(1.0);
+		
 		for (Double p: probs) {
 			ANT_SAMPLING_PROBABILITY = p;
 			createGraph();

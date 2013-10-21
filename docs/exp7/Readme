@@ -7,12 +7,18 @@ trial 1
 Number of hosts: 1
 datafile: datasets/exp7/10c-10f-t100.gexf
 db: e7t1
-db dump: dumps/e7t1.txt
+db dump: e7t1
 
 trial 5
 =======
 Number of hosts: 55
 datafile: datasets/exp7/100c-10f-t100.gexf
+db: e7t5
+
+trial 6
+=======
+Number of hosts: 55
+datafile: datasets/exp7/50c-10f-t100.gexf
 db: e7t5
 
 

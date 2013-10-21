@@ -43,7 +43,7 @@ public class SimpleExploringState extends ClientAgentState {
 		if (SimpleExplorationResult.class.isInstance(message)) {
 			SimpleExplorationResult msg = (SimpleExplorationResult) message;
 			results.add(msg);
-		} else if ("EXPLORATION_TIMEOUT".equals(message)) {
+		} else if (EXPLORATION_TIMEOUT.equals(message)) {
 			SimpleExplorationResult selectedExplorationResult = selectLowerExplorationResult();
 			
 			if (selectedExplorationResult != null && !selectedExplorationResult.isEmpty()) {

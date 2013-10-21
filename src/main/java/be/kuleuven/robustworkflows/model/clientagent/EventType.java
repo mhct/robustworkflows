@@ -4,8 +4,7 @@ public enum EventType {
 	SERVICE_REQUEST_SUMMARY,
 	RUN, 
 	NeihgborListRequest, 
-	ExploringStateTimeout, 
 	ExplorationFinished, 
 	ExplorationResult, 
-	ExplorationReply;
+	ExplorationReply, ExploringStateTimeout;
 }

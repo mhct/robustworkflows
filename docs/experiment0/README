@@ -20,6 +20,9 @@ mongoexport -d e7t1 -h andenne.cs.kotnet.kuleuven.be -u $DB_USER -p $DB_PASS -c 
 rsync -avz -e ssh ./ u0061821@aalst.cs.kotnet.kuleuven.be:/home/u0061821/robustworkflows/
 
 
+- copying datasets to the labs
+rsync -avz -e ssh datasets/ u0061821@andenne.cs.kotnet.kuleuven.be:/home/u0061821/robustworkflows/
+
 ===============
 Experiment 0
 

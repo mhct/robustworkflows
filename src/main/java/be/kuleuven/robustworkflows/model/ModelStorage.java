@@ -28,7 +28,6 @@ import com.mongodb.DBObject;
  */
 public class ModelStorage {
 	private final static String EVENTS_COLLECTION = "model_events";
-	private final static String EVENT_TYPE ="EventType";
 	private final static String FACTORY_AGENTS_COLLECTION = "model_factory_agents";
 	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss_SSS");
 	
@@ -39,7 +38,6 @@ public class ModelStorage {
 	private ModelStorage(DB db) {
 		this.db = db;
 		extraFields = Maps.newHashMap();
-		System.out.println("mark");
 	}
 
 	public void addField(String key, Object value) {
@@ -57,7 +55,7 @@ public class ModelStorage {
 	 * @param obj
 	 */
 	private void insert(DBCollection coll, DBObject obj) {
-		String val = (String) obj.get(EVENT_TYPE);
+		String val = (String) obj.get(ModelStorageMap.EVENT_TYPE);
 		if("SERVICE_REQUEST_SUMMARY".equals(val)) {
 			System.out.println("DO");
 		}
@@ -77,15 +75,17 @@ public class ModelStorage {
 	public void persistEvent(ModelEvent event) {
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
-		obj.append(EVENT_TYPE, event.eventType());
-		obj.putAll(event.values());
+		obj.append(ModelStorageMap.EVENT_TYPE, event.eventType());
+		if (event.values() != null) {
+			obj.putAll(event.values());
+		}
 		insert(coll, obj);
 	}
 	
 	public void persistEvent(EventType eventType, String event) {
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
-		obj.append(EVENT_TYPE, eventType.toString());
+		obj.append(ModelStorageMap.EVENT_TYPE, eventType.toString());
 		obj.append(eventType.toString(), event);
 		insert(coll, obj);
 	}
@@ -153,7 +153,7 @@ public class ModelStorage {
 		
 		final DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		final BasicDBObject query = new BasicDBObject("run", run);
-		query.append(EVENT_TYPE, "SERVICE_COMPOSITION_SUMMARY");
+		query.append(ModelStorageMap.EVENT_TYPE, ModelStorageMap.SERVICE_COMPOSITION_SUMMARY);
 		
 		final int clientAgents = db.getCollection("clientAgents").find().size();
 		final int completedCompositions = coll.find(query).size();

@@ -3,6 +3,8 @@ package be.kuleuven.robustworkflows.model.events;
 import java.util.HashMap;
 import java.util.Map;
 
+import be.kuleuven.robustworkflows.model.ModelStorageMap;
+
 /**
  * Stores the data relative to the execution of a service composition
  * 
@@ -11,11 +13,6 @@ import java.util.Map;
  */
 public class ServiceCompositionSummaryEvent implements ModelEvent {
 	
-	private static final String SERVICE_COMPOSITION_SUMMARY = "SERVICE_COMPOSITION_SUMMARY";
-	private static final String EXPECTED_TIME_TO_SERVE_COMPOSITION = "EXPECTED_TIME_TO_SERVE_COMPOSITION";
-	private static final String REAL_TIME_TO_SERVE_COMPOSITION = "REAL_TIME_TO_SERVE_COMPOSITION";
-	private static final String CLIENT_AGENT = "CLIENT_AGENT";
-	private static final String SERVICES_ENGAGED = "SERVICES_ENGAGED";
 	
 	private Map<String, Object> data;
 	
@@ -25,15 +22,15 @@ public class ServiceCompositionSummaryEvent implements ModelEvent {
 			String servicesEngaged) {
 		
 		data = new HashMap<String, Object>();
-		data.put(EXPECTED_TIME_TO_SERVE_COMPOSITION, expectedTimeToServeComposition);
-		data.put(REAL_TIME_TO_SERVE_COMPOSITION, realTimeToServeComposition);
-		data.put(CLIENT_AGENT, clientAgentName);
-		data.put(SERVICES_ENGAGED, servicesEngaged);
+		data.put(ModelStorageMap.EXPECTED_TIME_TO_SERVE_COMPOSITION, expectedTimeToServeComposition);
+		data.put(ModelStorageMap.REAL_TIME_TO_SERVE_COMPOSITION, realTimeToServeComposition);
+		data.put(ModelStorageMap.CLIENT_AGENT, clientAgentName);
+		data.put(ModelStorageMap.SERVICES_ENGAGED, servicesEngaged);
 	}
 
 	@Override
 	public String eventType() {
-		return SERVICE_COMPOSITION_SUMMARY;
+		return ModelStorageMap.SERVICE_COMPOSITION_SUMMARY;
 	}
 
 	@Override

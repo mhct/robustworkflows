@@ -3,6 +3,7 @@ package be.kuleuven.robustworkflows.model.events;
 import java.util.HashMap;
 import java.util.Map;
 
+import be.kuleuven.robustworkflows.model.ModelStorageMap;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
 
 /**
@@ -12,11 +13,6 @@ import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.
  *
  */
 public class ServiceRequestSummaryEvent implements ModelEvent {
-	private static final String SERVICE_REQUEST_SUMMARY = "SERVICE_REQUEST_SUMMARY";
-	private static final String EXPECTED_TIME_TO_SERVE_REQUEST = "EXPECTED_TIME_TO_SERVE_REQUEST";
-	private static final String REAL_TIME_TO_SERVE_REQUEST = "REAL_TIME_TO_SERVE_REQUEST";
-	private static final String CLIENT_AGENT = "CLIENT_AGENT";
-	private static final String FACTORY_AGENT = "FACTORY_AGENT";
 	
 	private Map<String, Object> data;
 	
@@ -26,15 +22,15 @@ public class ServiceRequestSummaryEvent implements ModelEvent {
 			String clientAgentName) {
 
 		data = new HashMap<String, Object>();
-		data.put(EXPECTED_TIME_TO_SERVE_REQUEST, expectedTimeToExecuteTask);
-		data.put(REAL_TIME_TO_SERVE_REQUEST, realTimeToServeRequest);
-		data.put(FACTORY_AGENT, factoryAgentName);
-		data.put(CLIENT_AGENT, clientAgentName);
+		data.put(ModelStorageMap.EXPECTED_TIME_TO_SERVE_REQUEST, expectedTimeToExecuteTask);
+		data.put(ModelStorageMap.REAL_TIME_TO_SERVE_REQUEST, realTimeToServeRequest);
+		data.put(ModelStorageMap.FACTORY_AGENT, factoryAgentName);
+		data.put(ModelStorageMap.CLIENT_AGENT, clientAgentName);
 	}
 
 	@Override
 	public String eventType() {
-		return SERVICE_REQUEST_SUMMARY;
+		return ModelStorageMap.SERVICE_REQUEST_SUMMARY;
 	}
 
 	@Override

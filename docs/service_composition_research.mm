@@ -39,7 +39,7 @@
 </node>
 </node>
 </node>
-<node COLOR="#0033ff" CREATED="1366191267993" ID="ID_211748430" MODIFIED="1366191292794" POSITION="right" TEXT="experiment1">
+<node COLOR="#0033ff" CREATED="1366191267993" ID="ID_211748430" MODIFIED="1381322597472" POSITION="right" TEXT="experiments in general">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
 <node COLOR="#00b439" CREATED="1366191102505" ID="ID_1350655981" MODIFIED="1366191298995" TEXT="scenario1">
@@ -157,7 +157,7 @@
 </node>
 </node>
 </node>
-<node COLOR="#0033ff" CREATED="1380199207225" ID="ID_623300367" MODIFIED="1380199210127" POSITION="right" TEXT="experiment 7">
+<node COLOR="#0033ff" CREATED="1380199207225" ID="ID_623300367" MODIFIED="1381232657337" POSITION="right" TEXT="DOING experiment 7">
 <edge STYLE="sharp_bezier" WIDTH="8"/>
 <font NAME="SansSerif" SIZE="18"/>
 <node COLOR="#00b439" CREATED="1380199210481" ID="ID_1986635089" MODIFIED="1380199213799" TEXT="hyphotesis">
@@ -231,7 +231,7 @@
 <node COLOR="#111111" CREATED="1380199586244" ID="ID_1804423827" MODIFIED="1380199756611" TEXT="10c-10f-500t.gexf"/>
 </node>
 </node>
-<node COLOR="#00b439" CREATED="1380199322317" ID="ID_1654859087" MODIFIED="1381153121595" TEXT="trial4">
+<node COLOR="#00b439" CREATED="1380199322317" ID="ID_1654859087" MODIFIED="1381223696517" TEXT="trial5">
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1380199364827" ID="ID_766130208" MODIFIED="1381153117215" TEXT="clients">
@@ -240,7 +240,7 @@
 </node>
 <node COLOR="#990000" CREATED="1380199377650" ID="ID_1209015319" MODIFIED="1381153117216" TEXT="factories">
 <font NAME="SansSerif" SIZE="14"/>
-<node COLOR="#111111" CREATED="1380199732271" ID="ID_438894794" MODIFIED="1380199733492" TEXT="20"/>
+<node COLOR="#111111" CREATED="1380199732271" ID="ID_438894794" MODIFIED="1381223701149" TEXT="10"/>
 </node>
 <node COLOR="#990000" CREATED="1380199380179" ID="ID_1406506068" MODIFIED="1381153117217" TEXT="hosts">
 <font NAME="SansSerif" SIZE="14"/>
@@ -257,6 +257,108 @@
 <node COLOR="#990000" CREATED="1380199583900" ID="ID_1605762795" MODIFIED="1381153117220" TEXT="datafile">
 <font NAME="SansSerif" SIZE="14"/>
 <node COLOR="#111111" CREATED="1380199586244" ID="ID_1510290557" MODIFIED="1381153133411" TEXT="100c-10f-500t.gexf"/>
+</node>
+</node>
+<node COLOR="#00b439" CREATED="1380199322317" ID="ID_1414350018" MODIFIED="1381223666439" TEXT="trial6">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1380199364827" ID="ID_1922418464" MODIFIED="1381223661095" TEXT="clients">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1380199725727" ID="ID_1585448831" MODIFIED="1381223670798" TEXT="50"/>
+</node>
+<node COLOR="#990000" CREATED="1380199377650" ID="ID_118851189" MODIFIED="1381223661096" TEXT="factories">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1380199732271" ID="ID_1409853382" MODIFIED="1381223672263" TEXT="10"/>
+</node>
+<node COLOR="#990000" CREATED="1380199380179" ID="ID_1922243466" MODIFIED="1381223661097" TEXT="hosts">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1380199736366" ID="ID_886527102" MODIFIED="1380199737520" TEXT="50"/>
+</node>
+<node COLOR="#990000" CREATED="1380199384987" ID="ID_1592649227" MODIFIED="1381223661098" TEXT="AntExplorationTimeout">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1380199743182" ID="ID_778434107" MODIFIED="1380199744548" TEXT="500ms"/>
+</node>
+<node COLOR="#990000" CREATED="1380199398443" ID="ID_304016829" MODIFIED="1381223661099" TEXT="ExplorationTimeout">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1380199749846" ID="ID_1244860977" MODIFIED="1380199750972" TEXT="1100ms"/>
+</node>
+<node COLOR="#990000" CREATED="1380199583900" ID="ID_276274824" MODIFIED="1381223661100" TEXT="datafile">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1380199586244" ID="ID_1904511507" MODIFIED="1381223681221" TEXT="50c-10f-500t.gexf"/>
+</node>
+</node>
+</node>
+<node COLOR="#0033ff" CREATED="1381225118241" ID="ID_1726685512" MODIFIED="1381232664776" POSITION="right" TEXT="experiment1">
+<edge STYLE="sharp_bezier" WIDTH="8"/>
+<font NAME="SansSerif" SIZE="18"/>
+<node COLOR="#00b439" CREATED="1381225122161" ID="ID_1028464294" MODIFIED="1381225126505" TEXT="hypothesis">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1381225127849" ID="ID_164261845" MODIFIED="1381233954813" TEXT="It is possible to find good quality compositions changing the sampling rate of exploration while reducing the number of messages exchanged">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
+<node COLOR="#00b439" CREATED="1381225178327" ID="ID_1338347709" MODIFIED="1381225180487" TEXT="how to test?">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1381225180983" ID="ID_1506426431" MODIFIED="1381225234917" TEXT="change the exploration sampling rate, compare two solutions, one using local search and one using DMAS">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1381225276476" ID="ID_953979072" MODIFIED="1381225304594" TEXT="The idea is to have two algorithms, one is the base case, which optimizes locally, everytime the Composition needs another service.">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1381225304938" ID="ID_384870072" MODIFIED="1381225321885" TEXT="The second algorithm uses DMAS, trying to optimize the whole composition.">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1381225864382" ID="ID_263098248" MODIFIED="1381225893005" TEXT="1 - try to optimize the simple algorithm, finding the best possible explorationAntTimeout, explorationTimeout, and sampling rate">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+<node COLOR="#990000" CREATED="1381225893741" ID="ID_41296978" MODIFIED="1381225908540" TEXT="2 - compare this best algorithm with DMAS ">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
+<node COLOR="#00b439" CREATED="1381322663138" ID="ID_1972489065" MODIFIED="1381322668553" TEXT="trial1">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1381322669129" ID="ID_820197445" MODIFIED="1381322675577" TEXT="datafile">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1381322675857" ID="ID_72923805" MODIFIED="1381322693216" TEXT="100c-10f-500t-0.1s.gexf"/>
+</node>
+</node>
+<node COLOR="#00b439" CREATED="1381831453419" ID="ID_1367777582" MODIFIED="1381831455820" TEXT="trial2">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1381831456426" ID="ID_686525514" MODIFIED="1381831458114" TEXT="datafile">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
+</node>
+<node COLOR="#0033ff" CREATED="1381232669233" ID="ID_1952995483" MODIFIED="1381232677151" POSITION="right" TEXT="experiment2">
+<edge STYLE="sharp_bezier" WIDTH="8"/>
+<font NAME="SansSerif" SIZE="18"/>
+<node COLOR="#00b439" CREATED="1381232677568" ID="ID_836379325" MODIFIED="1381232680384" TEXT="hypothesis">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1381232680624" ID="ID_46352555" MODIFIED="1381233825368" TEXT="DMAS is suitable for compositions, when the average service execution time is from 10s to 100s">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
+<node COLOR="#00b439" CREATED="1381233834510" ID="ID_1459354714" MODIFIED="1381233836678" TEXT="how to test?">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1381233836990" ID="ID_1694897317" MODIFIED="1381233935398" TEXT="1 - try different scenarios, with different Average Service Execution times.">
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
+</node>
+<node COLOR="#0033ff" CREATED="1382345748290" ID="ID_214099831" MODIFIED="1382345753195" POSITION="right" TEXT="experiment3">
+<edge STYLE="sharp_bezier" WIDTH="8"/>
+<font NAME="SansSerif" SIZE="18"/>
+<node COLOR="#00b439" CREATED="1382345753650" ID="ID_1281111514" MODIFIED="1382345757986" TEXT="hypothesis">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1382345758298" ID="ID_1647608184" MODIFIED="1382345801609" TEXT="changing the exploration timeout, has huge impact on message load and the quality of created compositions">
+<font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
 </node>
