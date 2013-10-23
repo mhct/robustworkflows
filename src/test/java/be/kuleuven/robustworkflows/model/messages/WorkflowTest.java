@@ -2,6 +2,8 @@ package be.kuleuven.robustworkflows.model.messages;
 
 import static org.junit.Assert.fail;
 
+import java.util.Iterator;
+
 import org.junit.Test;
 import org.scalatest.selenium.WebBrowser.MultiSel;
 
@@ -17,6 +19,15 @@ import be.kuleuven.robustworkflows.model.collect.Graph;
 
 public class WorkflowTest {
 
+	@Test
+	public void instance() {
+		Workflow wf = Workflow.getLinear3();
+		Iterator<WorkflowTask> itr = wf.iterator();
+		
+		while (itr.hasNext()) {
+			System.out.println(itr.next());
+		}
+	}
 //	public static void main(String[] args) {
 //		Graph<WorkflowTask> tasks = Graph.create();
 //		

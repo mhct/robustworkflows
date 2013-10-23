@@ -26,17 +26,15 @@ edata = function() {
     print("Factories: " + factories);
 }
 
-client = function(id) {
-	db.model_events
-
-}
 
 dropDBS = function() {
 	dbs = db.getMongo().getDBNames()
 	for (i in dbs) { 
-		db = db.getMongo().getDB( dbs[i] );     
-		print( "dropping db " + db.getName() );     
-		db.dropDatabase(); 
+		if (i != "admin") {
+			db = db.getMongo().getDB( dbs[i] );     
+			print( "dropping db " + db.getName() );     
+			db.dropDatabase();
+		} 
 	}
 }
 
@@ -69,3 +67,17 @@ summary = function(run_id) {
 	print("# Compositions:\t" + db.model_events.find(query).size());
 	
 }
+
+timeline = function(clientAgentId, run_id) {
+	query = {ClientAgent: clientAgentId.toString(), run: run_id.toString()};
+	db.model_events.find(query);
+}
+
+findMissing = function() {
+	clients = db.clientAgents.find({},{actorName:1});
+	clients.forEach(function(data) {
+		db.model_events.find({ClientAgent: data.actorName, EventType: }, {EventType: 1})
+		});
+	
+}
+	

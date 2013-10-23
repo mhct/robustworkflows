@@ -1,6 +1,7 @@
 System.out.println(be.kuleuven.robustworkflows.model.clientagent.SimpleExplorationFactory.class.getName());
-org.apache.commons.math3.random.RandomDataGenerator random = new org.apache.commons.math3.random.RandomDataGenerator(new org.apache.commons.math3.random.MersenneTwister(898989l));
- for( int i=0; i<10; i++ ) {
- System.out.print(random.nextPoisson(10) + ",");
- }
- 
+org.apache.commons.math3.random.RandomDataGenerator random = new org.apache.commons.math3.random.RandomDataGenerator(new org.apache.commons.math3.random.MersenneTwister(8080823l));
+for( int i=0; i<300; i++ ) {
+	System.out.print(random.nextUniform(0,1) + ",");
+}
+
+System.out.println(1.0/3);

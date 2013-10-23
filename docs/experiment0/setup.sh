@@ -42,7 +42,13 @@ function loadGraphLoader {
 #
 function loadRobustWorkflowsApp {
     db_name=$1
-    ssh  $SSH_OPTIONS $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT DB_NAME=$db_name SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startRobustWorkflowsLauncher \& echo PID: \$! 
+    ssh  $SSH_OPTIONS $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER \
+            DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT \
+            DB_NAME=$db_name SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER \
+            PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \
+            \$HOME/robustworkflows/current/bin/startRobustWorkflowsLauncher \> \
+            /home/u0061821/robustworkflows/logs/workflowsLauncher.txt  2\>\&1  \& \
+            echo PID: \$! 
 }
 
 
@@ -56,7 +62,13 @@ function loadSorcerer {
     sorcerer_server=$1
     sorcerer_name=$2
     db_name=$3
-    ssh $SSH_OPTIONS $SSH_USER@$sorcerer_server DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT SORCERER_NAME=$sorcerer_name SYSTEM_HOSTNAME=$sorcerer_server DB_NAME=$db_name PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startSorcerer \>\> /home/u0061821/robustworkflows/logs 2\>\&1  \& echo PID: \$! & 
+    ssh $SSH_OPTIONS $SSH_USER@$sorcerer_server DB_USER=$DB_USER DB_PASS=$DB_PASS \
+            DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT \
+            SORCERER_NAME=$sorcerer_name SYSTEM_HOSTNAME=$sorcerer_server \
+            DB_NAME=$db_name PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \
+            \$HOME/robustworkflows/current/bin/startSorcerer \> \
+            /home/u0061821/robustworkflows/logs/$sorcerer_name.txt  2\>\&1  \& \
+            echo PID: \$! & 
 }
 
 
@@ -147,7 +159,7 @@ if [ "true" == "$(checkDBUser)" ] && [ -n $network_model ] && [ -n $b_name ]; th
     #sleep 15
     prepareDBPermissions $db_name
     testInput
-    loadNeededSorcerers 50 $db_name
+    loadNeededSorcerers 10 $db_name
     testInput
     loadGraphLoader $network_model $db_name
     testInput
@@ -158,7 +170,17 @@ fi
 }
 
 function stopExt {
-    stopAll 50
+    stopAll 10
     stopIt verviers java
 #    stopIt andenne mongod
 }
+
+#
+# Compile Robustworkflows and deploy it 
+#
+function deploy {
+    mvn package -DskipTests
+    scp target/RobustWorkflows-Actors-0.0.1-SNAPSHOT.jar  $SSH_USER@$DB_SERVER:/home/$SSH_USER/robustworkflows/current/deploy
+    rsync -avz -e ssh datasets/* $SSH_USER@$DB_SERVER:/home/$SSH_USER/robustworkflows/
+}
+    

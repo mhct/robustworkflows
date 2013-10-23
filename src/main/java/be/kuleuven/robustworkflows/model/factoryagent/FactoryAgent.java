@@ -10,6 +10,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
+import be.kuleuven.robustworkflows.model.ModelStorageException;
 import be.kuleuven.robustworkflows.model.ModelStorageMap;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.events.FactoryAgentEvents;
@@ -64,6 +65,11 @@ public class FactoryAgent extends UntypedActor {
 		this.modelStorage = ModelStorage.getInstance(db);
 		this.neigbhors = neighbors;
 		this.computationalProfile = computationalProfile; //TODO make a prototype of the computational profile...
+
+		log.info("storage: " + storage);
+		log.info("modelStorage: " + modelStorage);
+		log.info("neighbors:" + neighbors);
+		log.info("computationalProfile:" + computationalProfile);
 	}
 
 	/**
@@ -107,14 +113,26 @@ public class FactoryAgent extends UntypedActor {
 			//TODO QoSData should be created by computationalProfile, since it has all the needed data to create it.
 			if (msg.getServiceType().equals(computationalProfile.getServiceType())) {
 				ExplorationRequest sr = (ExplorationRequest) message;
-				modelStorage.persistEvent(toDBObject(sr));
+				
+				try {
+					modelStorage.persistEvent(toDBObject(sr));
+				} catch (ModelStorageException e) {
+					modelStorage.persistEvent(e.getObj());
+				}
+				
 				sender().tell(ExplorationReply.getInstance(msg, computationalProfile.expectedTimeToServeRequest()), self());
 			}
 			
 			
 		} else if (ServiceRequest.class.isInstance(message)) {
 			ServiceRequest sr = (ServiceRequest) message;
-			modelStorage.persistEvent(toDBObject(sr));
+			
+			try {
+				modelStorage.persistEvent(toDBObject(sr));
+			} catch (ModelStorageException e) {
+				//try to insert again
+				modelStorage.persistEvent(e.getObj());
+			}
 			
 			if (sr.typeOf(computationalProfile.getServiceType())) {
 				System.out.println("A");
@@ -124,7 +142,12 @@ public class FactoryAgent extends UntypedActor {
 			}
 
 		} else if (FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED.equals(message)) {
-			modelStorage.persistEvent(FactoryAgentEvents.TIME_TO_WORK_FOR_REQUEST_FINISHED());
+
+			try {
+				modelStorage.persistEvent(FactoryAgentEvents.TIME_TO_WORK_FOR_REQUEST_FINISHED());
+			} catch (ModelStorageException e) {
+				modelStorage.persistEvent(e.getObj());
+			}
 			ReceivedServiceRequest rsr = computationalProfile.poll();
 			if (rsr != null) {
 				rsr.actor().tell(ServiceRequestCompleted.getInstance(rsr.sr(), getName()), self());

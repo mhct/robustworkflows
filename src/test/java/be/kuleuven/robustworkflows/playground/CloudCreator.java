@@ -25,10 +25,10 @@ public class CloudCreator {
 	private static RandomDataGenerator random1 = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator random2 = new RandomDataGenerator(new MersenneTwister(SEED));
 
-	private static final int NUMBER_OF_FACTORIES = 10;
-	private static final int NUMBER_OF_CLIENTS = 100;
-	private static final long EXPLORATION_TIMEOUT = 1000;
-	private static final long ANT_EXPLORATION_TIMEOUT = 700;
+	private static final int NUMBER_OF_FACTORIES = 15;
+	private static final int NUMBER_OF_CLIENTS = 2;
+	private static final long EXPLORATION_TIMEOUT = 2050;
+	private static final long ANT_EXPLORATION_TIMEOUT = 1950;
 	private static  double ANT_SAMPLING_PROBABILITY;
 	
 	/**
@@ -68,7 +68,7 @@ public class CloudCreator {
 		
 		final ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
-			String graphFilename = "/tmp/" + NUMBER_OF_CLIENTS + "c-" + NUMBER_OF_FACTORIES + "f-" + EXPLORATION_TIMEOUT + "et-" + ANT_EXPLORATION_TIMEOUT + "aet-" + ANT_SAMPLING_PROBABILITY + "asp.gexf";
+			String graphFilename = "/tmp/ABC" + NUMBER_OF_CLIENTS + "c-" + NUMBER_OF_FACTORIES + "f-" + EXPLORATION_TIMEOUT + "et-" + ANT_EXPLORATION_TIMEOUT + "aet-" + ANT_SAMPLING_PROBABILITY + "asp.gexf";
 			ec.exportFile(new File(graphFilename));
 		} catch (IOException e) {
 			System.err.println(e);
@@ -95,12 +95,16 @@ public class CloudCreator {
 	private static Node newFactoryNode(final GraphModel gm) {
 		Node n = gm.factory().newNode();
 				
-		final int processingTimePerRequest = random1.nextInt(10000, 60000);
+		final int processingTimePerRequest = random1.nextInt(10000, 30000);
 		String serviceType = "A";
 		double e = random2.nextUniform(0, 1);
-		if (e >= 0.5) {
+		if (e >= 1.0/3.0 && e < 2.0/3.0) {
 			serviceType = "B";
 		}
+		if (e >= 2.0/3.0) {
+			serviceType = "C";
+		}
+		
 		n.getAttributes().setValue(NodeAttributes.NodeType, "Factory");
 		n.getAttributes().setValue(NodeAttributes.ComputationalResourceProfile, "FixedProcessingTime");
 		n.getAttributes().setValue(NodeAttributes.ProcessingTimePerRequest, String.valueOf(processingTimePerRequest));

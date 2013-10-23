@@ -17,6 +17,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 
 
 /**
@@ -63,8 +64,15 @@ public class ModelStorage {
 			obj.put(e.getKey(), e.getValue());
 			
 		}
-		
-		coll.insert(obj);
+		try {
+			coll.insert(obj);
+		} catch (MongoException e) {
+			coll.insert(obj);
+//			throw new ModelStorageException(obj);
+		} catch (Exception e) {
+			coll.insert(obj);
+//			throw new ModelStorageException(obj);
+		}
 	}
 	
 	/**

@@ -93,20 +93,23 @@ public class Workflow implements Iterable<WorkflowTask>, Serializable {
 	 * 
 	 * @return a workflow with only two tasks A -> B
 	 */
-	public static Workflow getLinear1(){
-		Graph<WorkflowTask> workflow =  Graph.create(); 
+	public static Workflow getLinear3(){
+		Graph<WorkflowTask> graph =  Graph.create(); 
 		
-		workflow.put(ImmutableWorkflowTask.getInstance(ServiceType.A), ImmutableWorkflowTask.getInstance(ServiceType.B));
+		graph.put(ImmutableWorkflowTask.getInstance(ServiceType.A),
+				ImmutableWorkflowTask.getInstance(ServiceType.B));
+		graph.put(ImmutableWorkflowTask.getInstance(ServiceType.B), 
+				ImmutableWorkflowTask.getInstance(ServiceType.C));
 		
-		return new Workflow(workflow);
+		return new Workflow(graph);
 	}
 
 	public static Workflow getLinearInverted1(){
-		Graph<WorkflowTask> workflow =  Graph.create(); 
+		Graph<WorkflowTask> graph =  Graph.create(); 
 		
-		workflow.put(ImmutableWorkflowTask.getInstance(ServiceType.B), ImmutableWorkflowTask.getInstance(ServiceType.A));
+		graph.put(ImmutableWorkflowTask.getInstance(ServiceType.B), ImmutableWorkflowTask.getInstance(ServiceType.A));
 		
-		return new Workflow(workflow);
+		return new Workflow(graph);
 	}
 	
 	/**

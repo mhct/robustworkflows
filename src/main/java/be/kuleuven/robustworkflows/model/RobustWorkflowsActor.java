@@ -30,7 +30,7 @@ import com.mongodb.DBCursor;
  */
 public class RobustWorkflowsActor extends UntypedActor {
 
-	private static final int AVERAGE_ARRIVAL_INTERVAL = 10;
+	private static int AVERAGE_ARRIVAL_INTERVAL = 1;
 	private static final int NUMBER_OF_RUNS = 30;
 	private static final Long SEED = 898989l;
 	
@@ -95,20 +95,25 @@ public class RobustWorkflowsActor extends UntypedActor {
 		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED*currentRun));
 		
 		DBCursor cursor = infrastructureStorage.getClientAgent().find();
-		while (cursor.hasNext()) {	
+		int batch = 0;
+		while (cursor.hasNext()) {
+			if (batch % 50 == 0) {
+				AVERAGE_ARRIVAL_INTERVAL += 30;
+			}
 			String ref = (String) cursor.next().get("actorAddress");
-			scheduleComposeMessage(getContext().system().actorFor(ref), random.nextPoisson(AVERAGE_ARRIVAL_INTERVAL), String.valueOf(currentRun));
+			scheduleComposeMessage(ref, AVERAGE_ARRIVAL_INTERVAL, String.valueOf(currentRun));
+			batch++;
 		}
 	}
 	
-	private void scheduleComposeMessage(final ActorRef ref, final long time, final String run) {
+	private void scheduleComposeMessage(final String ref, final long time, final String run) {
 		getContext().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.SECONDS), 
 				new Runnable() {
 
 					@Override
 					public void run() {
 						System.out.println("Enviando Compose Message: " + System.currentTimeMillis());
-						ref.tell(ClientAgentState.COMPOSE, self());
+						getContext().system().actorFor(ref).tell(ClientAgentState.COMPOSE, self());
 					}
 			
 		}, getContext().system().dispatcher());		

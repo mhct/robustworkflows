@@ -79,7 +79,7 @@ public class SimpleExplorationAnt extends UntypedActor {
 			replies.add(new ExplorationReplyWrapper(sender(), explorationReply));
 			
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
-			modelStorage.persistEvent(ExplorationAntEvents.timeout());
+			modelStorage.persistEvent(ExplorationAntEvents.timeout(master.path().name()));
 			SimpleExplorationResult bla = bestReply();
 			replies.clear();
 			master.tell(bla, self());
@@ -113,7 +113,7 @@ public class SimpleExplorationAnt extends UntypedActor {
 //			}
 			return SimpleExplorationResult.getInstance(replies.get(0).getActor(), replies.get(0).getReply().getComputationTime(), replies.get(0).getReply().getRequestExploration().getServiceType());
 		} else {
-			modelStorage.persistEvent(ExplorationAntEvents.noReplies());
+			modelStorage.persistEvent(ExplorationAntEvents.noReplies(master.path().name()));
 		}
 		
 		return null;

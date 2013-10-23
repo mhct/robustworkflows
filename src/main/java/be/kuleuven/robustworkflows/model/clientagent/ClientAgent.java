@@ -57,7 +57,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		this.currentState = behaviorFactory.createWaitingState((ClientAgentProxy) this);
 		this.antApi = AntAPI.getInstance(behaviorFactory, self(), context());
 		this.attributes = attributes;
-		this.workflow = Workflow.getLinear1();
+		this.workflow = Workflow.getLinear3();
 		requestsExecutionData = new ArrayList<RequestExecutionData>();
 	}
 	

@@ -165,8 +165,19 @@ ggsave(filename=paste("plots/", experiment_name, "-points_delta.pdf", sep=''), p
 ggsave(filename=paste("plots/", experiment_name, "-histogram_services_engaged.pdf", sep=''), plot=p4)
 ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_execution_times_factories.pdf", sep=''), plot=p5)
 
-experiment_data <- agg(experiment_name="e1t2", number_of_runs=1);
-experiment_name <- "e1t2"
+
+experiment_data <- agg(experiment_name="e1-basecase1", number_of_runs=1);
+experiment_name <- "e1-basecase2"
+sub_title <- paste(", Experiment:", experiment_name)
+p1 <- plotLines(experiment_data$agg, sub_title);
+p2 <- summDelta(experiment_data$agg, sub_title);
+p3 <- plotErrors(experiment_data$agg, sub_title)
+p4 <- ggplot(data=experiment_data$raw) + geom_histogram(aes(x=SERVICES_ENGAGED)) + labs(title=paste("Services Used in the compositions", sub_title))
+
+
+
+experiment_data <- agg(experiment_name="e1-basecase2", number_of_runs=1);
+experiment_name <- "e1-basecase2"
 sub_title <- paste(", Experiment:", experiment_name)
 p1 <- plotLines(experiment_data$agg, sub_title);
 p2 <- summDelta(experiment_data$agg, sub_title);
@@ -206,7 +217,7 @@ failure_data_e1t2 <- data.frame(index=c(1,2, 3, 4, 5), failure_percentage=unlist
 title <- paste("Successful Service Compositions using Sampling in ExplorationAnts", sub_title)
 plot_e1t1 <- geom_line(data=failure_data_e1t1, aes(x=index, y=failure_percentage, color='100c10f'), size=2)
 plot_e1t2 <- geom_line(data=failure_data_e1t2, aes(x=index, y=failure_percentage, color='1000c100f'), size=2)
-ggplot() +  plot_e1t1 + plot_e1t2 +
+ggplot() +  plot_e1t1 + 
   labs(title=title, x="ExplorationAnt Sampling Probability (%)", y="Failed Compositions (%)", colour="Network Composition") +
   scale_x_discrete(breaks=c(1,2,3,5,6,7,8,9,10), labels=c(10,20,30,50,60,70,80,90,100)) +
   scale_colour_manual(breaks=c("100c10f", "1000c100f"), labels=c("100 Clients, 10 Services", "1000 Clients, 100 Services"), values=c("100c10f" = "blue", "1000c100f" = "red"))
