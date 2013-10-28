@@ -59,10 +59,16 @@ public class SimpleExplorationAnt extends UntypedActor {
 	}
 
 	@Override
+	public void postStop() {
+		modelStorage.persistWriteCache();
+	}
+	
+	@Override
 	public void onReceive(Object message) throws Exception {
 		if (StartExperimentRun.class.isInstance(message)) {
 			StartExperimentRun msg = (StartExperimentRun) message;
 			modelStorage.addField("run", msg.getRun());
+			modelStorage.persistWriteCache();
 			randomSampling = new RandomDataGenerator(new MersenneTwister());
 			replies = new ArrayList<ExplorationReplyWrapper>();
 			

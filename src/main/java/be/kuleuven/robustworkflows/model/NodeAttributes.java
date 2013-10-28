@@ -16,4 +16,5 @@ public class NodeAttributes {
 	public static final String Seed = "Seed";
 	public static final String ServiceType = "ServiceType";
 	public static final String ExplorationBehaviorFactory = "ExplorationBehaviorFactory";
+	public static final String WorkflowFactory = "WorkflowFactory";
 }

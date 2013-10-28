@@ -15,18 +15,21 @@ import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.openide.util.Lookup;
 
-import com.google.common.collect.Lists;
-
+import be.kuleuven.robustworkflows.model.NodeAttributeValues;
 import be.kuleuven.robustworkflows.model.NodeAttributes;
+import be.kuleuven.robustworkflows.model.ServiceType;
+
+import com.google.common.collect.Lists;
 
 public class CloudCreator {
 
 	private static int SEED = 8080823;
 	private static RandomDataGenerator random1 = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator random2 = new RandomDataGenerator(new MersenneTwister(SEED));
+	private static RandomDataGenerator randomWorkflows = new RandomDataGenerator(new MersenneTwister(SEED));
 
 	private static final int NUMBER_OF_FACTORIES = 15;
-	private static final int NUMBER_OF_CLIENTS = 2;
+	private static final int NUMBER_OF_CLIENTS = 100;
 	private static final long EXPLORATION_TIMEOUT = 2050;
 	private static final long ANT_EXPLORATION_TIMEOUT = 1950;
 	private static  double ANT_SAMPLING_PROBABILITY;
@@ -96,17 +99,17 @@ public class CloudCreator {
 		Node n = gm.factory().newNode();
 				
 		final int processingTimePerRequest = random1.nextInt(10000, 30000);
-		String serviceType = "A";
 		double e = random2.nextUniform(0, 1);
+
+		String serviceType = ServiceType.A.toString();
 		if (e >= 1.0/3.0 && e < 2.0/3.0) {
-			serviceType = "B";
-		}
-		if (e >= 2.0/3.0) {
-			serviceType = "C";
+			serviceType = ServiceType.B.toString();
+		} else if (e >= 2.0/3.0) {
+			serviceType = ServiceType.C.toString();
 		}
 		
-		n.getAttributes().setValue(NodeAttributes.NodeType, "Factory");
-		n.getAttributes().setValue(NodeAttributes.ComputationalResourceProfile, "FixedProcessingTime");
+		n.getAttributes().setValue(NodeAttributes.NodeType, NodeAttributeValues.Factory);
+		n.getAttributes().setValue(NodeAttributes.ComputationalResourceProfile, NodeAttributeValues.FixedProcessingTime);
 		n.getAttributes().setValue(NodeAttributes.ProcessingTimePerRequest, String.valueOf(processingTimePerRequest));
 		n.getAttributes().setValue(NodeAttributes.ServiceType, serviceType);
 
@@ -115,12 +118,21 @@ public class CloudCreator {
 
 	private static Node newClientNode(final GraphModel gm) {
 		Node n = gm.factory().newNode();
-		//FIXME this strings are simply BAD. put on a separate class, enumeration, wherever
-		n.getAttributes().setValue(NodeAttributes.NodeType, "Client");
+		double e = randomWorkflows.nextUniform(0.0, 1.0);
+		
+		String workflowFactory = NodeAttributeValues.Linear3;
+		if (e >= 1.0/3.0 && e < 2.0/3.0) {
+			workflowFactory = NodeAttributeValues.Linear2;
+		} else if (e >= 2.0/3.0) {
+			workflowFactory = NodeAttributeValues.InvertedLinear2;
+		}
+		
+		n.getAttributes().setValue(NodeAttributes.NodeType, NodeAttributeValues.Client);
 		n.getAttributes().setValue(NodeAttributes.ExplorationStateTimeout, EXPLORATION_TIMEOUT);
 		n.getAttributes().setValue(NodeAttributes.AntExplorationTimeout, ANT_EXPLORATION_TIMEOUT);
 		n.getAttributes().setValue(NodeAttributes.AntExplorationSamplingProbability, ANT_SAMPLING_PROBABILITY);
-		n.getAttributes().setValue(NodeAttributes.ExplorationBehaviorFactory, "be.kuleuven.robustworkflows.model.clientagent.SimpleExplorationFactory");
+		n.getAttributes().setValue(NodeAttributes.ExplorationBehaviorFactory, NodeAttributeValues.SimpleExplorationBehaviour);
+		n.getAttributes().setValue(NodeAttributes.WorkflowFactory, workflowFactory);
 		
 		return n;
 	}

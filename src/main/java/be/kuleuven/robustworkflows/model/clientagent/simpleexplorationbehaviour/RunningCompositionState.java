@@ -46,6 +46,8 @@ public class RunningCompositionState extends ClientAgentState {
 			clearRequests();
 			beginingComposition = true;
 			persistEvent(summaryEngagement(serviceCompositionData));
+			getClientAgentProxy().getModelStorage().persistWriteCache();
+			
 			setState(SimpleWaitingTaskState.getInstance(getClientAgentProxy()));
 		}
 	}

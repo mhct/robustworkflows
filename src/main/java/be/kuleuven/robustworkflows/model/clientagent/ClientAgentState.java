@@ -33,9 +33,9 @@ public abstract class ClientAgentState {
 		clientAgentProxy.getModelStorage().persistEvent(event);
 	}
 	
-	protected void persistEvent(EventType eventType, String event) {
-		clientAgentProxy.getModelStorage().persistEvent(eventType, event);
-	}
+//	protected void persistEvent(EventType eventType, String event) {
+//		clientAgentProxy.getModelStorage().persistEvent(eventType, event);
+//	}
 	
 	protected void addRequestExecutionData(RequestExecutionData requestData) {
 		clientAgentProxy.addRequestsExecutionData(requestData);

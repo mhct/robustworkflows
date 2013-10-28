@@ -88,3 +88,10 @@ summDelta <- function(data_to_plot, sub_title) {
   return(plot)
 }
 
+plotRealCompositionTimes <- function(data_to_plot, sub_title) {
+  title <- paste("Average Composition Times Real", sub_title)
+  plot <- ggplot(data=data_to_plot) + geom_histogram(aes(x=REAL_TIME_TO_SERVE_COMPOSITION/1000, y=..density..), color="black", binwidth=50) + 
+    labs(title=title, x="Real Composition time (s)", y="Density")
+  
+  return(plot)
+}

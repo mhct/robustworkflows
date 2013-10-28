@@ -61,7 +61,7 @@ public class RobustWorkflowsLauncher implements Bootable {
 
 							@Override
 							public Actor create() throws Exception {
-								return new RobustWorkflowsActor(db);
+								return new RobustWorkflowsActor(db, config.getConfig("actor"));
 							}
 						}));
 			

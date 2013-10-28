@@ -57,7 +57,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		this.currentState = behaviorFactory.createWaitingState((ClientAgentProxy) this);
 		this.antApi = AntAPI.getInstance(behaviorFactory, self(), context());
 		this.attributes = attributes;
-		this.workflow = Workflow.getLinear3();
+		this.workflow = attributes.getWorkflow();
 		requestsExecutionData = new ArrayList<RequestExecutionData>();
 	}
 	
@@ -69,6 +69,7 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	
 	@Override
 	public void postStop() {
+		modelStorage.persistWriteCache();
 		log.debug("ClientAgent stoped");
 	}
 	

@@ -29,13 +29,13 @@ edata = function() {
 
 dropDBS = function() {
 	dbs = db.getMongo().getDBNames()
-	for (i in dbs) { 
-		if (i != "admin") {
-			db = db.getMongo().getDB( dbs[i] );     
+	dbs.forEach( function(data) {
+		if (data != "admin") {
+			db = db.getMongo().getDB( data );     
 			print( "dropping db " + db.getName() );     
 			db.dropDatabase();
 		} 
-	}
+	});
 }
 
 summary = function(run_id) {

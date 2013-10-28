@@ -1,5 +1,6 @@
 package be.kuleuven.robustworkflows.model.collect;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,7 +15,9 @@ import com.google.common.collect.Multimap;
  * @author mario
  *
  */
-public final class Graph<K> {
+public final class Graph<K> implements Serializable {
+	private static final long serialVersionUID = 20131024L;
+	
 	private final Multimap<K, K> map; //internal graph representation is an adjacency list
 	private K head;
 	private boolean empty = true;
@@ -75,4 +78,42 @@ public final class Graph<K> {
 	public static <K> Graph<K> create() {
 		return new Graph<K>();
 	}
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (empty ? 1231 : 1237);
+		result = prime * result + ((head == null) ? 0 : head.hashCode());
+		result = prime * result + ((map == null) ? 0 : map.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Graph other = (Graph) obj;
+		if (empty != other.empty)
+			return false;
+		if (head == null) {
+			if (other.head != null)
+				return false;
+		} else if (!head.equals(other.head))
+			return false;
+		if (map == null) {
+			if (other.map != null)
+				return false;
+		} else if (!map.equals(other.map))
+			return false;
+		return true;
+	}
+	
+	
 }	

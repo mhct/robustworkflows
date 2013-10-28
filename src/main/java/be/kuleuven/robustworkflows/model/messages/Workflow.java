@@ -16,7 +16,6 @@ import com.google.common.collect.Multimap;
  *
  */
 public class Workflow implements Iterable<WorkflowTask>, Serializable {
-	
 	private static final long serialVersionUID = 20130821L;
 	
 	Graph<WorkflowTask> activitiesGraph; 
@@ -104,6 +103,24 @@ public class Workflow implements Iterable<WorkflowTask>, Serializable {
 		return new Workflow(graph);
 	}
 
+	public static Workflow getLinear2() {
+		Graph<WorkflowTask> graph =  Graph.create(); 
+		
+		graph.put(ImmutableWorkflowTask.getInstance(ServiceType.A),
+				ImmutableWorkflowTask.getInstance(ServiceType.B));
+
+		return new Workflow(graph);
+	}
+
+	public static Workflow getInvertedLinear2() {
+		Graph<WorkflowTask> graph =  Graph.create(); 
+		
+		graph.put(ImmutableWorkflowTask.getInstance(ServiceType.A),
+				ImmutableWorkflowTask.getInstance(ServiceType.B));
+		
+		return new Workflow(graph);
+	}
+	
 	public static Workflow getLinearInverted1(){
 		Graph<WorkflowTask> graph =  Graph.create(); 
 		
@@ -125,5 +142,32 @@ public class Workflow implements Iterable<WorkflowTask>, Serializable {
 		return new Workflow(graph);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((activitiesGraph == null) ? 0 : activitiesGraph.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Workflow other = (Workflow) obj;
+		if (activitiesGraph == null) {
+			if (other.activitiesGraph != null)
+				return false;
+		} else if (!activitiesGraph.equals(other.activitiesGraph))
+			return false;
+		return true;
+	}
+
+	
 
 }

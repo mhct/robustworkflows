@@ -56,7 +56,9 @@ public class FactoryAgent extends UntypedActor {
 	@Override
 	public void postStop() {
 		modelStorage.unRegisterFactoryAgent(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
+		modelStorage.persistWriteCache();
 	}
+	
 	
 	public FactoryAgent(DB db, List<ActorRef> neighbors, ComputationalResourceProfile computationalProfile) {
 		log.info("FactoryAgent started");
@@ -104,6 +106,7 @@ public class FactoryAgent extends UntypedActor {
 				throw new RuntimeException("StartExperimentRun has no run code");
 			}
 			modelStorage.addField("run", msg.getRun());
+			modelStorage.persistWriteCache();
 			computationalProfile.reset();
 			sender().tell("OK", self());
 		} else if (!isRunningExperiment()) {

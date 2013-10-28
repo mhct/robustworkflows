@@ -2,18 +2,22 @@ package be.kuleuven.robustworkflows.model;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.math3.random.MersenneTwister;
-import org.apache.commons.math3.random.RandomDataGenerator;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import scala.concurrent.duration.Duration;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
+import com.typesafe.config.Config;
 
 /**
  * Loads experiments on the network...
@@ -29,31 +33,38 @@ import com.mongodb.DBCursor;
  *
  */
 public class RobustWorkflowsActor extends UntypedActor {
-
-	private static int AVERAGE_ARRIVAL_INTERVAL = 1;
-	private static final int NUMBER_OF_RUNS = 30;
-	private static final Long SEED = 898989l;
+	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	
+	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss_SSS");
+	private static final int NUMBER_OF_RUNS = 30;
+
+	private final int startTimeInterval;
+	private final int concurrentClients;
+//	private static final Long SEED = 898989l;
+	
+	private int currentRun;
 	private final ModelStorage modelStorage;
 	private final InfrastructureStorage infrastructureStorage;
-	private int currentRun;
 	
-	public RobustWorkflowsActor(DB db) {
+	public RobustWorkflowsActor(DB db, Config configAttributes) {
+		log.debug("RobustWork Actor. Current time: " + dtf.print(new DateTime()));
 		this.modelStorage = ModelStorage.getInstance(db);
 		this.infrastructureStorage = new InfrastructureStorage(db);
 		currentRun = 0;
+		
+		startTimeInterval = configAttributes.getInt("start-time-interval");
+		concurrentClients = configAttributes.getInt("concurrent-clients");
 	}
 
 	@Override
 	public void onReceive(Object message) throws Exception {
 		
 		if ("Start".equals(message)) {
-//			sendComposeToAllClientAgents();
 			startNewExperimentRun();
 		} else if ("CheckExecution".equals(message)) {
-			System.out.println("CheckExecution received");
+			log.debug("CheckExecution received");
 			if (modelStorage.finishedAllCompositions(String.valueOf(previousRun()))) {
-				System.out.println("FINISHED ALL COMP");
+				log.debug("FINISHED ALL COMP");
 				startNewExperimentRun();
 			} else {
 				//do nothing
@@ -76,43 +87,48 @@ public class RobustWorkflowsActor extends UntypedActor {
 		if (currentRun == NUMBER_OF_RUNS-1) { 
 			return; //end soft execution
 		}
-		System.out.println("Starting new Experiment RUN");
+		log.debug("Starting new Experiment RUN");
 		
+		sendStartExperimentRun();
+		sendComposeToAllClientAgents();
+		
+		currentRun++;
+	}
+	
+	private void sendStartExperimentRun() {
 		DBCursor cursor = infrastructureStorage.getActors().find();
 		
 		while (cursor.hasNext()) {	
 			String actorAddress = (String) cursor.next().get("actorAddress");
 			ActorRef ref = getContext().system().actorFor(actorAddress);
 			ref.tell(StartExperimentRun.getInstance(String.valueOf(currentRun)), self());
-//			Future<Object> ret = akka.pattern.Patterns.ask(ref, StartExperimentRun.getInstance(String.valueOf(currentRun)), self(), 1000);
 		}
-		sendComposeToAllClientAgents();
-		
-		currentRun++;
 	}
 	
 	private void sendComposeToAllClientAgents() {
-		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED*currentRun));
+//		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED*currentRun));
 		
 		DBCursor cursor = infrastructureStorage.getClientAgent().find();
+		long startingTime = startTimeInterval;
 		int batch = 0;
 		while (cursor.hasNext()) {
-			if (batch % 50 == 0) {
-				AVERAGE_ARRIVAL_INTERVAL += 30;
+			
+			if (batch % concurrentClients == 0) {
+				startingTime += startTimeInterval;
+				batch++;
 			}
 			String ref = (String) cursor.next().get("actorAddress");
-			scheduleComposeMessage(ref, AVERAGE_ARRIVAL_INTERVAL, String.valueOf(currentRun));
-			batch++;
+			scheduleComposeMessage(ref, startingTime, String.valueOf(currentRun));
 		}
 	}
 	
-	private void scheduleComposeMessage(final String ref, final long time, final String run) {
-		getContext().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.SECONDS), 
+	public void scheduleComposeMessage(final String ref, final long time, final String run) {
+		getContext().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 
 				new Runnable() {
 
 					@Override
 					public void run() {
-						System.out.println("Enviando Compose Message: " + System.currentTimeMillis());
+						log.debug("Enviando Compose Message: " + dtf.print(new DateTime()));
 						getContext().system().actorFor(ref).tell(ClientAgentState.COMPOSE, self());
 					}
 			

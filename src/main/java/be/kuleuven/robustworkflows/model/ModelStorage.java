@@ -1,8 +1,10 @@
 package be.kuleuven.robustworkflows.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.BasicBSONObject;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -10,8 +12,10 @@ import org.joda.time.format.DateTimeFormatter;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.events.ModelEvent;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -34,11 +38,13 @@ public class ModelStorage {
 	
 	private final DB db;
 	private Map<String, Object> extraFields;
+	private Multimap<DBCollection, DBObject> writeCache;
 	
 	
 	private ModelStorage(DB db) {
 		this.db = db;
 		extraFields = Maps.newHashMap();
+		writeCache = ArrayListMultimap.create();
 	}
 
 	public void addField(String key, Object value) {
@@ -56,22 +62,35 @@ public class ModelStorage {
 	 * @param obj
 	 */
 	private void insert(DBCollection coll, DBObject obj) {
-		String val = (String) obj.get(ModelStorageMap.EVENT_TYPE);
-		if("SERVICE_REQUEST_SUMMARY".equals(val)) {
-			System.out.println("DO");
-		}
 		for (Map.Entry<String, Object> e: extraFields.entrySet()) {
 			obj.put(e.getKey(), e.getValue());
-			
 		}
-		try {
-			coll.insert(obj);
-		} catch (MongoException e) {
-			coll.insert(obj);
-//			throw new ModelStorageException(obj);
-		} catch (Exception e) {
-			coll.insert(obj);
-//			throw new ModelStorageException(obj);
+		writeToDB(coll, obj);
+	}
+	
+	private void writeToDB(DBCollection coll, DBObject obj) {
+		
+		writeCache.put(coll, obj);
+		if (writeCache.size() > 30) {
+			persistWriteCache();
+		}
+		
+	}
+	
+	public void persistWriteCache() {
+		for (int i=0; i<writeCache.keySet().size(); i++ ) {
+			for (DBCollection currentColl : writeCache.keySet()) {
+				List<DBObject> objects = new ArrayList<DBObject>(writeCache.get(currentColl));
+				writeCache.removeAll(currentColl);
+				
+				try {
+					currentColl.insert(objects);
+				} catch (MongoException e) {
+					throw new RuntimeException("Mongo Exc." + e);
+				} catch (Exception e) {
+					throw new RuntimeException("I/O Exc." + e);
+				}
+			}
 		}
 	}
 	

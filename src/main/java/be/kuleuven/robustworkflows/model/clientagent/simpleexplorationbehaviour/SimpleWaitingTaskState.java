@@ -1,7 +1,6 @@
 package be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour;
 
 import akka.actor.ActorRef;
-import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
@@ -48,6 +47,7 @@ public class SimpleWaitingTaskState extends ClientAgentState {
 						);
 			}
 			
+			getClientAgentProxy().getModelStorage().persistWriteCache();
 			getClientAgentProxy().getModelStorage().addField("run", msg.getRun());
 			getClientAgentProxy().getAntAPI().tellAll(msg);
 			

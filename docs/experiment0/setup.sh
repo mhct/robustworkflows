@@ -7,9 +7,7 @@
 #
 
 SSH_USER="u0061821"
-#ROOT="/Users/mario/Estudos/phd/software-projects/projects/evaluation_givemearide"
-#MONGO_CLIENT="/Users/mario/opt/mongo/bin/mongo"
-
+ROOT_FOLDER="/home/u0061821/robustworkflows"
 GRAPH_LOADER_SERVER="verviers.cs.kotnet.kuleuven.be"
 
 DB_SERVER="andenne.cs.kotnet.kuleuven.be"
@@ -33,7 +31,13 @@ function loadDatabase {
 function loadGraphLoader {
     network_model=$1
     db_name=$2
-    ssh $SSH_OPTIONS  $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER DB_PASS=$DB_PASS DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT DB_NAME=$db_name SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER NETWORK_MODEL=$network_model PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \$HOME/robustworkflows/current/bin/startGraphLoaderApp \& echo PID: \$! & 
+    ssh $SSH_OPTIONS  $SSH_USER@$GRAPH_LOADER_SERVER DB_USER=$DB_USER DB_PASS=$DB_PASS \
+            DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT DB_NAME=$db_name \
+            SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER NETWORK_MODEL=$network_model \
+            PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \
+            \$HOME/robustworkflows/current/bin/startGraphLoaderApp \> \
+            /home/u0061821/robustworkflows/logs/$db_name/graphloader.txt 2\>\&1 \& \
+            echo PID: \$! & 
 }
 
 
@@ -47,8 +51,8 @@ function loadRobustWorkflowsApp {
             DB_NAME=$db_name SYSTEM_HOSTNAME=$GRAPH_LOADER_SERVER \
             PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \
             \$HOME/robustworkflows/current/bin/startRobustWorkflowsLauncher \> \
-            /home/u0061821/robustworkflows/logs/workflowsLauncher.txt  2\>\&1  \& \
-            echo PID: \$! 
+            /home/u0061821/robustworkflows/logs/$db_name/workflowsLauncher.txt  2\>\&1  \& \
+            echo PID: \$! & 
 }
 
 
@@ -67,7 +71,7 @@ function loadSorcerer {
             SORCERER_NAME=$sorcerer_name SYSTEM_HOSTNAME=$sorcerer_server \
             DB_NAME=$db_name PATH=\$PATH:\$HOME/nvm/v0.6.14/bin/  \
             \$HOME/robustworkflows/current/bin/startSorcerer \> \
-            /home/u0061821/robustworkflows/logs/$sorcerer_name.txt  2\>\&1  \& \
+            /home/u0061821/robustworkflows/logs/$db_name/$sorcerer_name.txt  2\>\&1  \& \
             echo PID: \$! & 
 }
 
@@ -142,6 +146,11 @@ function  prepareDBPermissions {
 
 }
 
+function prepareLogFolders {
+    folder=$1
+     ssh $SSH_OPTIONS  $SSH_USER@$DB_SERVER LC_ALL=C mkdir $ROOT_FOLDER/logs/$folder 
+}
+
 function testInput {
     read -p "Next step (y,n)?" yn
     case $yn in
@@ -157,6 +166,7 @@ function exp {
 if [ "true" == "$(checkDBUser)" ] && [ -n $network_model ] && [ -n $b_name ]; then
     #loadDatabase
     #sleep 15
+    prepareLogFolders $db_name
     prepareDBPermissions $db_name
     testInput
     loadNeededSorcerers 10 $db_name
@@ -182,5 +192,6 @@ function deploy {
     mvn package -DskipTests
     scp target/RobustWorkflows-Actors-0.0.1-SNAPSHOT.jar  $SSH_USER@$DB_SERVER:/home/$SSH_USER/robustworkflows/current/deploy
     rsync -avz -e ssh datasets/* $SSH_USER@$DB_SERVER:/home/$SSH_USER/robustworkflows/
+    echo Current Time $(date)
 }
     
