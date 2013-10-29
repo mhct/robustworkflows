@@ -95,3 +95,12 @@ plotRealCompositionTimes <- function(data_to_plot, sub_title) {
   
   return(plot)
 }
+
+# STATISTICS
+smape <- function(experiment_data) {
+  a <- experiment_data
+  sum(abs(a$EXPECTED_TIME_TO_SERVE_COMPOSITION - a$REAL_TIME_TO_SERVE_COMPOSITION))/sum(a$REAL_TIME_TO_SERVE_COMPOSITION+a$EXPECTED_TIME_TO_SERVE_COMPOSITION)
+}
+
+#dt <- data.frame(smape=matrix(unlist(t[2:6]), nrow=6, byrow=T))
+#ggplot(data=dt, aes(x=seq(1:6), y=smape)) + geom_point()
