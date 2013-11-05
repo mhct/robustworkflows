@@ -86,9 +86,9 @@ public class RobustWorkflowsLauncher implements Bootable {
 		}
 	}
 	
-	public ActorSystem getSystem() {
-		return system;
-	}
+//	public ActorSystem getSystem() {
+//		return system;
+//	}
 	
 //	public static void main(String[] args) throws IOException, InterruptedException {
 //		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();

@@ -4,120 +4,6 @@
 #
 
 #
-# Experiment 1, trial 1
-#
-experiment_data <- agg(experiment_name="t7", number_of_runs=1);
-experiment_name <- "t7 - base case"
-sub_title <- paste(", Experiment:", experiment_name)
-p1 <- plotLines(experiment_data$agg, sub_title);
-p2 <- summDelta(experiment_data$agg, sub_title);
-p3 <- plotErrors(experiment_data$agg, sub_title)
-p4 <- ggplot(data=experiment_data$raw) + geom_histogram(aes(x=SERVICES_ENGAGED)) + labs(title=paste("Services Used in the compositions", sub_title))
-#factories <- read.csv(file="factories-trial1.csv")
-#p5 <- ggplot(data=factories) + geom_bar(aes(x=seq(1:10), y=time/1000), stat="identity") + labs(title=paste("Average service execution time of component services", sub_title), x="Component Service Identification", y="Average execution time (s)") +
-#  scale_x_discrete()
-
-ggsave(filename=paste("plots/", experiment_name, "-max_min_delta.pdf", sep=''), plot=p1)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_delta.pdf", sep=''), plot=p2)
-ggsave(filename=paste("plots/", experiment_name, "-points_delta.pdf", sep=''), plot=p3)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_services_engaged.pdf", sep=''), plot=p4)
-#ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_execution_times_factories.pdf", sep=''), plot=p5)
-
-
-experiment_data <- agg(experiment_name="t8", number_of_runs=1);
-experiment_name <- "t8"
-sub_title <- paste(", Experiment:", experiment_name)
-p1 <- plotLines(experiment_data$agg, sub_title);
-p2 <- summDelta(experiment_data$agg, sub_title);
-p3 <- plotErrors(experiment_data$agg, sub_title)
-p4 <- ggplot(data=experiment_data$raw) + geom_histogram(aes(x=SERVICES_ENGAGED)) + labs(title=paste("Services Used in the compositions", sub_title))
-#factories <- read.csv(file="factories-trial1.csv")
-#p5 <- ggplot(data=factories) + geom_bar(aes(x=seq(1:10), y=time/1000), stat="identity") + labs(title=paste("Average service execution time of component services", sub_title), x="Component Service Identification", y="Average execution time (s)") +
-scale_x_discrete()
-
-ggsave(filename=paste("plots/", experiment_name, "-max_min_delta.pdf", sep=''), plot=p1)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_delta.pdf", sep=''), plot=p2)
-ggsave(filename=paste("plots/", experiment_name, "-points_delta.pdf", sep=''), plot=p3)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_services_engaged.pdf", sep=''), plot=p4)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_execution_times_factories.pdf", sep=''), plot=p5)
-
-experiment_data <- agg(experiment_name="t12", number_of_runs=2);
-experiment_name <- "t12"
-sub_title <- paste(", Experiment  - /exp1/ABC100c-15f-2050et-1950aet-1.0asp.gexf:", experiment_name)
-p1 <- plotLines(experiment_data$agg, sub_title);
-p2 <- summDelta(experiment_data$agg, sub_title);
-p3 <- plotErrors(experiment_data$agg, sub_title)
-p4 <- ggplot(data=experiment_data$raw) + geom_histogram(aes(x=SERVICES_ENGAGED)) + labs(title=paste("Services Used in the compositions", sub_title))
-#factories <- read.csv(file="factories-trial1.csv")
-#p5 <- ggplot(data=factories) + geom_bar(aes(x=seq(1:10), y=time/1000), stat="identity") + labs(title=paste("Average service execution time of component services", sub_title), x="Component Service Identification", y="Average execution time (s)") +
-scale_x_discrete()
-
-ggsave(filename=paste("plots/", experiment_name, "-max_min_delta.pdf", sep=''), plot=p1)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_delta.pdf", sep=''), plot=p2)
-ggsave(filename=paste("plots/", experiment_name, "-points_delta.pdf", sep=''), plot=p3)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_services_engaged.pdf", sep=''), plot=p4)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_execution_times_factories.pdf", sep=''), plot=p5)
-
-
-experiment_data <- agg(experiment_name="t12", number_of_runs=2);
-experiment_name <- "t12"
-sub_title <- paste(", Experiment:", experiment_name)
-p1 <- plotLines(experiment_data$agg, sub_title);
-p2 <- summDelta(experiment_data$agg, sub_title);
-pCompSummary <- plotRealCompositionTimes(experiment_data$agg, sub_title);
-p3 <- plotErrors(experiment_data$agg, sub_title)
-p4 <- ggplot(data=experiment_data$raw) + geom_histogram(aes(x=SERVICES_ENGAGED)) + labs(title=paste("Services Used in the compositions", sub_title))
-#factories <- read.csv(file="factories-trial1.csv")
-#p5 <- ggplot(data=factories) + geom_bar(aes(x=seq(1:10), y=time/1000), stat="identity") + labs(title=paste("Average service execution time of component services", sub_title), x="Component Service Identification", y="Average execution time (s)") +
-scale_x_discrete()
-
-ggsave(filename=paste("plots/", experiment_name, "-max_min_delta.pdf", sep=''), plot=p1)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_delta.pdf", sep=''), plot=p2)
-ggsave(filename=paste("plots/", experiment_name, "-points_delta.pdf", sep=''), plot=p3)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_services_engaged.pdf", sep=''), plot=p4)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_execution_times_factories.pdf", sep=''), plot=p5)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_real_execution_time_composition.pdf", sep=''), plot=pCompSummary)
-
-experiment_data <- agg(experiment_name="t12-2", number_of_runs=1);
-experiment_name <- "t12-2"
-sub_title <- paste(", Experiment:", experiment_name)
-p1 <- plotLines(experiment_data$agg, sub_title);
-p2 <- summDelta(experiment_data$agg, sub_title);
-pCompSummary <- plotRealCompositionTimes(experiment_data$agg, sub_title);
-p3 <- plotErrors(experiment_data$agg, sub_title)
-p4 <- ggplot(data=experiment_data$raw) + geom_histogram(aes(x=SERVICES_ENGAGED)) + labs(title=paste("Services Used in the compositions", sub_title))
-#factories <- read.csv(file="factories-trial1.csv")
-#p5 <- ggplot(data=factories) + geom_bar(aes(x=seq(1:10), y=time/1000), stat="identity") + labs(title=paste("Average service execution time of component services", sub_title), x="Component Service Identification", y="Average execution time (s)") +
-scale_x_discrete()
-
-ggsave(filename=paste("plots/", experiment_name, "-max_min_delta.pdf", sep=''), plot=p1)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_delta.pdf", sep=''), plot=p2)
-ggsave(filename=paste("plots/", experiment_name, "-points_delta.pdf", sep=''), plot=p3)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_services_engaged.pdf", sep=''), plot=p4)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_execution_times_factories.pdf", sep=''), plot=p5)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_real_execution_time_composition.pdf", sep=''), plot=pCompSummary)
-
-
-experiment_data <- agg(experiment_name="t12-4", number_of_runs=1);
-experiment_name <- "t12-4"
-sub_title <- paste(", Experiment:", experiment_name)
-p1 <- plotLines(experiment_data$agg, sub_title);
-p2 <- summDelta(experiment_data$agg, sub_title);
-pCompSummary <- plotRealCompositionTimes(experiment_data$agg, sub_title);
-p3 <- plotErrors(experiment_data$agg, sub_title)
-p4 <- ggplot(data=experiment_data$raw) + geom_histogram(aes(x=SERVICES_ENGAGED)) + labs(title=paste("Services Used in the compositions", sub_title))
-#factories <- read.csv(file="factories-trial1.csv")
-#p5 <- ggplot(data=factories) + geom_bar(aes(x=seq(1:10), y=time/1000), stat="identity") + labs(title=paste("Average service execution time of component services", sub_title), x="Component Service Identification", y="Average execution time (s)") +
-scale_x_discrete()
-
-ggsave(filename=paste("plots/", experiment_name, "-max_min_delta.pdf", sep=''), plot=p1)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_delta.pdf", sep=''), plot=p2)
-ggsave(filename=paste("plots/", experiment_name, "-points_delta.pdf", sep=''), plot=p3)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_services_engaged.pdf", sep=''), plot=p4)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_execution_times_factories.pdf", sep=''), plot=p5)
-ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_real_execution_time_composition.pdf", sep=''), plot=pCompSummary)
-
-#
 # Failure Percentage
 #
 # Percentage of failed service compositions in relation to the search probability of exploration ants
@@ -145,3 +31,57 @@ ggplot() +  plot_e1t1 +
   scale_x_discrete(breaks=c(1,2,3,5,6,7,8,9,10), labels=c(10,20,30,50,60,70,80,90,100)) +
   scale_colour_manual(breaks=c("100c10f", "1000c100f"), labels=c("100 Clients, 10 Services", "1000 Clients, 100 Services"), values=c("100c10f" = "blue", "1000c100f" = "red"))
 
+#
+# BoxPlot to compare the Average Composition time for different concurrency levels
+#
+executions <- 17
+agg_data <- data.frame()
+for (i in seq(1:executions)) {
+  agg_temp <- agg(experiment_name=paste("t1-", i, sep=''), number_of_runs=1)$raw
+  agg_temp$X <- i
+  
+  agg_data <- rbind(agg_data, agg_temp)
+}
+distribution_compositions <- ggplot(data=agg_data, aes(factor(X), REAL_TIME_TO_SERVE_COMPOSITION/1000)) + geom_boxplot() + 
+  labs(title="Distribution of Composition times by number of concurrent monitoring requests, 100 Clients, 10 Servers", x="Concurrent requests (number)", y="Composition duration (s)")
+ggsave(filename="plots/distribution_composition_times.pdf", plot=distribution_compositions)
+
+#
+# SMAPE to show the error in estimates of the expected composition time, for different concurrency levels
+#
+t <- list()
+for (i in seq(1:executions)) {
+  t[i] <- smape(agg(experiment_name=paste("t1-", i, sep=''), number_of_runs=1)$raw)
+}
+experiment1_trial1 <- data.frame(smape=matrix(unlist(t), nrow=executions, byrow=T))
+smapeTrial1 <- ggplot(data=experiment1_trial1, aes(x=seq(1:executions), y=100*smape)) + geom_point(size=3) +
+  scale_x_discrete(breaks=seq(1:executions), labels=seq(1:executions)) +
+  labs(title="SMAPE by concurrency, 100 Clients, 10 Servers", x="Number of concurrent requests", y="SMAPE result (%)")
+
+ggsave(filename=paste("plots/", "smape-trial1.pdf", sep=''), plot=smapeTrial1)
+
+#
+# Detailed information about each concurrent execution
+#
+for (i in seq(1:executions)) {
+  experiment_name <- paste("t1-",i,sep='')
+  experiment_data <- agg(experiment_name=experiment_name, number_of_runs=1);
+  
+  sub_title <- paste(", Experiment:", experiment_name)
+  p1 <- plotLines(experiment_data$agg, sub_title);
+  p2 <- summDelta(experiment_data$agg, sub_title);
+  pCompSummary <- plotRealCompositionTimes(experiment_data$agg, sub_title);
+  p3 <- plotErrors(experiment_data$agg, sub_title)
+  p4 <- ggplot(data=experiment_data$raw) + geom_histogram(aes(x=SERVICES_ENGAGED)) + labs(title=paste("Services Used in the compositions", sub_title))
+  #factories <- read.csv(file="factories-trial1.csv")
+  #p5 <- ggplot(data=factories) + geom_bar(aes(x=seq(1:10), y=time/1000), stat="identity") + labs(title=paste("Average service execution time of component services", sub_title), x="Component Service Identification", y="Average execution time (s)") +
+  #scale_x_discrete()
+  
+  ggsave(filename=paste("plots/", experiment_name, "-max_min_delta.pdf", sep=''), plot=p1)
+  ggsave(filename=paste("plots/", experiment_name, "-histogram_delta.pdf", sep=''), plot=p2)
+  ggsave(filename=paste("plots/", experiment_name, "-points_delta.pdf", sep=''), plot=p3)
+  ggsave(filename=paste("plots/", experiment_name, "-histogram_services_engaged.pdf", sep=''), plot=p4)
+  #ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_execution_times_factories.pdf", sep=''), plot=p5)
+  ggsave(filename=paste("plots/", experiment_name, "-histogram_avg_real_execution_time_composition.pdf", sep=''), plot=pCompSummary)
+
+}

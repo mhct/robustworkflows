@@ -73,11 +73,12 @@ timeline = function(clientAgentId, run_id) {
 	db.model_events.find(query);
 }
 
-findMissing = function() {
-	clients = db.clientAgents.find({},{actorName:1});
-	clients.forEach(function(data) {
-		db.model_events.find({ClientAgent: data.actorName, EventType: }, {EventType: 1})
-		});
-	
-}
+
+//findMissing = function() {
+//	clients = db.clientAgents.find({},{actorName:1});
+//	clients.forEach(function(data) {
+//		db.model_events.find({ClientAgent: data.actorName, EventType: }, {EventType: 1})
+//		});
+//}
+
 	

@@ -115,8 +115,9 @@ public class RobustWorkflowsActor extends UntypedActor {
 			
 			if (batch % concurrentClients == 0) {
 				startingTime += startTimeInterval;
-				batch++;
 			}
+
+			batch++;
 			String ref = (String) cursor.next().get("actorAddress");
 			scheduleComposeMessage(ref, startingTime, String.valueOf(currentRun));
 		}

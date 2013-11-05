@@ -115,8 +115,8 @@ public class Workflow implements Iterable<WorkflowTask>, Serializable {
 	public static Workflow getInvertedLinear2() {
 		Graph<WorkflowTask> graph =  Graph.create(); 
 		
-		graph.put(ImmutableWorkflowTask.getInstance(ServiceType.A),
-				ImmutableWorkflowTask.getInstance(ServiceType.B));
+		graph.put(ImmutableWorkflowTask.getInstance(ServiceType.B),
+				ImmutableWorkflowTask.getInstance(ServiceType.A));
 		
 		return new Workflow(graph);
 	}

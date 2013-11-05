@@ -167,12 +167,16 @@ if [ "true" == "$(checkDBUser)" ] && [ -n $network_model ] && [ -n $b_name ]; th
     #loadDatabase
     #sleep 15
     prepareLogFolders $db_name
+    sleep 5
     prepareDBPermissions $db_name
-    testInput
-    loadNeededSorcerers 10 $db_name
-    testInput
+    sleep 15
+    #testInput
+    loadNeededSorcerers 50 $db_name
+    sleep 10
+    #testInput
     loadGraphLoader $network_model $db_name
-    testInput
+    sleep 10
+    #testInput
     loadRobustWorkflowsApp $db_name
 else
     echo "DB_USER, DB_PASS, DB_ADMIN_USER, DB_ADMIN_PASS should be set before executing this script"
@@ -180,7 +184,7 @@ fi
 }
 
 function stopExt {
-    stopAll 10
+    stopAll 50
     stopIt verviers java
 #    stopIt andenne mongod
 }
