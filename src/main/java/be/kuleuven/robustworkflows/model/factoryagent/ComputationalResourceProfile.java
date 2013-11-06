@@ -55,7 +55,7 @@ public abstract class ComputationalResourceProfile implements Serializable {
 	}
 
 	/**
-	 * Tell the Actor how long it should "BLOCK" its operations to simulate the time for the "hardware" simulated by the ComputationProfile to 
+	 * Tells the Actor how long it should "BLOCK" its operations to simulate the time for the "hardware" simulated by the ComputationProfile to 
 	 * be able to perform another operation... TODO this is still not quite clear.
 	 * 
 	 * @return
@@ -64,6 +64,12 @@ public abstract class ComputationalResourceProfile implements Serializable {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	public boolean hasWork() {
+		return false;
+	}
+	
+	public abstract void reset();
 
 	/**
 	 * Creates a FixedProcessingTimeProfile
@@ -76,7 +82,7 @@ public abstract class ComputationalResourceProfile implements Serializable {
 	}
 	
 	/**
-	 * Creates a ExponentialProfile
+	 * Creates an ExponentialProfile
 	 * 
 	 * @param seed used to bootstrap the pseudo-random number generator
 	 * @return
@@ -85,11 +91,17 @@ public abstract class ComputationalResourceProfile implements Serializable {
 		return new ExponentialProfile(seed);
 	}
 
-	public boolean hasWork() {
-		return false;
+	/**
+	 * Creates an AverageDistributionProcessingTimeProfile
+	 * 
+	 * @param processingTimePerRequest represents the average time it will take to execute a request
+	 * @param seed is the initial seed used to randomly generate the execution times
+	 * @param serviceType constrains the request types that are executed by this Computational Resource Profile  
+	 * @return a new {@code AverageDistributionProcessingTimeProfile} 
+	 */
+	public static ComputationalResourceProfile average(int processingTimePerRequest, double sigma, int seed, ServiceType serviceType) {
+		return new AverageDistributionProcessingTimeProfile(processingTimePerRequest, sigma, seed, serviceType);
 	}
-
-	public abstract void reset();
 
 }
 

@@ -17,4 +17,6 @@ public class NodeAttributes {
 	public static final String ServiceType = "ServiceType";
 	public static final String ExplorationBehaviorFactory = "ExplorationBehaviorFactory";
 	public static final String WorkflowFactory = "WorkflowFactory";
+	public static final String Client = "Client";
+	public static final String Sigma = "Sigma";
 }

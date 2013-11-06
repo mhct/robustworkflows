@@ -14,4 +14,6 @@ public class NodeAttributeValues {
 	public static final String InvertedLinear2 = "InvertedLinear2";
 	public static final String SimpleExplorationBehaviour = "be.kuleuven.robustworkflows.model.clientagent.SimpleExplorationFactory";
 	public static final String FixedProcessingTime = "FixedProcessingTime";
+	public static final String AverageDistributionProcessingTimeProfile = "AverageDistributionProcessingTimeProfile";
+	public static final String Exponential = "Exponential";
 }

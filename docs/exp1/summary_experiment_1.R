@@ -34,7 +34,7 @@ ggplot() +  plot_e1t1 +
 #
 # BoxPlot to compare the Average Composition time for different concurrency levels
 #
-executions <- 17
+executions <- 20
 agg_data <- data.frame()
 for (i in seq(1:executions)) {
   agg_temp <- agg(experiment_name=paste("t1-", i, sep=''), number_of_runs=1)$raw

@@ -99,17 +99,24 @@ public class AgentAttributes implements Serializable {
 		Workflow workflow = null;
 		
 		//FIXME TODO parse the nodeAttribute and load the correct type of resource
-		if ("Factory".equals((String) attributes.getValue(NodeAttributes.NodeType))) {
+		if (NodeAttributeValues.Factory.equals((String) attributes.getValue(NodeAttributes.NodeType))) {
 			
-			if ("Exponential".equals((String) attributes.getValue(NodeAttributes.ComputationalResourceProfile))) {
+			if (NodeAttributeValues.Exponential.equals((String) attributes.getValue(NodeAttributes.ComputationalResourceProfile))) {
 				profile = ComputationalResourceProfile.exponential(Integer.valueOf((String) attributes.getValue("Seed")));
 				
-			} else if ("FixedProcessingTime".equals((String) attributes.getValue(NodeAttributes.ComputationalResourceProfile))) {
+			} else if (NodeAttributeValues.FixedProcessingTime.equals((String) attributes.getValue(NodeAttributes.ComputationalResourceProfile))) {
 				ServiceType st = ServiceType.valueOf((String) attributes.getValue(NodeAttributes.ServiceType));
 				profile = ComputationalResourceProfile.fixedProcessingTime(Integer.valueOf((String) attributes.getValue(NodeAttributes.ProcessingTimePerRequest)), st);
 				
+			} else if (NodeAttributeValues.AverageDistributionProcessingTimeProfile.equals((String) attributes.getValue(NodeAttributes.ComputationalResourceProfile))) {
+				ServiceType st = ServiceType.valueOf((String) attributes.getValue(NodeAttributes.ServiceType));
+				profile = ComputationalResourceProfile.average(Integer.valueOf((String) attributes.getValue(NodeAttributes.ProcessingTimePerRequest)), 
+						(Double) attributes.getValue(NodeAttributes.Sigma),
+						(Integer) attributes.getValue(NodeAttributes.Seed),
+						st);
+			
 			} 
-		} else if ("Client".equals((String) attributes.getValue(NodeAttributes.NodeType))) {
+		} else if (NodeAttributes.Client.equals((String) attributes.getValue(NodeAttributes.NodeType))) {
 			explorationStateTimeout = (Long) attributes.getValue(NodeAttributes.ExplorationStateTimeout);
 			antExplorationTimeout = (Long) attributes.getValue(NodeAttributes.AntExplorationTimeout);
 			antExplorationSamplingProbability =  (Double) attributes.getValue(NodeAttributes.AntExplorationSamplingProbability);

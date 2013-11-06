@@ -27,6 +27,7 @@ public class CloudCreator {
 	private static RandomDataGenerator random1 = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator random2 = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator randomWorkflows = new RandomDataGenerator(new MersenneTwister(SEED));
+	private static RandomDataGenerator seedGen = new RandomDataGenerator(new MersenneTwister(SEED));
 
 	private static final int NUMBER_OF_FACTORIES = 15;
 	private static final int NUMBER_OF_CLIENTS = 100;
@@ -109,7 +110,9 @@ public class CloudCreator {
 		}
 		
 		n.getAttributes().setValue(NodeAttributes.NodeType, NodeAttributeValues.Factory);
-		n.getAttributes().setValue(NodeAttributes.ComputationalResourceProfile, NodeAttributeValues.FixedProcessingTime);
+		n.getAttributes().setValue(NodeAttributes.ComputationalResourceProfile, NodeAttributeValues.AverageDistributionProcessingTimeProfile);
+		n.getAttributes().setValue(NodeAttributes.Seed, seedGen.nextInt(1000, 90000));
+		n.getAttributes().setValue(NodeAttributes.Sigma, 0.7);
 		n.getAttributes().setValue(NodeAttributes.ProcessingTimePerRequest, String.valueOf(processingTimePerRequest));
 		n.getAttributes().setValue(NodeAttributes.ServiceType, serviceType);
 
