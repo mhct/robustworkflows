@@ -15,7 +15,7 @@ import com.google.common.io.Files;
 public class CloudReader {
 
 	public static void main(String[] args) throws IOException {
-		String filename = "exp7/10c-10f-500t.gexf";
+		String filename = "exp1/ABC100c-15f-2050et-1950aet-1.0asp-another_distribution.gexf";
 		String outputfile = "factories-trial1.csv";
 		File gephiFile = new File("datasets/" + filename);
 		Graph g = GephiGraphImporter.loadDirectedGraphFrom(gephiFile);

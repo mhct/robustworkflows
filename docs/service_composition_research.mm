@@ -163,7 +163,7 @@
 <node COLOR="#00b439" CREATED="1380199210481" ID="ID_1986635089" MODIFIED="1380199213799" TEXT="hyphotesis">
 <edge STYLE="bezier" WIDTH="thin"/>
 <font NAME="SansSerif" SIZE="16"/>
-<node COLOR="#990000" CREATED="1380199214352" ID="ID_870751976" MODIFIED="1380199243620" TEXT="the size of the network affects the performance of the service compositions">
+<node COLOR="#990000" CREATED="1380199214352" ID="ID_870751976" MODIFIED="1384857669875" TEXT="the size of the network affects the performance of the service compositions">
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
@@ -380,6 +380,22 @@
 <font NAME="SansSerif" SIZE="14"/>
 <node COLOR="#111111" CREATED="1382347917055" ID="ID_352204857" MODIFIED="1382348185766" TEXT=""/>
 </node>
+</node>
+</node>
+<node COLOR="#0033ff" CREATED="1383729174115" ID="ID_1383444272" MODIFIED="1383729175531" POSITION="right" TEXT="TODO">
+<edge STYLE="sharp_bezier" WIDTH="8"/>
+<font NAME="SansSerif" SIZE="18"/>
+<node COLOR="#00b439" CREATED="1383729175835" ID="ID_1410426301" MODIFIED="1383729181478" TEXT="document the experiments I am doing">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+</node>
+<node COLOR="#00b439" CREATED="1383729183539" ID="ID_723169504" MODIFIED="1383729186955" TEXT="write plan again">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
+</node>
+<node COLOR="#00b439" CREATED="1383729585044" ID="ID_344303738" MODIFIED="1383729602548" TEXT="add variation to expected time to execute the service as well.. (distribution)">
+<edge STYLE="bezier" WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="16"/>
 </node>
 </node>
 <node COLOR="#0033ff" CREATED="1371028657902" ID="ID_860534724" MODIFIED="1371028662143" POSITION="left" TEXT="cycle1">

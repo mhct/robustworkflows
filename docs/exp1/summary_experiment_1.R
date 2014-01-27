@@ -34,10 +34,10 @@ ggplot() +  plot_e1t1 +
 #
 # BoxPlot to compare the Average Composition time for different concurrency levels
 #
-executions <- 20
+executions <- 7
 agg_data <- data.frame()
 for (i in seq(1:executions)) {
-  agg_temp <- agg(experiment_name=paste("t1-", i, sep=''), number_of_runs=1)$raw
+  agg_temp <- agg(experiment_name=paste("t3-", i, sep=''), number_of_runs=1)$raw
   agg_temp$X <- i
   
   agg_data <- rbind(agg_data, agg_temp)
@@ -51,20 +51,30 @@ ggsave(filename="plots/distribution_composition_times.pdf", plot=distribution_co
 #
 t <- list()
 for (i in seq(1:executions)) {
-  t[i] <- smape(agg(experiment_name=paste("t1-", i, sep=''), number_of_runs=1)$raw)
+  t[i] <- smape(agg(experiment_name=paste("t3-", i, sep=''), number_of_runs=1)$raw)
 }
 experiment1_trial1 <- data.frame(smape=matrix(unlist(t), nrow=executions, byrow=T))
-smapeTrial1 <- ggplot(data=experiment1_trial1, aes(x=seq(1:executions), y=100*smape)) + geom_point(size=3) +
+smapeTrial1 <- ggplot(data=experiment1_trial1, aes(x=seq(1:executions), y=100*smape)) + geom_point(size=2) +
   scale_x_discrete(breaks=seq(1:executions), labels=seq(1:executions)) +
   labs(title="SMAPE by concurrency, 100 Clients, 10 Servers", x="Number of concurrent requests", y="SMAPE result (%)")
 
-ggsave(filename=paste("plots/", "smape-trial1.pdf", sep=''), plot=smapeTrial1)
+ggsave(filename=paste("plots/", "smape2-trial1.pdf", sep=''), plot=smapeTrial1)
+
+#
+# BoxPlot of trial 1 - Average execution time of each service
+#
+services_time <- read.csv(file="factories-trial1.csv")
+service_distribution_times <- ggplot(data=services_time, aes(factor(ServiceType), time/1000)) + geom_boxplot() + 
+  labs(title="Service execution time", x="Service type", y="Execution duration (s)")
+ggsave(filename="plots/service_distribution_times_trial1.pdf", plot=service_distribution_times)
+
+
 
 #
 # Detailed information about each concurrent execution
 #
 for (i in seq(1:executions)) {
-  experiment_name <- paste("t1-",i,sep='')
+  experiment_name <- paste("t3-",i,sep='')
   experiment_data <- agg(experiment_name=experiment_name, number_of_runs=1);
   
   sub_title <- paste(", Experiment:", experiment_name)

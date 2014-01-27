@@ -6,11 +6,11 @@
 # @mariohct
 #
 
-SSH_USER="u0061821"
+SSH_USER="mariokul"
 ROOT_FOLDER="/home/u0061821/robustworkflows"
 GRAPH_LOADER_SERVER="verviers.cs.kotnet.kuleuven.be"
 
-DB_SERVER="andenne.cs.kotnet.kuleuven.be"
+DB_SERVER="ly-2-08"
 DB_SERVER_PORT="27017"
 
 SSH_OPTIONS=" -o PasswordAuthentication=no -o StrictHostKeyChecking=no " 
@@ -18,7 +18,7 @@ SSH_OPTIONS=" -o PasswordAuthentication=no -o StrictHostKeyChecking=no "
 # Loads the database
 #
 function loadDatabase {
-    ssh $SSH_OPTIONS  $SSH_USER@$DB_SERVER LC_ALL=C \$HOME/mongo/bin/mongod --auth \
+    ssh $SSH_OPTIONS  $SSH_USER@$DB_SERVER LC_ALL=C /usr/bin/numactl --interleave=all \$HOME/opt/mongo/bin/mongod --auth \
             --logpath \$HOME/robustworkflows/mongo.log --logappend \
             --dbpath \$HOME/robustworkflows/db_storage \& echo PID: \$! &
     #\& pidstat -r -p \$! 1 86400 

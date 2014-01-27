@@ -28,8 +28,11 @@ public class CloudCreator {
 	private static RandomDataGenerator random2 = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator randomWorkflows = new RandomDataGenerator(new MersenneTwister(SEED));
 	private static RandomDataGenerator seedGen = new RandomDataGenerator(new MersenneTwister(SEED));
+	private static RandomDataGenerator randomP1 = new RandomDataGenerator(new MersenneTwister(2*SEED));
+	private static RandomDataGenerator randomP2 = new RandomDataGenerator(new MersenneTwister(3*SEED));
+	private static RandomDataGenerator randomP3 = new RandomDataGenerator(new MersenneTwister(4*SEED));
 
-	private static final int NUMBER_OF_FACTORIES = 15;
+	private static final int NUMBER_OF_FACTORIES = 100;
 	private static final int NUMBER_OF_CLIENTS = 100;
 	private static final long EXPLORATION_TIMEOUT = 2050;
 	private static final long ANT_EXPLORATION_TIMEOUT = 1950;
@@ -99,14 +102,18 @@ public class CloudCreator {
 	private static Node newFactoryNode(final GraphModel gm) {
 		Node n = gm.factory().newNode();
 				
-		final int processingTimePerRequest = random1.nextInt(10000, 30000);
+		int processingTimePerRequest;
 		double e = random2.nextUniform(0, 1);
 
 		String serviceType = ServiceType.A.toString();
 		if (e >= 1.0/3.0 && e < 2.0/3.0) {
 			serviceType = ServiceType.B.toString();
+			processingTimePerRequest = randomP1.nextInt(10000, 30000);
 		} else if (e >= 2.0/3.0) {
 			serviceType = ServiceType.C.toString();
+			processingTimePerRequest = randomP2.nextInt(10000, 30000);
+		} else {
+			processingTimePerRequest = randomP3.nextInt(10000, 30000);
 		}
 		
 		n.getAttributes().setValue(NodeAttributes.NodeType, NodeAttributeValues.Factory);

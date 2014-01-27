@@ -60,6 +60,10 @@ plotHistogram <- function(data_to_plot) {
     labs(title="Executed compositions per service", x="Number of Compositions", y="Density of services")
 }
 
+factories_service_times <- function(data) {
+  plot <- ggplot(data=data) + geom_histogram(aes(x=Freq, y=..density..), color= "black", binwidth=50) + 
+    labs(title="Service computation times", x="Average Execution time (ms)", y="density")
+}
 plotLines <- function(data_to_plot, sub_title) {
   title <- paste("Composition times", sub_title)
   l1 <- geom_line(data=data_to_plot, aes(x=X, y=REAL_TIME_TO_SERVE_COMPOSITION/1000, color='Real'), size=2)
@@ -96,7 +100,7 @@ plotRealCompositionTimes <- function(data_to_plot, sub_title) {
   return(plot)
 }
 
-# STATISTICS
+# STATISTICS SMAPE (http://en.wikipedia.org/wiki/Symmetric_mean_absolute_percentage_error)
 smape <- function(experiment_data) {
   a <- experiment_data
   sum(abs(a$EXPECTED_TIME_TO_SERVE_COMPOSITION - a$REAL_TIME_TO_SERVE_COMPOSITION))/sum(a$REAL_TIME_TO_SERVE_COMPOSITION+a$EXPECTED_TIME_TO_SERVE_COMPOSITION)

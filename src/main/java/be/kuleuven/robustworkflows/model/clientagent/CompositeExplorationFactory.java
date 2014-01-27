@@ -3,6 +3,7 @@ package be.kuleuven.robustworkflows.model.clientagent;
 import java.io.Serializable;
 
 import akka.actor.UntypedActor;
+import be.kuleuven.robustworkflows.model.ant.CompositeExplorationAnt;
 import be.kuleuven.robustworkflows.model.clientagent.compositeexplorationbehavior.WaitingTaskState;
 
 public class CompositeExplorationFactory extends ExplorationBehaviorFactory implements Serializable {
@@ -14,13 +15,9 @@ public class CompositeExplorationFactory extends ExplorationBehaviorFactory impl
 		return WaitingTaskState.getInstance(clientAgentProxy);
 	}
 
-	/**
-	 * FIXME check the parameters here
-	 */
 	@Override
-	public UntypedActor createExplorationAnt(ExplorationAntParameter parameterObject) {
-//		return CompositeExplorationAnt.getInstance(parameterObject);
-		return null;
+	public UntypedActor createExplorationAnt(ExplorationAntParameter antParameters) {
+		return CompositeExplorationAnt.getInstance(antParameters);
 	}
 
 }

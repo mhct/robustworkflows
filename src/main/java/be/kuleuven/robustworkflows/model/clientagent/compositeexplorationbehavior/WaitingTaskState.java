@@ -15,11 +15,11 @@ public class WaitingTaskState extends ClientAgentState {
 	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (RUN.equals(message)) {
-			persistEvent("WaitingTaskState: " + RUN);
+//			persistEvent("WaitingTaskState: " + RUN);
 			
 		} else if ("Compose".equals(message)) {
-			persistEvent("Received a compose message");
-			setState(ExploringState.getInstance(getClientAgentProxy()));
+//			persistEvent("Received a compose message");
+			setState(CompositeExploringState.getInstance(getClientAgentProxy()));
 			
 		}
 	}

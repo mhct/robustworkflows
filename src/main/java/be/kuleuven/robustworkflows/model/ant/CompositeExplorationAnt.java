@@ -12,6 +12,7 @@ import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
+import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
@@ -23,6 +24,16 @@ import be.kuleuven.robustworkflows.model.messages.Workflow;
  *  
  * @author mario
  *
+ * * === Inbound messages ===
+ * - ''' ExplorationReply '''
+ * - ''' ExploringStateTimeout '''
+ * - ''' ExplorationFinished '''
+ * - ''' Compose ''' tell the explorationAnt to mark all its events as bellonging to another RUN of the emulation
+ * 
+ * === Outbound messages ===
+ * - ''' SimpleExplorationResult '''
+ * - ''' ExplorationRequest '''
+ * 
  */
 public class CompositeExplorationAnt extends UntypedActor {
 	
@@ -59,14 +70,14 @@ public class CompositeExplorationAnt extends UntypedActor {
 			
 			serviceMatcher = WorkflowServiceMatcher.getInstance(workflow);
 			for (ServiceType st: serviceMatcher.getNeededServiceTypes()) {
-				List<String> agentPaths = modelStorage.getFactoryAgents(st); //FIXME CoordinationLayer function
+				List<String> agentPaths = modelStorage.getFactoryAgents(st);
 				askQoS(agentPaths, st);
 			}
 			addExpirationTimer(explorationTimeout, EventType.ExploringStateTimeout);
 			
 		} else if (ExplorationReply.class.isInstance(message)) {
 			ExplorationReply qos = (ExplorationReply) message;
-			modelStorage.persistEvent(qos.toDBObject(sender().path().name()));
+//			modelStorage.persistEvent(qos.toDBObject(sender().path().name()));
 
 			serviceMatcher.addReply(sender(), qos);
 			waitForReply--;
@@ -76,7 +87,7 @@ public class CompositeExplorationAnt extends UntypedActor {
 			
 			
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
-			modelStorage.persistEvent("ExpAnt Timeout"); //add complete summary of the state of explorationant
+//			modelStorage.persistEvent("ExpAnt Timeout"); //add complete summary of the state of explorationant
 			master.tell(ExplorationResult.getInstance(serviceMatcher.createOptimalWorkflow()), self());
 		}
 		
@@ -115,9 +126,8 @@ public class CompositeExplorationAnt extends UntypedActor {
 		}
 	}
 
-	public void addExpirationTimer(long time, final EventType message) {
-//		system.scheduler().scheduleOnce(Duration.create(10, TimeUnit.SECONDS), getClientAgent(), system.dispatcher(), null);
-		context().system().scheduler().scheduleOnce(Duration.create(time, TimeUnit.MILLISECONDS), 
+	public void addExpirationTimer(long milliseconds, final EventType message) {
+		context().system().scheduler().scheduleOnce(Duration.create(milliseconds, TimeUnit.MILLISECONDS), 
 				new Runnable() {
 					@Override
 					public void run() {
@@ -126,8 +136,14 @@ public class CompositeExplorationAnt extends UntypedActor {
 		}, context().system().dispatcher());
 	}
 	
-	public static UntypedActor getInstance(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
-		return new CompositeExplorationAnt(master, modelStorage, workflow, explorationTimeout);
+	public static UntypedActor getInstance(
+			ExplorationAntParameter antParameters) {
+		
+		return new CompositeExplorationAnt(
+				antParameters.getMaster(),
+				antParameters.getModelStorage(),
+				antParameters.getWorkflow(),
+				antParameters.getExplorationTimeout());
 	}
 
 }

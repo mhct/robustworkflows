@@ -12,10 +12,8 @@
 function mexport {
     db_name=$1
     output_file=$2
-
     mongoexport -h andenne.cs.kotnet.kuleuven.be -u $DB_USER -p $DB_PASS -d $db_name \
-    -c model_events  -f time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,\
-    REAL_TIME_TO_SERVE_COMPOSITION,ClientAgent,SERVICES_ENGAGED,run \
-    -q \{EventType:\'SERVICE_COMPOSITION_SUMMARY\'\} --csv > $output_file
+       -c model_events  -f time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,ClientAgent,SERVICES_ENGAGED,run \
+       -q {EventType:\'SERVICE_COMPOSITION_SUMMARY\'\,run:\'0\'} --csv > $output_file
 }
 
