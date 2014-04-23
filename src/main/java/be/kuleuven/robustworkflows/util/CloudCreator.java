@@ -109,7 +109,7 @@ public class CloudCreator {
 		final ExportController ec = Lookup.getDefault().lookup(ExportController.class);
 		try {
 			String graphFilename = "/tmp/ABC" + nbFactories + "f-" + numberOfClients + "c-" + EXPLORATION_TIMEOUT + "et-" + ANT_EXPLORATION_TIMEOUT + "aet-" + ANT_SAMPLING_PROBABILITY + "asp.gexf";
-			ec.exportFile(new File(graphFilename));
+			ec.exportFile(new File(graphFilename), pc.getCurrentWorkspace());
 		} catch (IOException e) {
 			System.err.println(e);
 		}

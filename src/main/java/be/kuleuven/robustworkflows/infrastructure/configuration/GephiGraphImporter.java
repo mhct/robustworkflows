@@ -22,7 +22,7 @@ import org.openide.util.Lookup;
 public class GephiGraphImporter {
 	
 	/**
-	 * Loads data from graph file and inserts it on the given workspace
+	 * Loads data from a file graph and inserts it on the given workspace
 	 * 
 	 * @param rawGraph File containing the raw graph data
 	 * @param workspace workspace that will receive the graph model which represents the raw graph data
