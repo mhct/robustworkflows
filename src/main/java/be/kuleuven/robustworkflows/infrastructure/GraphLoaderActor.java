@@ -17,7 +17,6 @@ import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 import be.kuleuven.robustworkflows.infrastructure.messages.AgentDeployed;
 import be.kuleuven.robustworkflows.infrastructure.messages.DeployAgent;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
-import be.kuleuven.robustworkflows.model.NodeAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -74,11 +73,15 @@ public class GraphLoaderActor extends UntypedActor {
 			//ADD REFERENCES TO REMOTE ACTORS
 			deployedActors++;
 			if (networkModel.getNodeCount() == deployedActors) {
+				// loads edges in both directions
 				for(Edge e: networkModel.getEdges()) {
 					log.info("e: " +e.getId() + " :  "+ e.getSource().getId() + " -> " + e.getTarget().getId());
 					ActorRef source = actors.get(e.getSource().getNodeData().getId());
 					ActorRef target = actors.get(e.getTarget().getNodeData().getId());
 					source.tell(target, getSelf());
+					
+					log.info("e: " +e.getId() + " :  "+ e.getTarget().getId() + " -> " + e.getSource().getId());
+					target.tell(source, getSelf());
 				}
 			}
 		}
@@ -96,9 +99,9 @@ public class GraphLoaderActor extends UntypedActor {
 		List<ActorRef> ret = Lists.newArrayList();
 		
 		for (String sorcererPath: sorcerersPaths) {
-			System.out.println("Loading actorFor:" + sorcererPath);
+			log.info("Loading actorFor:" + sorcererPath);
 			ActorRef ref = getContext().actorFor(sorcererPath);
-			System.out.println(ref.path().name());
+			log.info(ref.path().name());
 			if (!ref.isTerminated()) {
 				ret.add(ref);
 			} else {
@@ -132,7 +135,7 @@ public class GraphLoaderActor extends UntypedActor {
 		DBCursor cursor = storage.getSorcerers().find();
 		while (cursor.hasNext()) {
 			String sorcererPath = (String) cursor.next().get("sorcererPath");
-			System.out.println("sorcererPath:" + sorcererPath);
+			log.debug("sorcererPath:" + sorcererPath);
 			sorcerersPaths.add(sorcererPath);
 		}
 		
@@ -147,17 +150,17 @@ public class GraphLoaderActor extends UntypedActor {
 	 * @throws Exception in the case it is not possible to load one of the actors
 	 * 
 	 */
-	private void loadActorsGraph() throws Exception {
-		//load actors remotely corresponding to each NodeType
-		for(Node n: networkModel.getNodes()) {
-			log.debug("node: " + n.getId());
-			ActorRef sorcerer = getRandomSorcerer();
-
-			//n.getNodeData() is a blocking operation
-			sorcerer.tell(DeployAgent.getInstance(AgentAttributes.getInstance(n.getNodeData().getAttributes(), n.getNodeData().getId())), getSelf());
-		}
-		
-	}
+//	private void loadActorsGraph() throws Exception {
+//		//load actors remotely corresponding to each NodeType
+//		for(Node n: networkModel.getNodes()) {
+//			log.debug("node: " + n.getId());
+//			ActorRef sorcerer = getRandomSorcerer();
+//
+//			//n.getNodeData() is a blocking operation
+//			sorcerer.tell(DeployAgent.getInstance(AgentAttributes.getInstance(n.getNodeData().getAttributes(), n.getNodeData().getId())), getSelf());
+//		}
+//		
+//	}
 
 	/**
 	 * Loads one agent per sorcerer... 

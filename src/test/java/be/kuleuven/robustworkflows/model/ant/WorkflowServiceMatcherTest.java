@@ -26,7 +26,7 @@ public class WorkflowServiceMatcherTest {
 
 	@Test
 	public void testGetInstance() {
-		assertNotNull(WorkflowServiceMatcher.getInstance(Workflow.getLinear1()));
+		assertNotNull(WorkflowServiceMatcher.getInstance(Workflow.getLinear2()));
 	}
 	
 //	@Test
@@ -50,7 +50,7 @@ public class WorkflowServiceMatcherTest {
 	
 	@Test
 	public void testAssociateAgentB() {
-		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getInstance(Workflow.getLinear1());
+		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getInstance(Workflow.getLinear2());
 		
 		assertEquals(2, workflow.getNeededServiceTypes().size());
 		ExplorationReply mockedReply = mock(ExplorationReply.class);
@@ -65,7 +65,7 @@ public class WorkflowServiceMatcherTest {
 
 	@Test
 	public void testAssociateAgentA() {
-		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getInstance(Workflow.getLinear1());
+		WorkflowServiceMatcher workflow = WorkflowServiceMatcher.getInstance(Workflow.getLinear2());
 		
 		assertEquals(2, workflow.getNeededServiceTypes().size());
 		ExplorationReply mockedReply = mock(ExplorationReply.class);
@@ -80,7 +80,7 @@ public class WorkflowServiceMatcherTest {
 	
 	@Test
 	public void testgetNeededServiceTypes() {
-		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getInstance(Workflow.getLinear1());
+		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getInstance(Workflow.getLinear2());
 
 		Iterator<ServiceType> itr = wf.getNeededServiceTypes().iterator();
 		
@@ -98,7 +98,7 @@ public class WorkflowServiceMatcherTest {
 		final TestActorRef<MyActor> ac0 = TestActorRef.create(system, props, "ac0");
 		final TestActorRef<MyActor> ac1 = TestActorRef.create(system, props, "ac1");
 		final TestActorRef<MyActor> ac2 = TestActorRef.create(system, props, "ac2");
-		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getInstance(Workflow.getLinear1());
+		WorkflowServiceMatcher wf = WorkflowServiceMatcher.getInstance(Workflow.getLinear2());
 		
 		ExplorationRequest er0 = ExplorationRequest.getInstance(0, ServiceType.A, 10, ac0, "0");
 		ExplorationRequest er1 = ExplorationRequest.getInstance(0, ServiceType.B, 10, ac1, "1");

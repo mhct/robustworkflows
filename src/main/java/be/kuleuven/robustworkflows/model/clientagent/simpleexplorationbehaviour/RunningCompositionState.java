@@ -38,13 +38,18 @@ public class RunningCompositionState extends ClientAgentState {
 		if (tasksIterator.hasNext()) {
 			beginingComposition = false;
 			WorkflowTask task = tasksIterator.next();
+			getClientAgentProxy().getLoggingAdapter().debug("ClientAgentName: " + getClientAgentProxy().clientAgentName() + " task: " + task);
 			setState(SimpleExploringState.getInstance(getClientAgentProxy(), task));
 		}
 		else {
+			//
+			// completed the execution of a composition
+			//
 			long realTimeToServeComposition = System.currentTimeMillis() - startTimeSelectedComposition;
 			ServiceCompositionData serviceCompositionData = ServiceCompositionData.getInstance(getClientAgentProxy().clientAgentName(), getRequestsData(), realTimeToServeComposition);
 			clearRequests();
 			beginingComposition = true;
+			getClientAgentProxy().getLoggingAdapter().info("Completed the execution of a composition");
 			persistEvent(summaryEngagement(serviceCompositionData));
 			getClientAgentProxy().getModelStorage().persistWriteCache();
 			

@@ -18,4 +18,9 @@ public class StartExperimentRun implements Serializable {
 	public static StartExperimentRun getInstance(String run) {
 		return new StartExperimentRun(run);
 	}
+	
+	@Override
+	public String toString() {
+		return "run: " + run;
+	}
 }

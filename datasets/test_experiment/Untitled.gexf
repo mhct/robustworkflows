@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2" xmlns:viz="http://www.gexf.net/1.2draft/viz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
+  <meta lastmodifieddate="2014-04-23">
+    <creator>Gephi 0.8.1</creator>
+    <description></description>
+  </meta>
+  <graph defaultedgetype="undirected" mode="static">
+    <attributes class="node" mode="static">
+      <attribute id="NodeType" title="NodeType" type="string"></attribute>
+      <attribute id="ComputationalResourceProfile" title="ComputationalResourceProfile" type="string"></attribute>
+      <attribute id="ProcessingTimePerRequest" title="ProcessingTimePerRequest" type="string"></attribute>
+      <attribute id="ServiceType" title="ServiceType" type="string"></attribute>
+      <attribute id="ExplorationStateTimeout" title="ExplorationStateTimeout" type="long"></attribute>
+      <attribute id="AntExplorationTimeout" title="AntExplorationTimeout" type="long"></attribute>
+      <attribute id="AntExplorationSamplingProbability" title="AntExplorationSamplingProbability" type="double"></attribute>
+      <attribute id="ExplorationBehaviorFactory" title="ExplorationBehaviorFactory" type="string"></attribute>
+      <attribute id="WorkflowFactory" title="WorkflowFactory" type="string"></attribute>
+    </attributes>
+    <nodes>
+      <node id="1">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="25000"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="4.0"></viz:size>
+        <viz:position x="-2221.48" y="251.23909" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="2">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="26000"></attvalue>
+          <attvalue for="ServiceType" value="A"></attvalue>
+        </attvalues>
+        <viz:size value="4.0"></viz:size>
+        <viz:position x="486.7842" y="1298.1115" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="3">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="13156"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="4.0"></viz:size>
+        <viz:position x="105.135765" y="-756.0059" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="4">
+        <attvalues>
+          <attvalue for="NodeType" value="Factory"></attvalue>
+          <attvalue for="ComputationalResourceProfile" value="FixedProcessingTime"></attvalue>
+          <attvalue for="ProcessingTimePerRequest" value="10000"></attvalue>
+          <attvalue for="ServiceType" value="B"></attvalue>
+        </attvalues>
+        <viz:size value="4.0"></viz:size>
+        <viz:position x="105.135765" y="-756.0059" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="5">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1950"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="1700"></attvalue>
+          <attvalue for="AntExplorationSamplingProbability" value="1.0"></attvalue>
+          <attvalue for="ExplorationBehaviorFactory" value="be.kuleuven.robustworkflows.model.clientagent.SimpleExplorationFactory"></attvalue>
+          <attvalue for="WorkflowFactory" value="Linear2"></attvalue>
+        </attvalues>
+        <viz:size value="4.0"></viz:size>
+        <viz:position x="762.21216" y="-18.669352" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+      <node id="6">
+        <attvalues>
+          <attvalue for="NodeType" value="Client"></attvalue>
+          <attvalue for="ExplorationStateTimeout" value="1950"></attvalue>
+          <attvalue for="AntExplorationTimeout" value="1700"></attvalue>
+          <attvalue for="AntExplorationSamplingProbability" value="1.0"></attvalue>
+          <attvalue for="ExplorationBehaviorFactory" value="be.kuleuven.robustworkflows.model.clientagent.SimpleExplorationFactory"></attvalue>
+          <attvalue for="WorkflowFactory" value="Linear2"></attvalue>
+        </attvalues>
+        <viz:size value="4.0"></viz:size>
+        <viz:position x="762.21216" y="-18.669352" z="0.0"></viz:position>
+        <viz:color r="153" g="153" b="153"></viz:color>
+      </node>
+    </nodes>
+    <edges>
+       <edge source="6" target="1">
+        <attvalues></attvalues>
+      </edge>
+      <edge source="6" target="2">
+        <attvalues></attvalues>
+      </edge>
+
+      <edge source="5" target="2">
+        <attvalues></attvalues>
+      </edge>
+
+
+      <edge source="5" target="3">
+        <attvalues></attvalues>
+      </edge>
+            <edge source="5" target="4">
+        <attvalues></attvalues>
+      </edge>
+
+    </edges>
+  </graph>
+</gexf>

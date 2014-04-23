@@ -46,7 +46,7 @@ public class AgentAttributesTest {
 		long expectedAntExplorationTimeout = 111;
 		long expectedExplorationStateTimeout = 1800;
 		double expectedAntExplorationSamplingProbability = 1.0;
-		String workflowFactory = "Linear2";
+		Object workflowFactory = "InvertedLinear2";
 		
 		when(nodeAttributes.getValue(NodeAttributes.NodeType)).thenReturn("Client");
 		when(nodeAttributes.getValue(NodeAttributes.ExplorationStateTimeout)).thenReturn(expectedExplorationStateTimeout);
@@ -60,7 +60,28 @@ public class AgentAttributesTest {
 		assertEquals(expectedAntExplorationTimeout, att.getAntExplorationTimeout(), 0.0001);
 		assertEquals(expectedExplorationStateTimeout, att.getExplorationStateTimeout(), 0.0001);
 		assertEquals(expectedAntExplorationSamplingProbability, att.getAntExplorationSamplingProbability(), 0.0001);
-		assertTrue(Workflow.getLinear2().equals(att.getWorkflow()));
+		assertTrue(Workflow.getInvertedLinear2().equals(att.getWorkflow()));
+	}
+	
+	@Test
+	public void factoryAgentAttributes() {
+		Attributes nodeAttributes = mock(Attributes.class);
+		
+		String expectedServiceType = "A";
+		String expectedProcessingTime = "1800";
+		
+		ServiceType st = ServiceType.valueOf(expectedServiceType);
+		ComputationalResourceProfile expectedProfile = ComputationalResourceProfile.fixedProcessingTime(Integer.valueOf(expectedProcessingTime), st);
+		
+		when(nodeAttributes.getValue(NodeAttributes.NodeType)).thenReturn("Factory");
+		when(nodeAttributes.getValue(NodeAttributes.ComputationalResourceProfile)).thenReturn(NodeAttributeValues.FixedProcessingTime);
+		when(nodeAttributes.getValue(NodeAttributes.ServiceType)).thenReturn(expectedServiceType);
+		when(nodeAttributes.getValue(NodeAttributes.ProcessingTimePerRequest)).thenReturn(expectedProcessingTime);
+		
+		AgentAttributes att = AgentAttributes.getInstance(nodeAttributes, "1");
+		
+		assertNotNull(att);
+		assertEquals(expectedProfile.getServiceType(), att.getComputationalProfile().getServiceType());
 	}
 
 }

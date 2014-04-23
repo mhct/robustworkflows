@@ -21,22 +21,27 @@ public class AverageDistributionProcessingTimeProfileTest {
 
 	@Test
 	public void testExpectedTimeToServeRequest() {
-		int expected = 10;
-		ComputationalResourceProfile profile = ComputationalResourceProfile.average(expected, 0.7, 10, ServiceType.A);
+		final int seed = 34770;
+		final double sigma = 0.7;
+		int avg = 10;
+		ComputationalResourceProfile profile = ComputationalResourceProfile.average(avg, sigma, seed, ServiceType.A);
 		long res1 = profile.expectedTimeToServeRequest();
-		assertEquals(expected, res1);
+		System.out.println("res1: " + res1);
+		assertEquals(avg, res1);
 	}
 	
 	@Test
 	public void testExpectedTimeToServeRequestHavingQueuedRequests() {
-		int expected = 10;
-		ComputationalResourceProfile profile = ComputationalResourceProfile.average(expected, 0.7, 10, ServiceType.A);
+		final int seed = 34770;
+		final double sigma = 0.7;
+		final int avg = 10;
+		ComputationalResourceProfile profile = ComputationalResourceProfile.average(avg, sigma, seed, ServiceType.A);
 		profile.add(mock(ReceivedServiceRequest.class));
 		profile.add(mock(ReceivedServiceRequest.class));
 		profile.add(mock(ReceivedServiceRequest.class));
 		profile.add(mock(ReceivedServiceRequest.class));
 		long res1 = profile.expectedTimeToServeRequest();
-		assertEquals(4*expected, res1);
+		assertEquals(4*avg, res1);
 	}
 	
 	

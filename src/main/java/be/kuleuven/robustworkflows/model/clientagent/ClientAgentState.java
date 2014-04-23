@@ -6,8 +6,6 @@ import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
 import be.kuleuven.robustworkflows.model.events.ModelEvent;
 
-import com.mongodb.DBObject;
-
 public abstract class ClientAgentState {
 	
 	public static final String RUN = "run";

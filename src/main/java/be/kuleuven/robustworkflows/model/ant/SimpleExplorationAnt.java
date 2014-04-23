@@ -12,15 +12,19 @@ import org.apache.commons.math3.random.RandomDataGenerator;
 import scala.concurrent.duration.Duration;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.EmptyExplorationResult;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
 import be.kuleuven.robustworkflows.model.events.ExplorationAntEvents;
 import be.kuleuven.robustworkflows.model.events.ExplorationReplyEvent;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
+import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
@@ -35,14 +39,18 @@ import be.kuleuven.robustworkflows.model.messages.Workflow;
  * - ''' ExploringStateTimeout '''
  * - ''' ExplorationFinished '''
  * - ''' Compose ''' tell the explorationAnt to mark all its events as bellonging to another RUN of the emulation
+ * - ''' Neighbors ''' from DmasMW
  * 
  * === Outbound messages ===
  * - ''' SimpleExplorationResult '''
  * - ''' ExplorationRequest '''
+ * - ''' NeihgborListRequest ''' from DmasMW
  * 
  */
 public class SimpleExplorationAnt extends UntypedActor {
 
+	private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+	
 	private final ActorRef master;
 	private final ModelStorage modelStorage;
 	private RandomDataGenerator randomSampling = new RandomDataGenerator(new MersenneTwister());
@@ -50,6 +58,8 @@ public class SimpleExplorationAnt extends UntypedActor {
 	private List<ExplorationReplyWrapper> replies = new ArrayList<ExplorationReplyWrapper>();
 	private long explorationTimeout;
 	private double samplingProbability;
+
+	private ServiceType serviceType;
 
 	public SimpleExplorationAnt(ActorRef master, ModelStorage modelStorage, long explorationTimeout, double samplingProbability) {
 		this.master = master;
@@ -76,9 +86,23 @@ public class SimpleExplorationAnt extends UntypedActor {
 			addExpirationTimer(explorationTimeout, EventType.ExploringStateTimeout);
 			ExploreService msg = (ExploreService) message;
 			
-			askQoS(modelStorage.getFactoryAgents(msg.getServiceType()), msg.getServiceType());
+			// a new step. The EA has to find factories which provide the desired service. msg.getServiceType()
+			// 1 - retrieve list of neighbors from master
+			// 2 - ask QOS from neighbors
+			
+//			askQoS(modelStorage.getShuffledFactoryAgents(msg.getServiceType()), msg.getServiceType());
+			serviceType = msg.getServiceType();
+			log.debug("Asking NeihgborListRequest to: " + master.path());
+			master.tell(EventType.NeihgborListRequest, self());
+			
+		} else if (Neighbors.class.isInstance(message)){
+			log.debug("Received Neighbors list");
+			Neighbors neighbors = (Neighbors) message;
+		
+			askQoS(neighbors.getNeighbors(), serviceType);
 			
 		} else if (ExplorationReply.class.isInstance(message)) {
+			log.debug("Got ExplorationReply");
 			ExplorationReply explorationReply = (ExplorationReply) message;
 			modelStorage.persistEvent(ExplorationReplyEvent.instance(explorationReply, sender().path().name()));
 
@@ -86,9 +110,17 @@ public class SimpleExplorationAnt extends UntypedActor {
 			
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
 			modelStorage.persistEvent(ExplorationAntEvents.timeout(master.path().name()));
+			log.debug("nbReplies: " + replies.size());
+			
 			SimpleExplorationResult bla = bestReply();
 			replies.clear();
-			master.tell(bla, self());
+			
+			if (bla == null) {
+				log.debug("ExplorationAnt: Didn't receive any replies");
+				master.tell(new EmptyExplorationResult(), self());
+			} else {
+				master.tell(bla, self());
+			}
 		}
 	}
 	
@@ -112,11 +144,6 @@ public class SimpleExplorationAnt extends UntypedActor {
 		});
 		
 		if (replies.size() >= 1) {
-//			System.out.println("Best reply (sorted): " + replies.get(0));
-//			System.out.println("#Replies: " + replies.size());
-//			for (ExplorationReplyWrapper bla: replies) {
-//				System.out.println("actor: " + bla.getActor() + " c:" + bla.getReply().getComputationTime());
-//			}
 			return SimpleExplorationResult.getInstance(replies.get(0).getActor(), replies.get(0).getReply().getComputationTime(), replies.get(0).getReply().getRequestExploration().getServiceType());
 		} else {
 			modelStorage.persistEvent(ExplorationAntEvents.noReplies(master.path().name()));
@@ -132,11 +159,11 @@ public class SimpleExplorationAnt extends UntypedActor {
 	 * @param agentPaths Paths to agents to be contacted
 	 * @param serviceType Desired ServiceType to be explored
 	 */
-	private void askQoS(List<String> agentPaths, ServiceType serviceType) {
-		for (String agentPath: agentPaths) {
+	private void askQoS(List<ActorRef> agents, ServiceType serviceType) {
+		for (ActorRef agent: agents) {
 			if (sampling()) {
-				ActorRef agent = context().actorFor(agentPath);
 				if (agent != null) {
+					log.debug("Sending ExplorationRequest to: " + agent.path());
 					agent.tell(ExplorationRequest.getInstance(linearID++, serviceType, 10, self(), master.path().name()), self());
 				}
 			}

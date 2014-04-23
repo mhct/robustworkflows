@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 
 /**
- * MESSAGE Containing information about the quality of service of a particular component service 
+ * MESSAGE Containing information about the quality of service of a particular component service
+ * A reply that can not be execute is represented by an ExplorationReply with computationTime = Long.MAX_VALUE
+ *  
  * @author mario
  *
  */
@@ -79,6 +81,11 @@ public class ExplorationReply implements Serializable {
 		} else if (!requestExploration.equals(other.requestExploration))
 			return false;
 		return true;
+	}
+
+
+	public static ExplorationReply notPossible(ExplorationRequest msg) {
+		return new ExplorationReply(msg, Long.MAX_VALUE);
 	}
 	
 	

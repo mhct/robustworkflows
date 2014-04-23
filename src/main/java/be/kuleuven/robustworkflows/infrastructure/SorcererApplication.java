@@ -13,6 +13,7 @@ import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.ReadPreference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -59,6 +60,7 @@ public class SorcererApplication implements Bootable {
 		try {
 			mongoClient = new MongoClient(DB_SERVER_IP, DB_SERVER_PORT);
 			db = mongoClient.getDB(DB_NAME);
+			db.setReadPreference(ReadPreference.secondaryPreferred()); //defaults to read from replicas on the cluster
 			if ( (!DB_USER.equals("") && !DB_PASS.equals("")) && !db.authenticate(DB_USER, DB_PASS.toCharArray()) ) {
 				throw new RuntimeException("Couldn't authenticate to the Mongodb server");
 			}

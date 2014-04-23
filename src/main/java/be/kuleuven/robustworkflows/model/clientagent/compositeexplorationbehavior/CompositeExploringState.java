@@ -55,7 +55,7 @@ public class CompositeExploringState extends ClientAgentState {
 				getClientAgentProxy().addExpirationTimer(expirationTimer, RUN);
 				expirationTimer += expirationTimer;
 			} else {
-				setState(SelectingComponentServices.getInstance(getClientAgentProxy(), replies));
+//				setState(SelectingComponentServices.getInstance(getClientAgentProxy(), replies));
 			}
 			
 		} else if (ExplorationResult.class.isInstance(message))  {

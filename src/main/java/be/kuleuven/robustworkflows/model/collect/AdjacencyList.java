@@ -50,7 +50,6 @@ public final class AdjacencyList<K> {
 	private void DFS(K node) {
 		visitedNodes.add(node);
 		
-		System.out.println(node);
 		for (K n: map.get(node)) {
 			if (!visitedNodes.contains(n) ) {
 				DFS(n);

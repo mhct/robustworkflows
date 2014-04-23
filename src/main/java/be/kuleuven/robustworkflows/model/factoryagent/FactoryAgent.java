@@ -8,19 +8,19 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import be.kuleuven.dmas.AgentType;
+import be.kuleuven.dmas.DmasMW;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ModelStorageException;
 import be.kuleuven.robustworkflows.model.ModelStorageMap;
-import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.events.FactoryAgentEvents;
-import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
-import be.kuleuven.robustworkflows.model.messages.Neighbors;
+import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
+import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
-import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
-import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestCompleted;
+import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -32,6 +32,20 @@ import com.mongodb.DBObject;
  * 
  * @author mario
  *
+ *  === Inbound messages ===
+ * - ''' ActorRef ''' 
+ * - ''' StartExperimentRun '''
+ * - ''' ExplorationRequest '''
+ * - ''' ServiceRequest '''
+ * - ''' TIME_TO_WORK_FOR_REQUEST_FINISHED '''
+ * - ''' NeihgborListRequest '''
+ * 
+ * === Outbound messages ===
+ * - ''' "OK" '''
+ * - ''' ExplorationReply '''
+ * - ''' ServiceRequestCompleted '''
+ * - ''' Neighbors '''
+ * 
  */
 public class FactoryAgent extends UntypedActor {
 
@@ -39,12 +53,13 @@ public class FactoryAgent extends UntypedActor {
 	
 	private static final String TIME_TO_WORK_FOR_REQUEST_FINISHED = "time_to_service_request";
 
-	private final List<ActorRef> neigbhors;
 	private final ModelStorage modelStorage;
 	private InfrastructureStorage storage;
 	private ComputationalResourceProfile computationalProfile;
 
 	private boolean busy = false;
+
+	private final DmasMW dmasMW;
 
 
 	@Override
@@ -65,8 +80,10 @@ public class FactoryAgent extends UntypedActor {
 		
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = ModelStorage.getInstance(db);
-		this.neigbhors = neighbors;
 		this.computationalProfile = computationalProfile; //TODO make a prototype of the computational profile...
+		
+		dmasMW = DmasMW.getInstance(getContext().system(), self(), AgentType.factory());
+		dmasMW.addNeighbors(neighbors);
 
 		log.info("storage: " + storage);
 		log.info("modelStorage: " + modelStorage);
@@ -90,17 +107,13 @@ public class FactoryAgent extends UntypedActor {
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
-		log.debug("Factory received message " + message);
 		
-		if(ActorRef.class.isInstance(message)) {
-			//
-			// Add reference to current actor
-			//
-			log.debug("Adding neighbor to neighborlist" + message);
-			neigbhors.add((ActorRef) message);
-			
-		} 
+		// sends the messages to the DmasMW so that it can hadle messages etc.
+		dmasMW.onReceive(message, sender());
+		
 		if (StartExperimentRun.class.isInstance(message)) {
+			log.debug("Factory received StartExperimentRun: " + ((StartExperimentRun)message).toString());
+			
 			StartExperimentRun msg = (StartExperimentRun) message;
 			if ("".equals(msg.getRun()) || msg.getRun() == null) {
 				throw new RuntimeException("StartExperimentRun has no run code");
@@ -112,6 +125,8 @@ public class FactoryAgent extends UntypedActor {
 		} else if (!isRunningExperiment()) {
 			unhandled(message);
 		} else if (ExplorationRequest.class.isInstance(message)) {
+			log.debug("Factory received ExplorationRequest" + message.toString());
+			
 			ExplorationRequest msg = (ExplorationRequest) message;
 			//TODO QoSData should be created by computationalProfile, since it has all the needed data to create it.
 			if (msg.getServiceType().equals(computationalProfile.getServiceType())) {
@@ -124,10 +139,14 @@ public class FactoryAgent extends UntypedActor {
 				}
 				
 				sender().tell(ExplorationReply.getInstance(msg, computationalProfile.expectedTimeToServeRequest()), self());
+			} else {
+				sender().tell(ExplorationReply.notPossible(msg), self());
 			}
 			
 			
 		} else if (ServiceRequest.class.isInstance(message)) {
+			log.debug("Factory received ServiceRequest" + message.toString());
+			
 			ServiceRequest sr = (ServiceRequest) message;
 			
 			try {
@@ -138,7 +157,6 @@ public class FactoryAgent extends UntypedActor {
 			}
 			
 			if (sr.typeOf(computationalProfile.getServiceType())) {
-				System.out.println("A");
 				computationalProfile.add(ReceivedServiceRequest.getInstance((ServiceRequest) message, sender()));
 			} else {
 				//TODO reply saying this factory does not serve this type of service
@@ -160,8 +178,6 @@ public class FactoryAgent extends UntypedActor {
 			}
 			busy = false;
 			
-		} else if (EventType.NeihgborListRequest.toString().equals(message)){
-			sender().tell(getNeighbors(), self());
 		} else {
 			unhandled(message);
 		}
@@ -174,9 +190,6 @@ public class FactoryAgent extends UntypedActor {
 	
 	public Object currentRun() {
 		return modelStorage.getField("run");
-	}
-	private Neighbors getNeighbors() {
-		return Neighbors.getInstance(neigbhors);
 	}
 	
 	private String getName() {

@@ -11,16 +11,16 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import be.kuleuven.dmas.AgentType;
+import be.kuleuven.dmas.DmasMW;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
-import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
-import com.google.common.collect.Lists;
 import com.mongodb.DB;
 
 /**
@@ -38,7 +38,6 @@ import com.mongodb.DB;
 public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	
-	private final List<ActorRef> neighbors;
 	private ClientAgentState currentState;
 	private InfrastructureStorage storage;
 	private ModelStorage modelStorage;
@@ -47,13 +46,18 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private AgentAttributes attributes;
 	private List<RequestExecutionData> requestsExecutionData;
 	private ClientAgentState hackState;
+
+	private final DmasMW dmasMW;
 	
 	public ClientAgent(DB db, List<ActorRef> neighbors, AgentAttributes attributes, ExplorationBehaviorFactory behaviorFactory) {
-		log.info("C L I E N T started\nBehavior Factory: " + behaviorFactory.getClass().getName());
-		
-		this.neighbors = neighbors;
+		log.info("C L I E N T started\nBehavior Factory: " + behaviorFactory.getClass().getName() + "\nWF: " + attributes.getWorkflow());
+
 		this.storage = new InfrastructureStorage(db);
 		this.modelStorage = ModelStorage.getInstance(db);
+		
+		dmasMW = DmasMW.getInstance(getContext().system(), self(), AgentType.client());
+		dmasMW.addNeighbors(neighbors);
+		
 		this.currentState = behaviorFactory.createWaitingState((ClientAgentProxy) this);
 		this.antApi = AntAPI.getInstance(behaviorFactory, self(), context());
 		this.attributes = attributes;
@@ -76,15 +80,9 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	@Override
 	public void onReceive(Object message) throws Exception {
 
-		if(ActorRef.class.isInstance(message)) {
-			log.debug("\n\n\nAdding neighbor to neighborlist" + message);
-			neighbors.add((ActorRef) message);
-			
-		} else if (EventType.NeihgborListRequest.equals(message)){
-			log.debug(self() + " got " + message);
-			sender().tell(getNeighbors(), self());
-			
-		} else if ("expirationTimer".equals(message)) {
+		dmasMW.onReceive(message, sender());
+		
+		if ("expirationTimer".equals(message)) {
 			log.debug(message + ". from " + sender());
 			addExpirationTimer(10, "test");
 			
@@ -101,19 +99,12 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		unhandled(message);
 	}
 
-	private Neighbors getNeighbors() {
-		return Neighbors.getInstance(Lists.newArrayList(neighbors));
-	}
 	
 	public void setState(ClientAgentState state) {
 		this.currentState = state;
 		currentState.run();
 	}
 	
-	protected void addNeighbor(ActorRef actor) {
-		neighbors.add(actor);
-	}
-
 	@Override
 	public ModelStorage getModelStorage() {
 		return modelStorage;
@@ -212,4 +203,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		return hackState;
 	}
 	
+	@Override
+	public LoggingAdapter getLoggingAdapter() {
+		return log;
+	}
 }

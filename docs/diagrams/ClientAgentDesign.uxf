@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="12.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>210</x>
+      <y>10</y>
+      <w>300</w>
+      <h>220</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Actor&gt;&gt;
+ClientAgentFSM
+--
+Receiving Events
++ ServiceRequestExploration
++ ExplorationResult
++ getNeighbors
++ ServiceRequestFinished
+
+--
+Sending Events
++ QoSData
++ ServiceRequest</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>40</x>
+      <y>700</y>
+      <w>330</w>
+      <h>130</h>
+    </coordinates>
+    <panel_attributes>ExponentialProfile
+--
+#  Uses the 
+# Exponential distribution probability function
+# to generate a number representing
+# the computational time it would take to 
+# execute its service.
+# </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>1160</x>
+      <y>490</y>
+      <w>310</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Message&gt;&gt;
+ExplorationDone
+--
+- QoSWorkflow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>480</x>
+      <y>0</y>
+      <w>290</w>
+      <h>100</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;270;80</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>180</x>
+      <y>550</y>
+      <w>340</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>ResourceProfile
+--
++ expectedTime(requestsPerSecond: int): long
++ static exponential(seed: int): ResourceProfile</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>1150</x>
+      <y>20</y>
+      <w>360</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>NodeAttributes
+--
++ NodeType: "Client", "Factory"
++ ComputationalResourceProfile: "Exponential"
++ Seed: Integer</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>310</x>
+      <y>430</y>
+      <w>50</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;30;120</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>900</x>
+      <y>490</y>
+      <w>230</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Message&gt;&gt;
+QoSData
+--
+- serviceTime: String
+- computationTime: long
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>750</x>
+      <y>30</y>
+      <w>300</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>AntAPI
+--
++ createExplorationAnt(): ActorRef
+ </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>680</x>
+      <y>260</y>
+      <w>410</w>
+      <h>200</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Actor&gt;&gt;
+ExplorationAnt
+--
++ ExplorationAnt(workflow, timeout, neighbor, alfa, beta)
+--
+Receiving Events
++ Timeout
++ QoSData
+--
+Sending Events
++ ServiceRequestExploration
++ GetNeighbors
++ ExplorationResult</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>210</x>
+      <y>290</y>
+      <w>310</w>
+      <h>170</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Actor&gt;&gt;
+FactoryAgent
+--
+Receiving Events
++ ServiceRequestExploration
++ ServiceRequest
++ TIME_TO_WORK_FOR_REQUEST_FINISHED
+--
+Sending Events
++ TIME_TO_WORK_FOR_REQUEST_FINISHED
++ ServiceRequestFinished</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>180</x>
+      <y>630</y>
+      <w>50</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;30;70</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>470</x>
+      <y>200</y>
+      <w>400</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>30;30;380;60</additional_attributes>
+  </element>
+</diagram>

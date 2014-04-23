@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.teradata.jdbc.jdbc_4.logging.Log;
+
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ant.ExploreService;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
@@ -41,6 +43,8 @@ public class SimpleExploringState extends ClientAgentState {
 	@Override
 	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 		if (SimpleExplorationResult.class.isInstance(message)) {
+			getClientAgentProxy().getLoggingAdapter().debug("ClientAgent" + getClientAgentProxy().clientAgentName() + ": SimpleExplorationResult received.");
+			
 			SimpleExplorationResult msg = (SimpleExplorationResult) message;
 			results.add(msg);
 		} else if (EXPLORATION_TIMEOUT.equals(message)) {
@@ -52,6 +56,7 @@ public class SimpleExploringState extends ClientAgentState {
 				//FIXME should not use this persistEvent(String) method anymore...
 //				persistEvent("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
 				//TODO go back to RunningCompositionState
+				getClientAgentProxy().getLoggingAdapter().debug("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
 			}
 			
 		} else {

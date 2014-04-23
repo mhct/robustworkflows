@@ -64,7 +64,7 @@ public class RobustWorkflowsActor extends UntypedActor {
 		} else if ("CheckExecution".equals(message)) {
 			log.debug("CheckExecution received");
 			if (modelStorage.finishedAllCompositions(String.valueOf(previousRun()))) {
-				log.debug("FINISHED ALL COMP");
+				log.info("FINISHED ALL COMP");
 				startNewExperimentRun();
 			} else {
 				//do nothing
@@ -87,7 +87,8 @@ public class RobustWorkflowsActor extends UntypedActor {
 		if (currentRun == NUMBER_OF_RUNS-1) { 
 			return; //end soft execution
 		}
-		log.debug("Starting new Experiment RUN");
+		log.info("Starting new Experiment RUN");
+		log.info("Experiment Stats");
 		
 		sendStartExperimentRun();
 		sendComposeToAllClientAgents();
@@ -106,9 +107,9 @@ public class RobustWorkflowsActor extends UntypedActor {
 	}
 	
 	private void sendComposeToAllClientAgents() {
-//		RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister(SEED*currentRun));
-		
 		DBCursor cursor = infrastructureStorage.getClientAgent().find();
+		log.info("Retrieving Client Agents: Found: " + cursor.count() + " clients");
+		
 		long startingTime = startTimeInterval;
 		int batch = 0;
 		while (cursor.hasNext()) {
@@ -129,7 +130,7 @@ public class RobustWorkflowsActor extends UntypedActor {
 
 					@Override
 					public void run() {
-						log.debug("Enviando Compose Message: " + dtf.print(new DateTime()));
+						log.info("Enviando Compose Message: " + dtf.print(new DateTime()));
 						getContext().system().actorFor(ref).tell(ClientAgentState.COMPOSE, self());
 					}
 			

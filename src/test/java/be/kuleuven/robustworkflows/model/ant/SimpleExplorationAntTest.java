@@ -1,6 +1,8 @@
 package be.kuleuven.robustworkflows.model.ant;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -10,18 +12,15 @@ import org.junit.Test;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
-
-import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
-import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
-import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
-
 import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 import akka.testkit.TestActorRef;
-import akka.testkit.JavaTestKit;
+import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
+import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 
 public class SimpleExplorationAntTest {
 
@@ -61,6 +60,11 @@ public class SimpleExplorationAntTest {
 	}
 	
 	@Test
+	public void testSequence() {
+		
+	}
+	
+	//@Test
 	public void timeoutTest() throws Exception {
 		
 		ant.tell(StartExperimentRun.getInstance("0"), system.deadLetters());

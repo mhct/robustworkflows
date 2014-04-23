@@ -129,11 +129,11 @@ public class AgentAttributes implements Serializable {
 			}
 			
 			//workflows to be used by ClientAgents
-			if (NodeAttributeValues.Linear2.equals(attributes.getValue(NodeAttributes.WorkflowFactory))) {
+			if (NodeAttributeValues.Linear2.equals((String) attributes.getValue(NodeAttributes.WorkflowFactory))) {
 				workflow = Workflow.getLinear2();
-			} else if (NodeAttributeValues.Linear3.equals(attributes.getValue(NodeAttributes.WorkflowFactory))) {
+			} else if (NodeAttributeValues.Linear3.equals((String) attributes.getValue(NodeAttributes.WorkflowFactory))) {
 				workflow = Workflow.getLinear3();
-			} else if (NodeAttributeValues.InvertedLinear2.equals(attributes.getValue(NodeAttributes.WorkflowFactory))) {
+			} else if (NodeAttributeValues.InvertedLinear2.equals((String) attributes.getValue(NodeAttributes.WorkflowFactory))) {
 				workflow = Workflow.getInvertedLinear2();
 			}
 			

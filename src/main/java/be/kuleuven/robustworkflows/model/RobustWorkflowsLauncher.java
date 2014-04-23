@@ -13,6 +13,7 @@ import akka.kernel.Bootable;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.ReadPreference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -27,7 +28,7 @@ public class RobustWorkflowsLauncher implements Bootable {
 	private static final String DB_USER = config.getString("db-user");
 	private static final String DB_PASS = config.getString("db-pass");
 	
-	private static final int CHECK_COMPLETION_RUN_INTERVAL = 5;
+	private static final int CHECK_COMPLETION_RUN_INTERVAL = 180;
 	
 	private final ActorSystem system;
 	private MongoClient mongoClient;
@@ -50,6 +51,7 @@ public class RobustWorkflowsLauncher implements Bootable {
 		try {
 			mongoClient = new MongoClient(DB_SERVER_IP, DB_SERVER_PORT);
 			final DB db = mongoClient.getDB(DB_NAME);
+			db.setReadPreference(ReadPreference.secondaryPreferred());
 			if ( (!DB_USER.equals("") && !DB_PASS.equals("")) && !db.authenticate(DB_USER, DB_PASS.toCharArray()) ) {
 				throw new RuntimeException("Couldn't authenticate to the Mongodb server");
 			}

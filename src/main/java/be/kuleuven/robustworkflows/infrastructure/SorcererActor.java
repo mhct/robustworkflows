@@ -56,7 +56,7 @@ public class SorcererActor extends UntypedActor {
 			}), msg.attributes().getAgentId());
 			
 			if(childActor == null) {
-				System.out.println("PROBLEM: childActor is null");
+				log.error("PROBLEM: childActor is null");
 			}
 			
 			getSender().tell(new AgentDeployed(childActor, msg.attributes().getAgentId()), getSelf());

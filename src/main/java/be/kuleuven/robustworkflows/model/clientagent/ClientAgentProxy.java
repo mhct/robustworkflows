@@ -3,6 +3,8 @@ package be.kuleuven.robustworkflows.model.clientagent;
 import java.util.List;
 
 import akka.actor.ActorRef;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
@@ -48,4 +50,6 @@ public interface ClientAgentProxy {
 	public void setHackingState(ClientAgentState bla);
 	
 	public ClientAgentState getHackingState();
+	
+	public LoggingAdapter getLoggingAdapter();
 }

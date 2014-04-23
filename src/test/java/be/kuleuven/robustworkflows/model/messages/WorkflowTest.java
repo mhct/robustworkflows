@@ -1,5 +1,8 @@
 package be.kuleuven.robustworkflows.model.messages;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.Iterator;
@@ -27,6 +30,32 @@ public class WorkflowTest {
 		while (itr.hasNext()) {
 			System.out.println(itr.next());
 		}
+	}
+	
+	@Test
+	public void testInvertedLinear2Iterator() {
+		Workflow wf = Workflow.getInvertedLinear2();
+		Iterator<WorkflowTask> itr = wf.iterator();
+		
+		WorkflowTask t = itr.next();
+		assertEquals(ImmutableWorkflowTask.getInstance(ServiceType.B), t);
+		t = itr.next();
+		assertEquals(ImmutableWorkflowTask.getInstance(ServiceType.A), t);
+		
+		assertFalse(itr.hasNext());
+	}
+
+	@Test
+	public void testLinear2Iterator() {
+		Workflow wf = Workflow.getLinear2();
+		Iterator<WorkflowTask> itr = wf.iterator();
+		
+		WorkflowTask t = itr.next();
+		assertEquals(ImmutableWorkflowTask.getInstance(ServiceType.A), t);
+		t = itr.next();
+		assertEquals(ImmutableWorkflowTask.getInstance(ServiceType.B), t);
+		
+		assertFalse(itr.hasNext());
 	}
 //	public static void main(String[] args) {
 //		Graph<WorkflowTask> tasks = Graph.create();
