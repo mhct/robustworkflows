@@ -70,7 +70,7 @@ public class DmasMW {
 	}
 	
 	public void onReceive(Object message, ActorRef sender) {
-		log.debug("MESSAGE: " + message.toString());
+//		log.debug("MESSAGE: " + message.toString());
 		
 		if(ActorRef.class.isInstance(message)) {
 			log.debug("Received ActorRef");
@@ -81,7 +81,7 @@ public class DmasMW {
 			sender.tell(getNeighbors(), master);
 		} else if (EventType.NeihgborListRequest.equals(message)){
 			log.debug("- 2 - Received NeighborListRequest");
-		sender.tell(getNeighbors(), master);
+			sender.tell(getNeighbors(), master);
 		}
 	}
 

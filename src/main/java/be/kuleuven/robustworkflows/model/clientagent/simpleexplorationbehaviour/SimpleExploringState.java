@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.teradata.jdbc.jdbc_4.logging.Log;
-
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ant.ExploreService;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
@@ -16,7 +14,8 @@ import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
 /**
  * Simple Exploration State. This implementation has only two distinct states SimpleExploringState <--> SimpleEngagementState
- * 
+ * Searches for component services (factories) which can perform the operations of type ServiceType. The type of service needed
+ * is given to the factory method (SimpleExploringState.getInstance()) in the parameter workflowTask.
  *
  * === Inbound Messages ===
  * - ''' SimpleExplorationResult ''' the best possible Agent to be engaged

@@ -58,14 +58,27 @@ public class SimpleExplorationAnt extends UntypedActor {
 	private List<ExplorationReplyWrapper> replies = new ArrayList<ExplorationReplyWrapper>();
 	private long explorationTimeout;
 	private double samplingProbability;
-
+	private int minimum_nbRplies = 1;
+	
 	private ServiceType serviceType;
 
+	private ActorRef currentAgent; //Current Node that the exploration ant is "seating"
+
+	private Neighbors neighbors;
+
+	private int askedQos;
+
+	private int receivedReplies;
+	
 	public SimpleExplorationAnt(ActorRef master, ModelStorage modelStorage, long explorationTimeout, double samplingProbability) {
 		this.master = master;
+		this.currentAgent = master;
 		this.modelStorage = modelStorage;
 		this.explorationTimeout = explorationTimeout;
 		this.samplingProbability = samplingProbability;
+		
+		askedQos = 0;
+		receivedReplies = 0;
 	}
 
 	@Override
@@ -90,25 +103,36 @@ public class SimpleExplorationAnt extends UntypedActor {
 			// 1 - retrieve list of neighbors from master
 			// 2 - ask QOS from neighbors
 			
-//			askQoS(modelStorage.getShuffledFactoryAgents(msg.getServiceType()), msg.getServiceType());
 			serviceType = msg.getServiceType();
 			log.debug("Asking NeihgborListRequest to: " + master.path());
-			master.tell(EventType.NeihgborListRequest, self());
+			
+			currentAgent.tell(EventType.NeihgborListRequest, self());
 			
 		} else if (Neighbors.class.isInstance(message)){
 			log.debug("Received Neighbors list");
-			Neighbors neighbors = (Neighbors) message;
+			neighbors = (Neighbors) message;
 		
 			askQoS(neighbors.getNeighbors(), serviceType);
 			
 		} else if (ExplorationReply.class.isInstance(message)) {
 			log.debug("Got ExplorationReply");
+			receivedReplies++;
 			ExplorationReply explorationReply = (ExplorationReply) message;
 			modelStorage.persistEvent(ExplorationReplyEvent.instance(explorationReply, sender().path().name()));
 
-			replies.add(new ExplorationReplyWrapper(sender(), explorationReply));
+			//
+			// test for the reply, to check if it is a proper reply
+			//
+			if (explorationReply.isPossible()) {
+				replies.add(new ExplorationReplyWrapper(sender(), explorationReply));
+			}
 			
+			shouldExploreAgain();
+			
+		} else if (EventType.AskQoSTimeout.equals(message)) {
+			exploreAgain();
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
+		
 			modelStorage.persistEvent(ExplorationAntEvents.timeout(master.path().name()));
 			log.debug("nbReplies: " + replies.size());
 			
@@ -122,6 +146,20 @@ public class SimpleExplorationAnt extends UntypedActor {
 				master.tell(bla, self());
 			}
 		}
+	}
+	
+	private void shouldExploreAgain() {
+		if (receivedReplies == askedQos && replies.size() < minimum_nbRplies) {
+			exploreAgain();
+		}
+	}
+	
+	private void exploreAgain() {
+		// selects a new agent from the neighbors it knows
+		receivedReplies = 0;
+		askedQos = 0;
+		currentAgent = neighbors.getRandomNeighbor();
+		currentAgent.tell(EventType.NeihgborListRequest, self());
 	}
 	
 	private SimpleExplorationResult bestReply() {
@@ -160,15 +198,18 @@ public class SimpleExplorationAnt extends UntypedActor {
 	 * @param serviceType Desired ServiceType to be explored
 	 */
 	private void askQoS(List<ActorRef> agents, ServiceType serviceType) {
+		addExpirationTimer((long)Math.ceil(explorationTimeout/4.0), EventType.AskQoSTimeout);
+		
 		for (ActorRef agent: agents) {
 			if (sampling()) {
 				if (agent != null) {
 					log.debug("Sending ExplorationRequest to: " + agent.path());
+					askedQos++;
 					agent.tell(ExplorationRequest.getInstance(linearID++, serviceType, 10, self(), master.path().name()), self());
 				}
 			}
 		}
-		
+		log.debug("AskQos to: " + askedQos);
 	}
 	
 	/**

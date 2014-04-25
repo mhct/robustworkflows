@@ -6,5 +6,5 @@ public enum EventType {
 	NeihgborListRequest, 
 	ExplorationFinished, 
 	ExplorationResult, 
-	ExplorationReply, ExploringStateTimeout;
+	ExplorationReply, ExploringStateTimeout, AskQoSTimeout;
 }

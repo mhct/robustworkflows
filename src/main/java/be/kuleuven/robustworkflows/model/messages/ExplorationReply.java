@@ -84,6 +84,14 @@ public class ExplorationReply implements Serializable {
 	}
 
 
+	public boolean isPossible() {
+		if (computationTime == Long.MAX_VALUE) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	public static ExplorationReply notPossible(ExplorationRequest msg) {
 		return new ExplorationReply(msg, Long.MAX_VALUE);
 	}
