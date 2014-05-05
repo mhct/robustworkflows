@@ -1,8 +1,6 @@
 package be.kuleuven.robustworkflows.util;
 
-import static org.junit.Assert.*;
-
-import javax.annotation.Nullable;
+import static org.junit.Assert.fail;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -12,11 +10,6 @@ import be.kuleuven.robustworkflows.util.StateMachine.StateMachineBuilder;
 
 public class StateMachineTest {
 
-	static enum Bla {
-		E1, E2;
-	};
-	
-		
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -27,9 +20,14 @@ public class StateMachineTest {
 
 	@Test
 	public void testStateMachine() {
-		TestStateRinde tsr = new TestStateRinde();
-		StateMachineBuilder<Bla, Object> sm = StateMachine.create(new TestStateRinde());
-		sm.addTransition(tsr, Bla.E2, tsr);
+		IdleState idle = new IdleState();
+		ExploringState exploringState = new ExploringState();
+		StateMachineBuilder<Object, Object> builder = StateMachine.create(idle);
+		builder.addTransition(idle, "ExploreService", exploringState);
+		
+		StateMachine<Object, Object> fsm = builder.build();
+		fsm.handle("Explore", null);
+		
 	}
 
 	@Test

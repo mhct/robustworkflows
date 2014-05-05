@@ -37,7 +37,6 @@ import be.kuleuven.robustworkflows.model.messages.Workflow;
  */
 public class CompositeExplorationAnt extends UntypedActor {
 	
-	private final ModelStorage modelStorage;
 	private WorkflowServiceMatcher serviceMatcher;
 	private final Workflow workflow;
 	private final ActorRef master;
@@ -47,9 +46,8 @@ public class CompositeExplorationAnt extends UntypedActor {
 	private final long explorationTimeout;
 	private final RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister());
 
-	public CompositeExplorationAnt(ActorRef master, ModelStorage modelStorage, Workflow workflow, long explorationTimeout) {
+	public CompositeExplorationAnt(ActorRef master, Workflow workflow, long explorationTimeout) {
 		this.master = master;
-		this.modelStorage = modelStorage;
 		this.workflow = workflow;
 		this.explorationTimeout = explorationTimeout;
 	}
@@ -70,8 +68,8 @@ public class CompositeExplorationAnt extends UntypedActor {
 			
 			serviceMatcher = WorkflowServiceMatcher.getInstance(workflow);
 			for (ServiceType st: serviceMatcher.getNeededServiceTypes()) {
-				List<String> agentPaths = modelStorage.getFactoryAgents(st);
-				askQoS(agentPaths, st);
+//				List<String> agentPaths = modelStorage.getFactoryAgents(st);
+//				askQoS(agentPaths, st);
 			}
 			addExpirationTimer(explorationTimeout, EventType.ExploringStateTimeout);
 			
@@ -141,7 +139,6 @@ public class CompositeExplorationAnt extends UntypedActor {
 		
 		return new CompositeExplorationAnt(
 				antParameters.getMaster(),
-				antParameters.getModelStorage(),
 				antParameters.getWorkflow(),
 				antParameters.getExplorationTimeout());
 	}

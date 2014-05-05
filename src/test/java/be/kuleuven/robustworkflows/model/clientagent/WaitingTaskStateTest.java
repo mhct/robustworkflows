@@ -21,7 +21,7 @@ public class WaitingTaskStateTest {
 	public void testOnReceiveCompose() throws Exception {
 		ClientAgentProxy mock = mock(ClientAgentProxy.class);
 		ModelStorage storage = mock(ModelStorage.class);
-		when(mock.getModelStorage()).thenReturn(storage);
+//		when(mock.getModelStorage()).thenReturn(storage);
 		
 		ClientAgentState cas = WaitingTaskState.getInstance(mock);
 		cas.onReceive("Compose", null);

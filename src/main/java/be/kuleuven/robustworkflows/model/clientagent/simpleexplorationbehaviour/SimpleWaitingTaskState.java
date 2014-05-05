@@ -40,15 +40,13 @@ public class SimpleWaitingTaskState extends ClientAgentState {
 			if (getClientAgentProxy().getAntAPI().explorationAnts() != 1) {
 
 				getClientAgentProxy().getAntAPI().createExplorationAnt(new ExplorationAntParameter(getClientAgentProxy().self(), 
-						getClientAgentProxy().getModelStorage(), 
 						getClientAgentProxy().getWorkflow(), 
 						getClientAgentProxy().getAttributes().getAntExplorationTimeout(), 
 						getClientAgentProxy().getAttributes().getAntExplorationSamplingProbability())
 						);
 			}
 			
-			getClientAgentProxy().getModelStorage().persistWriteCache();
-			getClientAgentProxy().getModelStorage().addField("run", msg.getRun());
+//			getClientAgentProxy().getModelStorage().addField("run", msg.getRun());
 			getClientAgentProxy().getAntAPI().tellAll(msg);
 			
 		} else if (COMPOSE.equals(message)) {

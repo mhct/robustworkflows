@@ -23,12 +23,12 @@ public class AgentFactory {
 	 * @param db
 	 * @return
 	 */
-	public Actor handleInstance(AgentAttributes attributes, DB db) {
-		if (attributes == null || db == null) {
-			throw new RuntimeException("rawType, db can not be null");
+	public Actor handleInstance(AgentAttributes attributes) {
+		if (attributes == null) {
+			throw new RuntimeException("rawType can not be null");
 		}
 		
-		return chain.handle(attributes).createInstance(attributes, db);
+		return chain.handle(attributes).createInstance(attributes);
 	}
 	
 	/**

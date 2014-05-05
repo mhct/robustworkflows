@@ -3,7 +3,7 @@ package be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour
 import java.io.Serializable;
 
 import be.kuleuven.robustworkflows.model.ServiceType;
-
+import be.kuleuven.robustworkflows.model.ant.messages.ExplorationReplyWrapper;
 import akka.actor.ActorRef;
 
 /**
@@ -47,6 +47,10 @@ public class SimpleExplorationResult implements Serializable {
 		} else {
 			return true;
 		}
+	}
+
+	public static SimpleExplorationResult getInstance(ExplorationReplyWrapper message) {
+		return new SimpleExplorationResult(message.getActor(), message.getReply().getComputationTime(), message.getReply().getRequestExploration().getServiceType());
 	}
 
 }

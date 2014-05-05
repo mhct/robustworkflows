@@ -8,11 +8,13 @@ public class AgentDeployed implements Serializable{
 
 	private static final long serialVersionUID = 2013020601L;
 	private final ActorRef ref;
-	private final String nodeName;
+	private String nodeName;
+	private String agentTpye;
 
-	public AgentDeployed(ActorRef ref, String nodeName) {
+	public AgentDeployed(ActorRef ref, String nodeName, String agentType) {
 		this.ref = ref;
 		this.nodeName = nodeName;
+		this.agentTpye = agentType;
 	}
 
 	public ActorRef getRef() {
@@ -23,5 +25,7 @@ public class AgentDeployed implements Serializable{
 		return nodeName;
 	}
 
-	
+	public String getAgentType() {
+		return agentTpye;
+	}
 }

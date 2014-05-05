@@ -67,7 +67,8 @@ public class GraphLoaderActor extends UntypedActor {
 			AgentDeployed ref = (AgentDeployed) message;
 			
 			networkModel.getNode(ref.getNodeName()).getAttributes().setValue("ActorRef", ref.getRef().path().toString());
-			storage.persistActorAddress(ref.getRef().path().toString(), ref.getNodeName());
+
+			storage.persistActorAddress(ref.getRef().path().toString(), ref.getNodeName(), ref.getAgentType());
 			actors.put(ref.getNodeName(), ref.getRef());
 
 			//ADD REFERENCES TO REMOTE ACTORS

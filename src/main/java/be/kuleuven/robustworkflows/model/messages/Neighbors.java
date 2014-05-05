@@ -25,10 +25,18 @@ public class Neighbors implements Serializable {
  	
 	public ActorRef getRandomNeighbor() {
 		final RandomDataGenerator random = new RandomDataGenerator(new MersenneTwister());
-		return (ActorRef) random.nextSample(neighbors, 1)[0];
+		if (neighbors.size() > 0) {
+			return (ActorRef) random.nextSample(neighbors, 1)[0];
+		} else {
+			return null;
+		}
 	}
 	
 	public static Neighbors getInstance(List<ActorRef> neighbors) {
 		return new Neighbors(neighbors);
+	}
+
+	public boolean isEmpty() {
+		return neighbors.size() == 0;
 	}
 }

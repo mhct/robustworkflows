@@ -16,7 +16,7 @@ public class FactoryAgentHandler extends AgentHandlerChain {
 	}
 
 	@Override
-	public Actor createInstance(AgentAttributes attributes, DB db) {
-		return new FactoryAgent(db, new ArrayList<ActorRef>(), attributes.getComputationalProfile());
+	public Actor createInstance(AgentAttributes attributes) {
+		return new FactoryAgent(new ArrayList<ActorRef>(), attributes.getComputationalProfile());
 	}
 }

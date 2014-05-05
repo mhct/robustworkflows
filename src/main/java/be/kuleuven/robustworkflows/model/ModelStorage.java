@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.events.ModelEvent;
 import be.kuleuven.robustworkflows.model.events.ServiceCompositionSummaryEvent;
@@ -38,13 +39,20 @@ public class ModelStorage {
 	private final static String FACTORY_AGENTS_COLLECTION = "model_factory_agents";
 	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss_SSS");
 	
-	private final DB db;
+	private  DB db;
 	private Map<String, Object> extraFields;
 	private Multimap<DBCollection, DBObject> writeCache;
+	private ActorRef master;
 	
 	
 	private ModelStorage(DB db) {
 		this.db = db;
+		extraFields = Maps.newHashMap();
+		writeCache = ArrayListMultimap.create();
+	}
+
+	private ModelStorage(ActorRef master) {
+		this.master = master;
 		extraFields = Maps.newHashMap();
 		writeCache = ArrayListMultimap.create();
 	}
@@ -81,20 +89,20 @@ public class ModelStorage {
 	}
 	
 	public void persistWriteCache() {
-		for (int i=0; i<writeCache.keySet().size(); i++ ) {
-			for (DBCollection currentColl : writeCache.keySet()) {
-				List<DBObject> objects = new ArrayList<DBObject>(writeCache.get(currentColl));
-				writeCache.removeAll(currentColl);
-				
-				try {
-					currentColl.insert(objects);
-				} catch (MongoException e) {
-					throw new RuntimeException("Mongo Exc." + e);
-				} catch (Exception e) {
-					throw new RuntimeException("I/O Exc." + e);
-				}
-			}
-		}
+//		for (int i=0; i<writeCache.keySet().size(); i++ ) {
+//			for (DBCollection currentColl : writeCache.keySet()) {
+//				List<DBObject> objects = new ArrayList<DBObject>(writeCache.get(currentColl));
+//				writeCache.removeAll(currentColl);
+//				
+//				try {
+//					currentColl.insert(objects);
+//				} catch (MongoException e) {
+//					throw new RuntimeException("Mongo Exc." + e);
+//				} catch (Exception e) {
+//					throw new RuntimeException("I/O Exc." + e);
+//				}
+//			}
+//		}
 	}
 	
 	/**
@@ -104,18 +112,18 @@ public class ModelStorage {
 	 */
 	public void persistEvent(ModelEvent event) {
 		//FIXME dirty hack.. check for the type of event to persist
-		if (ServiceCompositionSummaryEvent.class.isInstance(event)) {
-			DBCollection coll = db.getCollection(EVENTS_COLLECTION);
-			BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
-			obj.append(ModelStorageMap.EVENT_TYPE, event.eventType());
-			if (event.values() != null) {
-				obj.putAll(event.values());
-			}
-			
-			insert(coll, obj);
-		}
-		else 
-			return;
+//		if (ServiceCompositionSummaryEvent.class.isInstance(event)) {
+//			DBCollection coll = db.getCollection(EVENTS_COLLECTION);
+//			BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
+//			obj.append(ModelStorageMap.EVENT_TYPE, event.eventType());
+//			if (event.values() != null) {
+//				obj.putAll(event.values());
+//			}
+//			
+//			insert(coll, obj);
+//		}
+//		else 
+//			return;
 		
 //		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 //		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
@@ -127,6 +135,11 @@ public class ModelStorage {
 	}
 	
 	public void persistEvent(EventType eventType, String event) {
+		
+		if (true) {
+			return;
+		}
+		
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
 		obj.append(ModelStorageMap.EVENT_TYPE, eventType.toString());
@@ -135,6 +148,11 @@ public class ModelStorage {
 	}
 	
 	public void persistEvent(DBObject obj) {
+		
+		if (true) {
+			return;
+		}
+
 		obj.put("time_block", dtf.print(new DateTime()));
 		DBCollection coll = db.getCollection(EVENTS_COLLECTION);
 		insert(coll, obj);
@@ -147,12 +165,12 @@ public class ModelStorage {
 	 * @param serviceType
 	 */
 	public void registerFactoryAgent(String path, ServiceType serviceType) {
-		DBCollection coll = db.getCollection(FACTORY_AGENTS_COLLECTION);
-		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
-		obj.append("FactoryAgentPath", path);
-		obj.append("ServiceType", serviceType.toString());
-//		insert(coll, obj); //FIXME refactoring code for optimizations
-		coll.insert(obj);
+//		DBCollection coll = db.getCollection(FACTORY_AGENTS_COLLECTION);
+//		BasicDBObject obj = new BasicDBObject("time_block", dtf.print(new DateTime()));
+//		obj.append("FactoryAgentPath", path);
+//		obj.append("ServiceType", serviceType.toString());
+////		insert(coll, obj); //FIXME refactoring code for optimizations
+//		coll.insert(obj);
 	}
 
 	/**
@@ -271,6 +289,10 @@ public class ModelStorage {
 
 	public static ModelStorage getInstance(DB db) {
 		return new ModelStorage(db);
+	}
+	
+	public static ModelStorage getInstance(ActorRef master) {
+		return new ModelStorage(master);
 	}
 	
 }

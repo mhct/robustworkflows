@@ -63,10 +63,10 @@ function loadDbCluster {
             ssh $SSH_OPTIONS  $node /usr/bin/numactl --interleave=all \$HOME/opt/mongo/bin/mongod \
                 --auth \
                  --config \$HOME/robustworkflows/config/mongodb.conf \
-                --logpath $LOGS_PATH/mongo_$node.log --logappend \
-                --dbpath /scratch/mariokul/mongodb/ 2\>\&1  \& 
+                --logpath $LOGS_PATH/mongo_$node.log --logappend  2\>\&1 \&
     done
 
+                #--dbpath /scratch/mariokul/mongodb/ 2\>\&1  \& 
     #
     # Configure REPLICA set at primary
     #
@@ -128,13 +128,15 @@ function loadRobustWorkflowsApp {
 function loadSorcerer {
     sorcerer_server=$1
     sorcerer_name=$2
-    db_name=$3
+    sorcerer_port=$3
+    db_name=$4
+
     ssh $SSH_OPTIONS $SSH_USER@$sorcerer_server DB_USER=$DB_USER DB_PASS=$DB_PASS \
             DB_SERVER_IP=$DB_SERVER DB_SERVER_PORT=$DB_SERVER_PORT \
-            SORCERER_NAME=$sorcerer_name SYSTEM_HOSTNAME=$sorcerer_server \
+            SORCERER_NAME=$sorcerer_name SORCERER_PORT=$sorcerer_port SYSTEM_HOSTNAME=$sorcerer_server \
             DB_NAME=$db_name  \
             $ROOT_FOLDER/current/bin/startSorcerer \> \
-            $LOGS_PATH/$db_name/$sorcerer_name.txt  2\>\&1  \& \
+            $LOGS_PATH/$db_name/$sorcerer_name_$sorcerer_port.txt  2\>\&1  \& \
             echo PID: \$! & 
 }
 
@@ -157,13 +159,21 @@ function getActiveNodes {
 # @Param Integer, number of computers to be used
 #
 function loadNeededSorcerers {
-    db_name=$1
+    local db_name=$1
+    local nbSorcerersPerServer=$2
+
+    local initialPort=30000
     local pcs=$(getActiveNodes)
     for pc in $pcs;
         do
-            echo loading sorcerer at $pc
-            loadSorcerer $pc $pc $db_name
-            #sleep 2
+            COUNTER=0
+            while [ $COUNTER -lt $nbSorcerersPerServer ]; do
+                    local port=$(($initialPort + $COUNTER))
+                    echo loading sorcerer at $pc port $port
+                    loadSorcerer $pc $pc $port $db_name
+                    COUNTER=$(($COUNTER + 1))
+                    #sleep 2
+            done
         done
     
 }
@@ -225,6 +235,7 @@ function exp {
     network_model=$1
     db_name=$2
     concurrent=$3
+    local nbSorcerersPerServer=$4
 if [ "true" == "$(checkDBUser)" ] && [ -n $network_model ] && [ -n $db_name ]; then
     #loadDatabase
     #sleep 15
@@ -233,11 +244,11 @@ if [ "true" == "$(checkDBUser)" ] && [ -n $network_model ] && [ -n $db_name ]; t
     prepareDBPermissions $db_name
     sleep 15
     #testInput
-    loadNeededSorcerers $db_name
+    loadNeededSorcerers $db_name $nbSorcerersPerServer
     sleep 10
     #testInput
     loadGraphLoader $network_model $db_name
-    sleep 10
+    sleep 100
     setConcurrency $concurrent
     #testInput
     loadRobustWorkflowsApp $db_name

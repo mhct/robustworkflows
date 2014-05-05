@@ -3,8 +3,6 @@ package be.kuleuven.robustworkflows.infrastructure.configuration;
 import akka.actor.Actor;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
 
-import com.mongodb.DB;
-
 /**
  * Chain of responsibility to handle the instantiation of MODEL classes
  * TODO change the name of this class
@@ -84,6 +82,6 @@ public abstract class AgentHandlerChain {
 		return factoryOf;
 	}
 	
-	abstract public Actor createInstance(AgentAttributes attributes, DB db);
+	abstract public Actor createInstance(AgentAttributes attributes);
 	
 }

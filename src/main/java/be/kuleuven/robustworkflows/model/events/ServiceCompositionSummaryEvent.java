@@ -3,6 +3,10 @@ package be.kuleuven.robustworkflows.model.events;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import be.kuleuven.robustworkflows.model.ModelStorageMap;
 
 /**
@@ -15,6 +19,8 @@ public class ServiceCompositionSummaryEvent implements ModelEvent {
 	
 	
 	private Map<String, Object> data;
+	private String time;
+	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss_SSS");
 	
 	public ServiceCompositionSummaryEvent(long expectedTimeToServeComposition,
 			long realTimeToServeComposition, 
@@ -26,6 +32,7 @@ public class ServiceCompositionSummaryEvent implements ModelEvent {
 		data.put(ModelStorageMap.REAL_TIME_TO_SERVE_COMPOSITION, realTimeToServeComposition);
 		data.put(ModelStorageMap.CLIENT_AGENT, clientAgentName);
 		data.put(ModelStorageMap.SERVICES_ENGAGED, servicesEngaged);
+		data.put(ModelStorageMap.TIME_BLOCK, dtf.print(new DateTime()));
 	}
 
 	@Override
@@ -38,6 +45,14 @@ public class ServiceCompositionSummaryEvent implements ModelEvent {
 		return new HashMap<String, Object>(data);
 	}
 
+	
+	@Override
+	public String toString() {
+		return "ServiceCompositionSummaryEvent [data=" + data
+				+ ", eventType()=" + eventType() + ", values()=" + values()
+				+ "]";
+	}
+
 	public static ServiceCompositionSummaryEvent instance(long expectedTimeToServeComposition,
 			long realTimeToServeComposition, 
 			String clientAgentName,
@@ -45,6 +60,5 @@ public class ServiceCompositionSummaryEvent implements ModelEvent {
 
 		return new ServiceCompositionSummaryEvent(expectedTimeToServeComposition, realTimeToServeComposition, clientAgentName, servicesEngaged);
 	}
-
 
 }

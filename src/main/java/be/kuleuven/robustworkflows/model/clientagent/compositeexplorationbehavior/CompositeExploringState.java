@@ -33,7 +33,6 @@ public class CompositeExploringState extends ClientAgentState {
 		replies = Lists.newArrayList();
 		if (getClientAgentProxy().getAntAPI().explorationAnts() == 0) {
 			getClientAgentProxy().getAntAPI().createExplorationAnt(new ExplorationAntParameter(getClientAgentProxy().self(), 
-					getClientAgentProxy().getModelStorage(), 
 					getClientAgentProxy().getWorkflow(), 
 					getClientAgentProxy().getAttributes().getAntExplorationTimeout(), 
 					getClientAgentProxy().getAttributes().getAntExplorationSamplingProbability())

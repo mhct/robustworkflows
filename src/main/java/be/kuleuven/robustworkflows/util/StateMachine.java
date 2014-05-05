@@ -89,7 +89,7 @@ public class StateMachine<E, C> {
     final State<E, C> newState = transitionTable.get(currentState, event);
     if (!newState.equals(currentState)) {
       currentState.onExit(event, context);
-      final State<E, C> oldState = currentState;
+
       currentState = newState;
       currentState.onEntry(event, context);
     }

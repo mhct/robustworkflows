@@ -41,7 +41,7 @@ public class AgentFactoryTest {
 		AgentAttributes attributes = mock(AgentAttributes.class);
 		when(attributes.getAgentType()).thenReturn("Factory");
 		
-		af.handleInstance(attributes, mock(DB.class));
+		af.handleInstance(attributes);
 	}
 
 	@Test(expected=ActorInitializationException.class)
@@ -50,6 +50,6 @@ public class AgentFactoryTest {
 		AgentAttributes attributes = mock(AgentAttributes.class);
 		when(attributes.getAgentType()).thenReturn("Client");
 		
-		af.handleInstance(attributes, mock(DB.class));
+		af.handleInstance(attributes);
 	}
 }

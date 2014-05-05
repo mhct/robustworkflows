@@ -51,7 +51,7 @@ public class SimpleExplorationAntTest {
 
 			@Override
 			public Actor create() throws Exception {
-				return SimpleExplorationAnt.getInstance(new ExplorationAntParameter(null, null, null, 100, 0.2));
+				return SimpleExplorationAnt.getInstance(new ExplorationAntParameter(null, null, 100, 0.2));
 			}
 		}), "ant0", system);
 		

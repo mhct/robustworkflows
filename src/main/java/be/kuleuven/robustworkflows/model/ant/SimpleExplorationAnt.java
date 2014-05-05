@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.random.MersenneTwister;
@@ -14,19 +15,19 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ServiceType;
+import be.kuleuven.robustworkflows.model.ant.messages.ExploreService;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.EmptyExplorationResult;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
-import be.kuleuven.robustworkflows.model.events.ExplorationAntEvents;
-import be.kuleuven.robustworkflows.model.events.ExplorationReplyEvent;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
+
+import com.google.common.collect.Sets;
 
 /**
  * Explores the network looking for only one service
@@ -52,10 +53,10 @@ public class SimpleExplorationAnt extends UntypedActor {
 	private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	
 	private final ActorRef master;
-	private final ModelStorage modelStorage;
 	private RandomDataGenerator randomSampling = new RandomDataGenerator(new MersenneTwister());
 	private Integer linearID = 0;
 	private List<ExplorationReplyWrapper> replies = new ArrayList<ExplorationReplyWrapper>();
+	private Set<ActorRef> pathFollowed;
 	private long explorationTimeout;
 	private double samplingProbability;
 	private int minimum_nbRplies = 1;
@@ -70,12 +71,12 @@ public class SimpleExplorationAnt extends UntypedActor {
 
 	private int receivedReplies;
 	
-	public SimpleExplorationAnt(ActorRef master, ModelStorage modelStorage, long explorationTimeout, double samplingProbability) {
+	public SimpleExplorationAnt(ActorRef master, long explorationTimeout, double samplingProbability) {
 		this.master = master;
 		this.currentAgent = master;
-		this.modelStorage = modelStorage;
 		this.explorationTimeout = explorationTimeout;
 		this.samplingProbability = samplingProbability;
+		this.pathFollowed = Sets.newHashSet();
 		
 		askedQos = 0;
 		receivedReplies = 0;
@@ -83,15 +84,13 @@ public class SimpleExplorationAnt extends UntypedActor {
 
 	@Override
 	public void postStop() {
-		modelStorage.persistWriteCache();
 	}
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if (StartExperimentRun.class.isInstance(message)) {
 			StartExperimentRun msg = (StartExperimentRun) message;
-			modelStorage.addField("run", msg.getRun());
-			modelStorage.persistWriteCache();
+//			modelStorage.addField("run", msg.getRun());
 			randomSampling = new RandomDataGenerator(new MersenneTwister());
 			replies = new ArrayList<ExplorationReplyWrapper>();
 			
@@ -106,6 +105,7 @@ public class SimpleExplorationAnt extends UntypedActor {
 			serviceType = msg.getServiceType();
 			log.debug("Asking NeihgborListRequest to: " + master.path());
 			
+			pathFollowed.add(currentAgent);
 			currentAgent.tell(EventType.NeihgborListRequest, self());
 			
 		} else if (Neighbors.class.isInstance(message)){
@@ -118,7 +118,7 @@ public class SimpleExplorationAnt extends UntypedActor {
 			log.debug("Got ExplorationReply");
 			receivedReplies++;
 			ExplorationReply explorationReply = (ExplorationReply) message;
-			modelStorage.persistEvent(ExplorationReplyEvent.instance(explorationReply, sender().path().name()));
+//			FIXME modelStorage.persistEvent(ExplorationReplyEvent.instance(explorationReply, sender().path().name()));
 
 			//
 			// test for the reply, to check if it is a proper reply
@@ -133,14 +133,14 @@ public class SimpleExplorationAnt extends UntypedActor {
 			exploreAgain();
 		} else if (EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message)) {
 		
-			modelStorage.persistEvent(ExplorationAntEvents.timeout(master.path().name()));
+//			FIXME modelStorage.persistEvent(ExplorationAntEvents.timeout(master.path().name()));
 			log.debug("nbReplies: " + replies.size());
 			
 			SimpleExplorationResult bla = bestReply();
 			replies.clear();
 			
 			if (bla == null) {
-				log.debug("ExplorationAnt: Didn't receive any replies");
+				log.info("ExplorationAnt: Didn't receive any replies");
 				master.tell(new EmptyExplorationResult(), self());
 			} else {
 				master.tell(bla, self());
@@ -158,7 +158,28 @@ public class SimpleExplorationAnt extends UntypedActor {
 		// selects a new agent from the neighbors it knows
 		receivedReplies = 0;
 		askedQos = 0;
-		currentAgent = neighbors.getRandomNeighbor();
+		boolean continueSearch = true;
+		
+		if (neighbors.isEmpty()) {
+			log.info("nbNeighbors = 0");
+			return;
+		}
+		
+		ActorRef tentativeAgent = null;
+		while (continueSearch) {
+			tentativeAgent = neighbors.getRandomNeighbor();
+			if (pathFollowed.contains(tentativeAgent)) {
+				continueSearch = true;
+			} else {
+				break;
+			}
+		}
+		if (tentativeAgent == null) {
+			log.error("nbNeighbors = 0");
+		}
+		
+		currentAgent = tentativeAgent;
+		pathFollowed.add(currentAgent);
 		currentAgent.tell(EventType.NeihgborListRequest, self());
 	}
 	
@@ -184,7 +205,7 @@ public class SimpleExplorationAnt extends UntypedActor {
 		if (replies.size() >= 1) {
 			return SimpleExplorationResult.getInstance(replies.get(0).getActor(), replies.get(0).getReply().getComputationTime(), replies.get(0).getReply().getRequestExploration().getServiceType());
 		} else {
-			modelStorage.persistEvent(ExplorationAntEvents.noReplies(master.path().name()));
+			//FIXME modelStorage.persistEvent(ExplorationAntEvents.noReplies(master.path().name()));
 		}
 		
 		return null;
@@ -242,7 +263,6 @@ public class SimpleExplorationAnt extends UntypedActor {
 	
 	public static UntypedActor getInstance(ExplorationAntParameter parameterObject) {
 		return new SimpleExplorationAnt(parameterObject.getMaster(),
-				parameterObject.getModelStorage(),
 				parameterObject.getExplorationTimeout(),
 				parameterObject.getSamplingProbability());
 	}

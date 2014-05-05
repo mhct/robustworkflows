@@ -10,11 +10,8 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.dmas.AgentType;
 import be.kuleuven.dmas.DmasMW;
-import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
-import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ModelStorageException;
 import be.kuleuven.robustworkflows.model.ModelStorageMap;
-import be.kuleuven.robustworkflows.model.events.FactoryAgentEvents;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
@@ -53,8 +50,6 @@ public class FactoryAgent extends UntypedActor {
 	
 	private static final String TIME_TO_WORK_FOR_REQUEST_FINISHED = "time_to_service_request";
 
-	private final ModelStorage modelStorage;
-	private InfrastructureStorage storage;
 	private ComputationalResourceProfile computationalProfile;
 
 	private boolean busy = false;
@@ -64,29 +59,25 @@ public class FactoryAgent extends UntypedActor {
 
 	@Override
 	public void preStart() {
-		storage.persistFactoryAgentAddress(getName());
-		modelStorage.registerFactoryAgent(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()), computationalProfile.getServiceType());
+//		storage.persistFactoryAgentAddress(getName());
+//		modelStorage.registerFactoryAgent(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()), computationalProfile.getServiceType());
 	}
 	
 	@Override
 	public void postStop() {
-		modelStorage.unRegisterFactoryAgent(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
-		modelStorage.persistWriteCache();
+//		modelStorage.unRegisterFactoryAgent(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
+//		modelStorage.persistWriteCache();
 	}
 	
 	
-	public FactoryAgent(DB db, List<ActorRef> neighbors, ComputationalResourceProfile computationalProfile) {
+	public FactoryAgent(List<ActorRef> neighbors, ComputationalResourceProfile computationalProfile) {
 		log.info("FactoryAgent started");
 		
-		this.storage = new InfrastructureStorage(db);
-		this.modelStorage = ModelStorage.getInstance(db);
 		this.computationalProfile = computationalProfile; //TODO make a prototype of the computational profile...
 		
 		dmasMW = DmasMW.getInstance(getContext().system(), self(), AgentType.factory());
 		dmasMW.addNeighbors(neighbors);
 
-		log.info("storage: " + storage);
-		log.info("modelStorage: " + modelStorage);
 		log.info("neighbors:" + neighbors);
 		log.info("computationalProfile:" + computationalProfile);
 	}
@@ -98,11 +89,12 @@ public class FactoryAgent extends UntypedActor {
 	 * @return
 	 */
 	public boolean isRunningExperiment() {
-		if (modelStorage.getField("run") != null) {
-			return true;
-		} else {
-			return false;
-		}
+		return true;
+//		if (modelStorage.getField("run") != null) {
+//			return true;
+//		} else {
+//			return false;
+//		}
 	}
 	
 	@Override
@@ -118,8 +110,7 @@ public class FactoryAgent extends UntypedActor {
 			if ("".equals(msg.getRun()) || msg.getRun() == null) {
 				throw new RuntimeException("StartExperimentRun has no run code");
 			}
-			modelStorage.addField("run", msg.getRun());
-			modelStorage.persistWriteCache();
+//			modelStorage.addField("run", msg.getRun());
 			computationalProfile.reset();
 			sender().tell("OK", self());
 		} else if (!isRunningExperiment()) {
@@ -132,11 +123,7 @@ public class FactoryAgent extends UntypedActor {
 			if (msg.getServiceType().equals(computationalProfile.getServiceType())) {
 				ExplorationRequest sr = (ExplorationRequest) message;
 				
-				try {
-					modelStorage.persistEvent(toDBObject(sr));
-				} catch (ModelStorageException e) {
-					modelStorage.persistEvent(e.getObj());
-				}
+//					modelStorage.persistEvent(toDBObject(sr));
 				
 				sender().tell(ExplorationReply.getInstance(msg, computationalProfile.expectedTimeToServeRequest()), self());
 			} else {
@@ -150,10 +137,10 @@ public class FactoryAgent extends UntypedActor {
 			ServiceRequest sr = (ServiceRequest) message;
 			
 			try {
-				modelStorage.persistEvent(toDBObject(sr));
+//				modelStorage.persistEvent(toDBObject(sr));
 			} catch (ModelStorageException e) {
 				//try to insert again
-				modelStorage.persistEvent(e.getObj());
+//				modelStorage.persistEvent(e.getObj());
 			}
 			
 			if (sr.typeOf(computationalProfile.getServiceType())) {
@@ -165,9 +152,9 @@ public class FactoryAgent extends UntypedActor {
 		} else if (FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED.equals(message)) {
 
 			try {
-				modelStorage.persistEvent(FactoryAgentEvents.TIME_TO_WORK_FOR_REQUEST_FINISHED());
+//				modelStorage.persistEvent(FactoryAgentEvents.TIME_TO_WORK_FOR_REQUEST_FINISHED());
 			} catch (ModelStorageException e) {
-				modelStorage.persistEvent(e.getObj());
+//				modelStorage.persistEvent(e.getObj());
 			}
 			ReceivedServiceRequest rsr = computationalProfile.poll();
 			if (rsr != null) {
@@ -189,7 +176,8 @@ public class FactoryAgent extends UntypedActor {
 	}
 	
 	public Object currentRun() {
-		return modelStorage.getField("run");
+//		return modelStorage.getField("run");
+		return null;
 	}
 	
 	private String getName() {

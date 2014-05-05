@@ -39,27 +39,33 @@ public class SorcererActor extends UntypedActor {
 	@Override
 	public void onReceive(Object message) {
 		if(message.equals("start")) {
-			log.info("Sorcerer started" + getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
+			log.info("BLE Sorcerer started" + getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
 			storage.persistSorcererAddress(getSelf().path().toStringWithAddress(getContext().provider().getDefaultAddress()));
 			
 		} else if (DeployAgent.class.isInstance(message)) {
 			log.debug("DeployActorMsg received" + message);
 			final DeployAgent msg = DeployAgent.valueOf(message);
-			ActorRef childActor = getContext().actorOf(new Props(new UntypedActorFactory() {
+			ActorRef childActor = getContext().system().actorOf(new Props(new UntypedActorFactory() {
 				
 				private static final long serialVersionUID = 2013021401L;
 
 				@Override
 				public Actor create() throws Exception {
-					return agentFactory.handleInstance(msg.attributes(), adminDB);
+					return agentFactory.handleInstance(msg.attributes()); 
 				}
 			}), msg.attributes().getAgentId());
 			
 			if(childActor == null) {
 				log.error("PROBLEM: childActor is null");
 			}
-			
-			getSender().tell(new AgentDeployed(childActor, msg.attributes().getAgentId()), getSelf());
+
+			//FIXME hack.. now the sorcerer knows about which type of agents the system has.. that is against the initial design rationale.
+//			if (msg.attributes().getAgentType().equals("Client")) {
+//				storage.persistClientAgentAddress(childActor.path().toStringWithAddress(getContext().provider().getDefaultAddress()), self().path().name());
+//			} else {
+//				storage.registerFactoryAgent(childActor.path().toStringWithAddress(getContext().provider().getDefaultAddress()), msg.attributes().getComputationalProfile().getServiceType());
+//			}
+			getSender().tell(new AgentDeployed(childActor, msg.attributes().getAgentId(), msg.attributes().getAgentType()), getSelf());
 		} else {
 			log.debug("Not handling message" + message);
 			unhandled(message);

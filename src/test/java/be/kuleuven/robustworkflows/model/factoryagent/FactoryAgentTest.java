@@ -92,7 +92,7 @@ public class FactoryAgentTest {
 		return Props.apply(new UntypedActorFactory() {
 			@Override
 			public Actor create() throws Exception {
-				return new FactoryAgent(db, null, computationalProfile);
+				return new FactoryAgent(null, computationalProfile);
 			}
 		});		
 	}

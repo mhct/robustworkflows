@@ -116,7 +116,7 @@ public class AgentAttributes implements Serializable {
 						st);
 			
 			} 
-		} else if (NodeAttributes.Client.equals((String) attributes.getValue(NodeAttributes.NodeType))) {
+		} else if (NodeAttributeValues.Client.equals((String) attributes.getValue(NodeAttributes.NodeType))) {
 			explorationStateTimeout = (Long) attributes.getValue(NodeAttributes.ExplorationStateTimeout);
 			antExplorationTimeout = (Long) attributes.getValue(NodeAttributes.AntExplorationTimeout);
 			antExplorationSamplingProbability =  (Double) attributes.getValue(NodeAttributes.AntExplorationSamplingProbability);

@@ -1,4 +1,4 @@
-package be.kuleuven.robustworkflows.model.ant;
+package be.kuleuven.robustworkflows.model.ant.messages;
 
 import java.io.Serializable;
 

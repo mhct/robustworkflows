@@ -46,6 +46,7 @@ public class SimpleEngagingInServiceComposition extends ClientAgentState {
 
 	@Override
 	public void run() {
+		getClientAgentProxy().getLoggingAdapter().info("ClientAgent" + getClientAgentProxy().clientAgentName() + "SimpleEngaginInServiceCompositionState");
 		engageWithServiceProvider();
 	}
 	

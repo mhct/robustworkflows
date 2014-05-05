@@ -70,7 +70,7 @@ public class ClientAgentTest {
 
 			@Override
 			public Actor create() throws Exception {
-				return new ClientAgent(db, null, mock(AgentAttributes.class), mock(ExplorationBehaviorFactory.class));
+				return new ClientAgent(null, mock(AgentAttributes.class), mock(ExplorationBehaviorFactory.class));
 			}
 		});		
 	}

@@ -3,10 +3,8 @@ package be.kuleuven.robustworkflows.model.clientagent;
 import java.util.List;
 
 import akka.actor.ActorRef;
-import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
-import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
@@ -24,9 +22,6 @@ public interface ClientAgentProxy {
 	//changes current state of the Agent
 	public void setState(ClientAgentState state);
 	
-	//gets the Model storage
-	public ModelStorage getModelStorage();
-
 	//adds a Message to the list of future messages of the agent
 	public void addExpirationTimer(long time, String message);
 

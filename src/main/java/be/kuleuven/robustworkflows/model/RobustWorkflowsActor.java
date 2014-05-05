@@ -107,7 +107,7 @@ public class RobustWorkflowsActor extends UntypedActor {
 	}
 	
 	private void sendComposeToAllClientAgents() {
-		DBCursor cursor = infrastructureStorage.getClientAgent().find();
+		DBCursor cursor = infrastructureStorage.getClientAgents();
 		log.info("Retrieving Client Agents: Found: " + cursor.count() + " clients");
 		
 		long startingTime = startTimeInterval;

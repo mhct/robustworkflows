@@ -1,5 +1,6 @@
 package be.kuleuven.robustworkflows.model;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
@@ -92,6 +93,12 @@ public class RobustWorkflowsLauncher implements Bootable {
 //		return system;
 //	}
 	
+	public static void main(String[] args) throws IOException {
+		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
+		wf.startup();
+		System.in.read();
+		wf.shutdown();
+	}
 //	public static void main(String[] args) throws IOException, InterruptedException {
 //		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
 //		wf.startup();

@@ -14,6 +14,7 @@ public class ModelStorageMap {
 	public static final String SERVICE_REQUEST_SUMMARY = "SERVICE_REQUEST_SUMMARY";
 	public static final String EXPECTED_TIME_TO_SERVE_REQUEST = "EXPECTED_TIME_TO_SERVE_REQUEST";
 	public static final String REAL_TIME_TO_SERVE_REQUEST = "REAL_TIME_TO_SERVE_REQUEST";
+	public static final String TIME_BLOCK = "time_block";
 	
 	
 }

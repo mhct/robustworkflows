@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import akka.actor.ActorRef;
-import be.kuleuven.robustworkflows.model.ant.ExploreService;
+import be.kuleuven.robustworkflows.model.ant.messages.ExploreService;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
@@ -35,6 +35,7 @@ public class SimpleExploringState extends ClientAgentState {
 
 	@Override
 	public void run() {
+		getClientAgentProxy().getLoggingAdapter().info("ClientAgent" + getClientAgentProxy().clientAgentName() + "SimpleExploringState");
 		getClientAgentProxy().getAntAPI().tellAll(ExploreService.type(workflowTask.getType()));
 		getClientAgentProxy().addExpirationTimer(getClientAgentProxy().getAttributes().getExplorationStateTimeout(), SimpleExploringState.EXPLORATION_TIMEOUT);
 	}
@@ -55,7 +56,7 @@ public class SimpleExploringState extends ClientAgentState {
 				//FIXME should not use this persistEvent(String) method anymore...
 //				persistEvent("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
 				//TODO go back to RunningCompositionState
-				getClientAgentProxy().getLoggingAdapter().debug("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
+				getClientAgentProxy().getLoggingAdapter().info("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
 			}
 			
 		} else {

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import akka.actor.UntypedActor;
 import be.kuleuven.robustworkflows.model.ant.SimpleExplorationAnt;
+import be.kuleuven.robustworkflows.model.antactors.ExplorationAntActor;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.SimpleWaitingTaskState;
 
 public class SimpleExplorationFactory extends
@@ -18,7 +19,8 @@ public class SimpleExplorationFactory extends
 
 	@Override
 	public UntypedActor createExplorationAnt(ExplorationAntParameter parameterObject) {
-		return SimpleExplorationAnt.getInstance(parameterObject);
+//		return SimpleExplorationAnt.getInstance(parameterObject); FIXME
+		return ExplorationAntActor.getInstance(parameterObject);
 	}
 
 }

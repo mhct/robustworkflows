@@ -13,15 +13,11 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.dmas.AgentType;
 import be.kuleuven.dmas.DmasMW;
-import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
-import be.kuleuven.robustworkflows.model.ModelStorage;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
-
-import com.mongodb.DB;
 
 /**
  * A ClientAgent represents a composite service. 
@@ -39,8 +35,6 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	
 	private ClientAgentState currentState;
-	private InfrastructureStorage storage;
-	private ModelStorage modelStorage;
 	private AntAPI antApi;
 	private Workflow workflow;
 	private AgentAttributes attributes;
@@ -49,12 +43,9 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 
 	private final DmasMW dmasMW;
 	
-	public ClientAgent(DB db, List<ActorRef> neighbors, AgentAttributes attributes, ExplorationBehaviorFactory behaviorFactory) {
+	public ClientAgent(List<ActorRef> neighbors, AgentAttributes attributes, ExplorationBehaviorFactory behaviorFactory) {
 		log.info("C L I E N T started\nBehavior Factory: " + behaviorFactory.getClass().getName() + "\nWF: " + attributes.getWorkflow());
 
-		this.storage = new InfrastructureStorage(db);
-		this.modelStorage = ModelStorage.getInstance(db);
-		
 		dmasMW = DmasMW.getInstance(getContext().system(), self(), AgentType.client());
 		dmasMW.addNeighbors(neighbors);
 		
@@ -68,13 +59,12 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	@Override
 	public void preStart() {
 		log.debug("----->>>>" + self().path().toStringWithAddress(getContext().provider().getDefaultAddress()) + "<<<<<<<<-----");
-		storage.persistClientAgentAddress(self().path().toStringWithAddress(getContext().provider().getDefaultAddress()), self().path().name());
+//		storage.persistClientAgentAddress(self().path().toStringWithAddress(getContext().provider().getDefaultAddress()), self().path().name());
 	}
 	
 	@Override
 	public void postStop() {
-		modelStorage.persistWriteCache();
-		log.debug("ClientAgent stoped");
+		log.info("ClientAgent stoped");
 	}
 	
 	@Override
@@ -105,11 +95,6 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 		currentState.run();
 	}
 	
-	@Override
-	public ModelStorage getModelStorage() {
-		return modelStorage;
-	}
-
 	@Override
 	public void addExpirationTimer(long time, final String message) {
 		final ActorRef selfReference = self();
