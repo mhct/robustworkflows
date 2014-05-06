@@ -6,6 +6,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import be.kuleuven.robustworkflows.model.antactors.ExplorationAntActor;
+import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.util.StateMachine.StateMachineBuilder;
 
 public class StateMachineTest {
@@ -20,14 +22,16 @@ public class StateMachineTest {
 
 	@Test
 	public void testStateMachine() {
-		IdleState idle = new IdleState();
-		ExploringState exploringState = new ExploringState();
+		StateA idle = new StateA();
+		StateB busy = new StateB();
 		StateMachineBuilder<Object, Object> builder = StateMachine.create(idle);
-		builder.addTransition(idle, "ExploreService", exploringState);
+		builder.addTransition(idle, String.class, busy);
+		builder.addTransition(busy, String.class, idle);
+		builder.addTransition(busy, Integer.class, busy);
 		
 		StateMachine<Object, Object> fsm = builder.build();
-		fsm.handle("Explore", null);
-		
+		fsm.handle("This is a test", null);
+		fsm.handle(12, null);
 	}
 
 	@Test

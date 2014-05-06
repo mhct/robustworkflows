@@ -24,19 +24,21 @@ import be.kuleuven.robustworkflows.util.Utils;
 
 import com.google.common.collect.Lists;
 /**
- * Explores the network looking for only one service
+ * 
+ * The TalkerAntActor asks for QoS values for a given {@link ServiceType} to a group of agents, given 
+ * by the message {@link Neighbors}.
+ * 
+ * It accumulates the replies and selects the best one, returning the best reply to its parent.
  * 
  * @author marioct
  *
  * === Inbound messages ===
- * - ''' ActorRef ''' 
  * - ''' ExplorationReply '''
  * - ''' AskQoSTimeout '''
  * - ''' Neighbors ''' from DmasMW
  * 
  * === Outbound messages ===
  * - ''' ExplorationRequest '''
- * - ''' NeihgborListRequest ''' from DmasMW
  * - ''' ExplorationReplyWrapper '''
  */
 public class TalkerAntActor extends UntypedActor {
@@ -68,13 +70,14 @@ public class TalkerAntActor extends UntypedActor {
 
 	@Override
 	public void onReceive(final Object message) throws Exception {
-		if (ActorRef.class.isInstance(message) ) {
-			//explore neighbors
-			final ActorRef current = (ActorRef) message;
-			log.debug("Asking NeihgborListRequest to: " + current.path());
-			current.tell(EventType.NeihgborListRequest, self());
+//		if (ActorRef.class.isInstance(message) ) {
+//			//explore neighbors
+//			final ActorRef current = (ActorRef) message;
+//			log.debug("Asking NeihgborListRequest to: " + current.path());
+//			current.tell(EventType.NeihgborListRequest, self());
 
-		} else if (Neighbors.class.isInstance(message)){
+//		} else if (Neighbors.class.isInstance(message)){
+		if (Neighbors.class.isInstance(message)){
 //			log.debug("Received Neighbors list");
 			neighbors = (Neighbors) message;
 			askQoS(neighbors.getNeighbors());

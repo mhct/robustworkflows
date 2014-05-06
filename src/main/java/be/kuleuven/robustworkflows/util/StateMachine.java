@@ -35,7 +35,7 @@ public class StateMachine<E, C> {
   /**
    * The transition table which defines the allowed transitions.
    */
-  protected ImmutableTable<State<E, C>, E, State<E, C>> transitionTable;
+  protected ImmutableTable<State<E, C>, Class<?>, State<E, C>> transitionTable;
   /**
    * The current state.
    */
@@ -46,7 +46,7 @@ public class StateMachine<E, C> {
   protected final State<E, C> startState;
 
   StateMachine(State<E, C> start,
-      ImmutableTable<State<E, C>, E, State<E, C>> table) {
+      ImmutableTable<State<E, C>, Class<?>, State<E, C>> table) {
     startState = start;
     currentState = start;
     transitionTable = table;
@@ -84,9 +84,9 @@ public class StateMachine<E, C> {
    * @param context Reference to the context.
    */
   protected void changeState(E event, C context) {
-    checkArgument(transitionTable.contains(currentState, event),
-        "The event %s is not supported when in state %s.", event, currentState);
-    final State<E, C> newState = transitionTable.get(currentState, event);
+    checkArgument(transitionTable.contains(currentState, event.getClass()),
+        "The event %s is not supported when in state %s.", event.getClass(), currentState);
+    final State<E, C> newState = transitionTable.get(currentState, event.getClass());
     if (!newState.equals(currentState)) {
       currentState.onExit(event, context);
 
@@ -186,7 +186,7 @@ public class StateMachine<E, C> {
    * @see StateMachine
    */
   public static final class StateMachineBuilder<E, C> {
-    private final ImmutableTable.Builder<State<E, C>, E, State<E, C>> tableBuilder;
+    private final ImmutableTable.Builder<State<E, C>, Class<?>, State<E, C>> tableBuilder;
     private final State<E, C> start;
 
     StateMachineBuilder(State<E, C> initialState) {
@@ -201,7 +201,7 @@ public class StateMachine<E, C> {
      * @param to The destination of the transition, the new state.
      * @return A reference to this for method chaining.
      */
-    public StateMachineBuilder<E, C> addTransition(State<E, C> from, E event,
+    public StateMachineBuilder<E, C> addTransition(State<E, C> from, Class<?> event,
         State<E, C> to) {
       tableBuilder.put(from, event, to);
       return this;

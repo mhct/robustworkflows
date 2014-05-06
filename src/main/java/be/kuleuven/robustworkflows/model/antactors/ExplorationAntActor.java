@@ -1,34 +1,30 @@
 package be.kuleuven.robustworkflows.model.antactors;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.ant.messages.ExplorationReplyWrapper;
 import be.kuleuven.robustworkflows.model.ant.messages.ExploreService;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
-import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.EmptyExplorationResult;
-import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
-import be.kuleuven.robustworkflows.model.messages.Workflow;
 import be.kuleuven.robustworkflows.util.StateMachine;
-import be.kuleuven.robustworkflows.util.Utils;
 import be.kuleuven.robustworkflows.util.StateMachine.StateMachineBuilder;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
- * Explores the network looking for only one service
+ * Explores the network looking for only one service.
+ * This is a completely reactive ExplorationAnt. It never "remembers" places that it have been, from previous
+ * service searches. It can avoid loops, though.
+ * 
+ *  Current ExploringState strategy is to keep looking for agents of the proper {@link ServiceType} only until
+ *  finding at least ONE agent which offers services of the desired type. Notice that there is no loadbalancing in such
+ *  solution.
  * 
  * @author marioct
  *
@@ -42,50 +38,38 @@ import com.google.common.collect.Sets;
  * - ''' SimpleExplorationResult '''
  * 
  */
-public class ExplorationAntActor extends UntypedActor {
+public class ExplorationAntActor extends UntypedActor implements ExplorationAntContext {
 
 	private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	
-	private final ActorRef master;
-	
-	private Integer linearID = 0;
-	private List<ExplorationReplyWrapper> replies = new ArrayList<ExplorationReplyWrapper>();
 	private Set<ActorRef> pathFollowed;
 	private long explorationTimeout;
 	
-	private int minimum_nbRplies = 1;
-	
-	private ServiceType serviceType;
-
 	private ActorRef currentAgent; //Current Node that the exploration ant is "seating"
-
-	private Neighbors neighbors;
-
-	private int askedQos;
-
-	private int receivedReplies;
 
 	private double samplingProbability;
 
-	private ActorRef talker;
-
-	private boolean ignoreTimeout = false;
+	private StateMachine<Object, ExplorationAntContext> fsm;
 	
 	public ExplorationAntActor(ActorRef master, long explorationTimeout, double samplingProbability) {
-		this.master = master;
+//		this.master = master;
 		this.currentAgent = master;
 		this.explorationTimeout = explorationTimeout;
 		this.samplingProbability = samplingProbability;
 		this.pathFollowed = Sets.newHashSet();
 		
-		askedQos = 0;
-		receivedReplies = 0;
+		IdleState idle = new IdleState();
+		ExploringState exploring = new ExploringState();
+		StateMachineBuilder<Object, ExplorationAntContext> builder = StateMachine.create(idle);
+		builder.addTransition(idle, StartExperimentRun.class, idle);
+		builder.addTransition(idle, ExploreService.class, exploring);
+		builder.addTransition(idle, EventType.ExploringStateTimeout.getClass(), idle);
+		builder.addTransition(exploring, String.class, idle);
+		builder.addTransition(exploring, ExplorationReplyWrapper.class, exploring);
+		builder.addTransition(exploring, Neighbors.class, exploring);
+		builder.addTransition(exploring, EventType.ExploringStateTimeout.getClass(), exploring);
 		
-//		StateMachineBuilder<Object, Object> builder = StateMachine.create(idle);
-//		builder.addTransition(idle, "ExploreService", exploringState);
-//		
-//		StateMachine<Object, Object> fsm = builder.build();
-//		fsm.handle("Explore", null);
+		fsm = builder.build();
 	}
 
 	@Override
@@ -94,46 +78,7 @@ public class ExplorationAntActor extends UntypedActor {
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
-		if (StartExperimentRun.class.isInstance(message)) {
-//			StartExperimentRun msg = (StartExperimentRun) message;
-//			modelStorage.addField("run", msg.getRun());
-			replies = Lists.newArrayList();
-			
-		} else if (ExploreService.class.isInstance(message)) {
-			Utils.addExpirationTimer(context(), explorationTimeout, EventType.ExploringStateTimeout);
-			ExploreService msg = (ExploreService) message;
-			
-			serviceType = msg.getServiceType();
-			talker = getContext().actorOf(TalkerAntActor.props(msg.getServiceType(), (long) Math.ceil(explorationTimeout/4.0), samplingProbability));
-			pathFollowed.add(currentAgent);
-			talker.tell(currentAgent, self());
-		
-		} else if (ExplorationReplyWrapper.class.isInstance(message)) {
-			ExplorationReplyWrapper wrapper = (ExplorationReplyWrapper) message;
-			if (wrapper.getReply().isPossible()) {
-				//jumps to the agent which has the best reply
-				currentAgent = wrapper.getActor();
-				master.tell(SimpleExplorationResult.getInstance((ExplorationReplyWrapper)message), self());
-			} else {
-				master.tell(new EmptyExplorationResult(), self());
-			}
-			ignoreTimeout = true;
-			
-		} else if (!ignoreTimeout  && ( EventType.ExploringStateTimeout.equals(message) || EventType.ExplorationFinished.equals(message))) {
-		
-////			FIXME modelStorage.persistEvent(ExplorationAntEvents.timeout(master.path().name()));
-//			log.debug("nbReplies: " + replies.size());
-//			
-//			SimpleExplorationResult bla = bestReply();
-//			replies.clear();
-//			
-//			if (bla == null) {
-//				log.info("ExplorationAnt: Didn't receive any replies");
-				master.tell(new EmptyExplorationResult(), self());
-//			} else {
-//				master.tell(bla, self());
-//			}
-		}
+		fsm.handle(message, this);
 	}
 	
 //	private void shouldExploreAgain() {
@@ -171,33 +116,35 @@ public class ExplorationAntActor extends UntypedActor {
 //		currentAgent.tell(EventType.NeihgborListRequest, self());
 //	}
 	
-//	private SimpleExplorationResult bestReply() {
-//		Collections.sort(replies, new Comparator<ExplorationReplyWrapper>() {
-//
-//			@Override
-//			public int compare(ExplorationReplyWrapper obj1, ExplorationReplyWrapper obj2) {
-//				final long o1 = obj1.getReply().getComputationTime();
-//				final long o2 = obj2.getReply().getComputationTime();
-//				
-//				if (o1 < o2) {
-//					return -1;
-//				} else if (o1 > o2) {
-//					return 1;
-//				}
-//					
-//				return 0;
-//			}
-//			
-//		});
-//		
-//		if (replies.size() >= 1) {
-//			return SimpleExplorationResult.getInstance(replies.get(0).getActor(), replies.get(0).getReply().getComputationTime(), replies.get(0).getReply().getRequestExploration().getServiceType());
-//		} else {
-//			//FIXME modelStorage.persistEvent(ExplorationAntEvents.noReplies(master.path().name()));
-//		}
-//		
-//		return null;
-//	}
+	@Override
+	public long getExplorationTimeout() {
+		return explorationTimeout;
+	}
+
+	@Override
+	public double getSamplingProbability() {
+		return samplingProbability;
+	}
+
+	@Override
+	public ActorRef getCurrentAgent() {
+		return currentAgent;
+	}
+
+	@Override
+	public void addToVisitedNodes(ActorRef currentAgent) {
+		pathFollowed.add(currentAgent);
+	}
+
+	@Override
+	public void setCurrentAgent(ActorRef actor) {
+		currentAgent = actor;
+	}
+
+	@Override
+	public void tellMaster(Object message) {
+		getContext().parent().tell(message, self());
+	}
 	
 	public static UntypedActor getInstance(ExplorationAntParameter parameterObject) {
 		return new ExplorationAntActor(parameterObject.getMaster(),
