@@ -2,6 +2,8 @@ package be.kuleuven.robustworkflows.model.clientagent;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 import akka.actor.ActorRef;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
@@ -47,4 +49,10 @@ public interface ClientAgentProxy {
 	public ClientAgentState getHackingState();
 	
 	public LoggingAdapter getLoggingAdapter();
+
+	public boolean isContinuousComposition();
+
+	public DateTime getStartTime();
+
+	public void setStartTime();
 }

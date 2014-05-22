@@ -1,7 +1,5 @@
 package be.kuleuven.robustworkflows.model.antactors;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.math3.random.MersenneTwister;
@@ -15,14 +13,11 @@ import akka.actor.UntypedActorFactory;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.ant.messages.ExplorationReplyWrapper;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
 import be.kuleuven.robustworkflows.model.messages.Neighbors;
 import be.kuleuven.robustworkflows.util.Utils;
-
-import com.google.common.collect.Lists;
 /**
  * 
  * The TalkerAntActor asks for QoS values for a given {@link ServiceType} to a group of agents, given 
@@ -52,54 +47,57 @@ public class TalkerAntActor extends UntypedActor {
 	
 	private Neighbors neighbors;
 
-	private List<ExplorationReplyWrapper> replies;
 	private int receivedReplies = 0;
 
 	private int askedQos;
 
 	private boolean ignoreTimeout = false;
 
+	private ExplorationRepliesHolder repliesHolder;
 
 	public TalkerAntActor(ServiceType serviceType, long explorationTimeout, double samplingProbability) {
 		this.serviceType = serviceType;
 		this.explorationTimeout = explorationTimeout;
 		this.samplingProbability = samplingProbability;
 		
-		replies = Lists.newArrayList();
+		repliesHolder = ExplorationRepliesHolder.getInstance();
 	}
 
 	@Override
 	public void onReceive(final Object message) throws Exception {
-//		if (ActorRef.class.isInstance(message) ) {
-//			//explore neighbors
-//			final ActorRef current = (ActorRef) message;
-//			log.debug("Asking NeihgborListRequest to: " + current.path());
-//			current.tell(EventType.NeihgborListRequest, self());
-
-//		} else if (Neighbors.class.isInstance(message)){
 		if (Neighbors.class.isInstance(message)){
-//			log.debug("Received Neighbors list");
+			log.debug("Adding AskQoSTimeout: " + explorationTimeout);
+			Utils.addExpirationTimer(context(), explorationTimeout, EventType.AskQoSTimeout);
 			neighbors = (Neighbors) message;
 			askQoS(neighbors.getNeighbors());
+			ignoreTimeout = false;
 			
 		} else if (ExplorationReply.class.isInstance(message)) {
 			log.debug("Got ExplorationReply: " + message.toString());
+			log.debug("context().parent(): " + context().parent().path());
 			receivedReplies++;
 			ExplorationReply explorationReply = (ExplorationReply) message;
+
 			//
-			// test for the reply, to check if it is a proper reply
+			// check if it is a proper reply
 			//
 			if (explorationReply.isPossible()) {
-				replies.add(ExplorationReplyWrapper.getInstance(sender(), explorationReply));
+				repliesHolder.add(explorationReply, sender());
 			}
 			
 			if (receivedReplies == askedQos) {
-				context().parent().tell(bestExplorationReply(), self());
+				log.debug("RECEIVED == ASKEDQOS ... ->context().parent(): " + context().parent().path());
+				context().parent().tell(repliesHolder.getImmutableClone(), self());
+				repliesHolder.clear();
 				ignoreTimeout  = true;
 			}
 			
 		} else if (!ignoreTimeout && EventType.AskQoSTimeout.equals(message)) {
-			context().parent().tell(bestExplorationReply(), self());
+			log.debug("AskQoSTimeout, replying to parent");
+			context().parent().tell(repliesHolder.getImmutableClone(), self());
+		} else {
+			log.debug("Unhandled message: " + message);
+			unhandled(message);
 		}
 	}
 	
@@ -111,9 +109,9 @@ public class TalkerAntActor extends UntypedActor {
 	 * @param serviceType Desired ServiceType to be explored
 	 */
 	private void askQoS(List<ActorRef> agents) {
-		Utils.addExpirationTimer(context(), explorationTimeout, EventType.AskQoSTimeout);
 
 		askedQos = 0;
+		receivedReplies = 0;
 		for (ActorRef agent: agents) {
 			if (sampling()) {
 				if (agent != null) {
@@ -139,35 +137,6 @@ public class TalkerAntActor extends UntypedActor {
 		}
 	}
 	
-	private ExplorationReplyWrapper bestExplorationReply() {
-		if (replies.size() == 0) {
-			log.debug("nbReceivedReplies: " + receivedReplies + ", nbReplies: " + replies.size());
-			return ExplorationReplyWrapper.getInstance(self(), null);
-		} else if (replies.size() == 1) {
-			return replies.get(0);
-		} else {
-			Collections.sort(replies, new Comparator<ExplorationReplyWrapper>() {
-	
-				@Override
-				public int compare(ExplorationReplyWrapper obj1, ExplorationReplyWrapper obj2) {
-					final long o1 = obj1.getReply().getComputationTime();
-					final long o2 = obj2.getReply().getComputationTime();
-					
-					if (o1 < o2) {
-						return -1;
-					} else if (o1 > o2) {
-						return 1;
-					}
-						
-					return 0;
-				}
-				
-			});
-		
-			return replies.get(0);
-		}
-	}
-
 	
 	/**
 	 * Props Factory for a TalkerAntActor

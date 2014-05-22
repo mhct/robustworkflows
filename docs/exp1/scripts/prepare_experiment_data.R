@@ -3,6 +3,26 @@ library(ggplot2)
 library(reshape)
 
 #
+# Gets an experiment name, checks for the experiments and create a data.frame
+# containing the information of such experiments and the aggregate form as well
+#
+# @param experiment_name, String containing the path and name of basic experiment,
+#                   eg: "data/250"
+# @param number_of_runs, Integer specifying how many experiments there are 
+#
+runexp <- function(experiment_name, number_of_runs) {
+  
+  # assuming data in CSV format: time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT,SERVICES_ENGAGED, start_time
+  raw_data <- read.csv(file=experiment_name, as.is=TRUE)
+  raw_data <- data.frame(X=1, raw_data)
+  raw_data <- data.frame(raw_data, delta=(raw_data$REAL_TIME_TO_SERVE_COMPOSITION-raw_data$EXPECTED_TIME_TO_SERVE_COMPOSITION)/1000)
+  sorted_data <- raw_data[order(raw_data[,5]),]
+  
+  return(sorted_data)
+  #agg_data_mean <- aggregate(data=raw_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION, delta) ~ X, mean)
+}
+
+#
 # Converts a CSV file from an experiment, to a data.frame containing both, the 
 # raw data and the aggregated version of the data.
 # 
@@ -12,7 +32,7 @@ library(reshape)
 #
 agg <- function(experiment_name, number_of_runs) {
   # assuming data in CSV format: time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT,SERVICES_ENGAGED, run
-  raw_data <- read.csv(file=experiment_name)
+  raw_data <- read.csv(file=experiment_name, as.is=TRUE)
   
   #TODO HACK for data without run info
   raw_data$run <- 0
@@ -21,13 +41,6 @@ agg <- function(experiment_name, number_of_runs) {
   # adds x column to data frame
   #
   raw_data <- data.frame(X=1, raw_data)
-
-  #
-  # adds sequence of events to the data from each run
-  #
-  for (i in seq(1:number_of_runs)) {
-    raw_data[raw_data$run == i-1,]$X <- seq(1:(nrow(raw_data)/number_of_runs))
-  }
 
   #
   # Calculates delta, between expected and real execution times
@@ -66,14 +79,15 @@ calculateError <- function(agg_mean, agg_sd, number_of_runs) {
   return (list("data" = histogram_data))
 }
 
-plotHistogram <- function(data_to_plot) {
+plotHistogram <- function(data_to_plot, title_data) {
   plot <- ggplot(data=data_to_plot) + geom_histogram(aes(x=Freq, y=..density..), color= "black", binwidth=5) + 
-    labs(title="Executed compositions per service", x="Number of Compositions", y="Density of services")
+    agg
 }
 
-factories_service_times <- function(data) {
-  plot <- ggplot(data=data) + geom_histogram(aes(x=Freq, y=..density..), color= "black", binwidth=50) + 
-    labs(title="Service computation times", x="Average Execution time (ms)", y="density")
+factories_service_times <- function(data, title) {
+  title <- paste("Service computation times - ", title)
+  plot <- ggplot(d250.factories, aes(ServiceType, time/1000)) + geom_boxplot() +
+    labs(title=title, x="Service Type", y="Execution Time (s)")
 }
 plotLines <- function(data_to_plot, sub_title) {
   title <- paste("Composition times", sub_title)
@@ -103,9 +117,9 @@ summDelta <- function(data_to_plot, sub_title) {
   return(plot)
 }
 
-plotRealCompositionTimes <- function(data_to_plot, sub_title) {
-  title <- paste("Average Composition Times Real", sub_title)
-  plot <- ggplot(data=data_to_plot) + geom_histogram(aes(x=REAL_TIME_TO_SERVE_COMPOSITION/1000, y=..density..), color="black", binwidth=50) + 
+plotRealCompositionTimes <- function(data_to_plot, sub_title, bin_width_data=50) {
+  title <- paste("Average Time to Execute Compositions", sub_title)
+  plot <- ggplot(data=data_to_plot) + geom_histogram(aes(x=REAL_TIME_TO_SERVE_COMPOSITION/1000, y=..density..), color="black", binwidth=bin_width_data) + 
     labs(title=title, x="Real Composition time (s)", y="Density")
   
   return(plot)
@@ -129,7 +143,7 @@ analysisSmape <- function(md) {
   d <- list()
   maximumDistance <- md
   for ( i in seq(1:maximumDistance)) {
-    a <- data.frame(EXPECTED_TIME_TO_SERVE_COMPOSITION=rep(-1, times=2), REAL_TIME_TO_SERVE_COMPOSITION=rep((1+i/100)*-1,times=2))
+    a <- data.frame(EXPECTED_TIME_TO_SERVE_COMPOSITION=rep(1, times=1), REAL_TIME_TO_SERVE_COMPOSITION=rep((1+i/100)*1,times=1))
     d[i] <- smape(a)
   }
   

@@ -4,4 +4,4 @@ for( int i=0; i<300; i++ ) {
 	System.out.print(random.nextUniform(0,1) + ",");
 }
 
-System.out.println(1.0/3);
+System.out.println(((long)1)/3.0);

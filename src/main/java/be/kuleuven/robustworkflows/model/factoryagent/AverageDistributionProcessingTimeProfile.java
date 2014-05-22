@@ -88,6 +88,11 @@ public class AverageDistributionProcessingTimeProfile extends ComputationalResou
 		random = new RandomDataGenerator(new MersenneTwister(seed));
 	}
 
+	@Override
+	public int queueSize() {
+		return serviceRequests.size();
+	}
+
 	static class WorkServiceRequest {
 		private final ReceivedServiceRequest req;
 		private final long time;
@@ -101,4 +106,5 @@ public class AverageDistributionProcessingTimeProfile extends ComputationalResou
 			return new WorkServiceRequest(req, time);
 		}
 	}
+
 }

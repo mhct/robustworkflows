@@ -45,4 +45,9 @@ public class ExponentialProfile extends ComputationalResourceProfile implements 
 		random = new RandomDataGenerator(new MersenneTwister(seed));
 	}
 
+	@Override
+	public int queueSize() {
+		return 0;
+	}
+
 }

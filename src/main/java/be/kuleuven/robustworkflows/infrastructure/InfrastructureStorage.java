@@ -4,6 +4,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import be.kuleuven.robustworkflows.model.NodeAttributeValues;
+import be.kuleuven.robustworkflows.model.NodeAttributes;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -38,7 +39,7 @@ public class InfrastructureStorage {
 
 	//@TODO move this to ModelStorage
 	public DBCursor getClientAgents() {
-		return db.getCollection("actors").find(new BasicDBObject("agentType", NodeAttributeValues.Client));
+		return db.getCollection("actors").find(new BasicDBObject("agentType", NodeAttributeValues.Client)).sort(new BasicDBObject("actorName", 1));
 	}
 
 //	public DBObject getClientAgent(String i) {
@@ -53,7 +54,7 @@ public class InfrastructureStorage {
 		DBCollection coll = db.getCollection("actors");
 		BasicDBObject obj = new BasicDBObject();
 		obj.append("actorAddress", address);
-		obj.append("actorName", nodeName);
+		obj.append("actorName", Integer.valueOf(nodeName));
 		obj.append("agentType", agentType);
 		coll.insert(obj);		
 	}

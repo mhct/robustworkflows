@@ -103,5 +103,6 @@ public abstract class ComputationalResourceProfile implements Serializable {
 		return new AverageDistributionProcessingTimeProfile(processingTimePerRequest, sigma, seed, serviceType);
 	}
 
+	public abstract int queueSize();
 }
 

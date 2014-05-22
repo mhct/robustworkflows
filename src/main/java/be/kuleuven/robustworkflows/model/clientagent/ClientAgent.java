@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.joda.time.DateTime;
+
 import scala.concurrent.duration.Duration;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
@@ -42,6 +44,8 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	private ClientAgentState hackState;
 
 	private final DmasMW dmasMW;
+
+	private DateTime startTime;
 	
 	public ClientAgent(List<ActorRef> neighbors, AgentAttributes attributes, ExplorationBehaviorFactory behaviorFactory) {
 		log.info("C L I E N T started\nBehavior Factory: " + behaviorFactory.getClass().getName() + "\nWF: " + attributes.getWorkflow());
@@ -191,5 +195,22 @@ public class ClientAgent extends UntypedActor implements ClientAgentProxy {
 	@Override
 	public LoggingAdapter getLoggingAdapter() {
 		return log;
+	}
+
+	@Override
+	public boolean isContinuousComposition() {
+		// TODO Auto-generated method stub
+		// FIXME get this information from the configuraiton
+		return true;
+	}
+
+	@Override
+	public DateTime getStartTime() {
+		return startTime;
+	}
+
+	@Override
+	public void setStartTime() {
+		this.startTime = new DateTime();
 	}
 }

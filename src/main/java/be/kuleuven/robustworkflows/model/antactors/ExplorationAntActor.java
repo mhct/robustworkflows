@@ -6,7 +6,7 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import be.kuleuven.robustworkflows.model.ant.messages.ExplorationReplyWrapper;
+import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.ant.messages.ExploreService;
 import be.kuleuven.robustworkflows.model.clientagent.EventType;
 import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
@@ -65,7 +65,7 @@ public class ExplorationAntActor extends UntypedActor implements ExplorationAntC
 		builder.addTransition(idle, ExploreService.class, exploring);
 		builder.addTransition(idle, EventType.ExploringStateTimeout.getClass(), idle);
 		builder.addTransition(exploring, String.class, idle);
-		builder.addTransition(exploring, ExplorationReplyWrapper.class, exploring);
+		builder.addTransition(exploring, ImmutableExplorationRepliesHolder.class, exploring);
 		builder.addTransition(exploring, Neighbors.class, exploring);
 		builder.addTransition(exploring, EventType.ExploringStateTimeout.getClass(), exploring);
 		
@@ -77,44 +77,13 @@ public class ExplorationAntActor extends UntypedActor implements ExplorationAntC
 	}
 	
 	@Override
-	public void onReceive(Object message) throws Exception {
-		fsm.handle(message, this);
+	public void onReceive(Object message) {
+		try {
+			fsm.handle(message, this);
+		} catch (RuntimeException e) {
+			log.debug("Wrong state." + e.toString());
+		}
 	}
-	
-//	private void shouldExploreAgain() {
-//		if (receivedReplies == askedQos && replies.size() < minimum_nbRplies) {
-//			exploreAgain();
-//		}
-//	}
-	
-//	private void exploreAgain() {
-//		// selects a new agent from the neighbors it knows
-//		receivedReplies = 0;
-//		askedQos = 0;
-//		boolean continueSearch = true;
-//		
-//		if (neighbors.isEmpty()) {
-//			log.info("nbNeighbors = 0");
-//			return;
-//		}
-//		
-//		ActorRef tentativeAgent = null;
-//		while (continueSearch) {
-//			tentativeAgent = neighbors.getRandomNeighbor();
-//			if (pathFollowed.contains(tentativeAgent)) {
-//				continueSearch = true;
-//			} else {
-//				break;
-//			}
-//		}
-//		if (tentativeAgent == null) {
-//			log.error("nbNeighbors = 0");
-//		}
-//		
-//		currentAgent = tentativeAgent;
-//		pathFollowed.add(currentAgent);
-//		currentAgent.tell(EventType.NeihgborListRequest, self());
-//	}
 	
 	@Override
 	public long getExplorationTimeout() {
@@ -146,9 +115,15 @@ public class ExplorationAntActor extends UntypedActor implements ExplorationAntC
 		getContext().parent().tell(message, self());
 	}
 	
+	@Override
+	public LoggingAdapter getLoggingAdapter() {
+		return log;
+	}
+
 	public static UntypedActor getInstance(ExplorationAntParameter parameterObject) {
 		return new ExplorationAntActor(parameterObject.getMaster(),
 				parameterObject.getExplorationTimeout(),
 				parameterObject.getSamplingProbability());
 	}
+
 }

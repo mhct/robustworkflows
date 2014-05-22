@@ -5,7 +5,6 @@ import java.util.Iterator;
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
-import be.kuleuven.robustworkflows.model.events.ModelEvent;
 import be.kuleuven.robustworkflows.model.events.ServiceCompositionSummaryEvent;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 
@@ -53,12 +52,21 @@ public class RunningCompositionState extends ClientAgentState {
 			clearRequests();
 			beginingComposition = true;
 			getClientAgentProxy().getLoggingAdapter().info("Completed the execution of a composition");
-			ModelEvent ev = summaryEngagement(serviceCompositionData);
+			ServiceCompositionSummaryEvent ev = summaryEngagement(serviceCompositionData);
 			getClientAgentProxy().getLoggingAdapter().info(ev.toString());
 //			persistEvent(summaryEngagement(serviceCompositionData));
 //			getClientAgentProxy().getModelStorage().persistWriteCache();
-			
-			setState(SimpleWaitingTaskState.getInstance(getClientAgentProxy()));
+
+			// start a new composition
+			if (getClientAgentProxy().isContinuousComposition()) {
+				ClientAgentState bla = RunningCompositionState.getInstance(getClientAgentProxy());
+				getClientAgentProxy().setHackingState(bla);
+				getClientAgentProxy().setStartTime();
+				setState(bla);
+			}
+			else {// wait again
+				setState(SimpleWaitingTaskState.getInstance(getClientAgentProxy()));
+			}
 		}
 	}
 	
@@ -80,7 +88,8 @@ public class RunningCompositionState extends ClientAgentState {
 		return ServiceCompositionSummaryEvent.instance(serviceCompositionData.getExpectedTimeToServeComposition(),
 				serviceCompositionData.getRealTimeToServeComposition(),
 				serviceCompositionData.getClientAgentName(),
-				serviceCompositionData.getServicesEngaged());
+				serviceCompositionData.getServicesEngaged(),
+				getClientAgentProxy().getStartTime());
 	}
 	
 	public static ClientAgentState getInstance(ClientAgentProxy clientAgentProxy) {

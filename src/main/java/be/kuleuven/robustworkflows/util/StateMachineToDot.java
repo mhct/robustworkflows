@@ -26,7 +26,7 @@ public class StateMachineToDot {
 	   *         debugging the transition table.
 	   */
 	  public static <E,C> String convert(StateMachine<E, C> fsm) {
-		  final ImmutableTable<State<E, C>, E, State<E, C>> transitionTable = fsm.transitionTable;
+		  final ImmutableTable<State<E, C>, Class<?>, State<E, C>> transitionTable = fsm.transitionTable;
 		  final State<E,C> startState = fsm.startState;
 		  
 	    int id = 0;
@@ -46,7 +46,7 @@ public class StateMachineToDot {
 	    builder.append(NODE).append(id).append(CONN).append(NODE)
 	        .append(idMap.get(startState)).append(NL);
 
-	    for (final Cell<State<E, C>, E, State<E, C>> cell : transitionTable.cellSet()) {
+	    for (final Cell<State<E, C>, Class<?>, State<E, C>> cell : transitionTable.cellSet()) {
 	      final int id1 = idMap.get(cell.getRowKey());
 	      final int id2 = idMap.get(cell.getValue());
 	      builder.append(NODE).append(id1).append(CONN).append(NODE).append(id2)

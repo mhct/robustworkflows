@@ -52,6 +52,7 @@ public class SimpleWaitingTaskState extends ClientAgentState {
 		} else if (COMPOSE.equals(message)) {
 			persistEvent(ComposeEvent.getInstance());
 			ClientAgentState bla = RunningCompositionState.getInstance(getClientAgentProxy());
+			getClientAgentProxy().setStartTime();
 			getClientAgentProxy().setHackingState(bla);
 			setState(bla);
 			

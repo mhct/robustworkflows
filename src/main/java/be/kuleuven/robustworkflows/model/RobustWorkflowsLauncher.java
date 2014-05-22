@@ -11,6 +11,8 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActorFactory;
 import akka.kernel.Bootable;
+import be.kuleuven.robustworkflows.infrastructure.GraphLoaderApplication;
+import be.kuleuven.robustworkflows.infrastructure.SorcererApplication;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -93,11 +95,25 @@ public class RobustWorkflowsLauncher implements Bootable {
 //		return system;
 //	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
+		SorcererApplication sorcerer = new SorcererApplication();
+		GraphLoaderApplication graphLoader = new GraphLoaderApplication();
 		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();
+		
+		sorcerer.startup();
+		Thread.sleep(1000);
+
+		graphLoader.startup();
+		Thread.sleep(1000);
+		
 		wf.startup();
+		
+		//waits for user input
 		System.in.read();
+		
 		wf.shutdown();
+		graphLoader.shutdown();
+		sorcerer.shutdown();
 	}
 //	public static void main(String[] args) throws IOException, InterruptedException {
 //		RobustWorkflowsLauncher wf = new RobustWorkflowsLauncher();

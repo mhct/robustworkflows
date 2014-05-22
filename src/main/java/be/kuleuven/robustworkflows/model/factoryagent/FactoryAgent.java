@@ -3,6 +3,10 @@ package be.kuleuven.robustworkflows.model.factoryagent;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import scala.concurrent.duration.Duration;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
@@ -47,14 +51,18 @@ import com.mongodb.DBObject;
 public class FactoryAgent extends UntypedActor {
 
 	private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-	
+
 	private static final String TIME_TO_WORK_FOR_REQUEST_FINISHED = "time_to_service_request";
+	
+	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss_SSS");
 
 	private ComputationalResourceProfile computationalProfile;
 
 	private boolean busy = false;
 
 	private final DmasMW dmasMW;
+
+	private long previousTime;
 
 
 	@Override
@@ -74,6 +82,7 @@ public class FactoryAgent extends UntypedActor {
 		log.info("FactoryAgent started");
 		
 		this.computationalProfile = computationalProfile; //TODO make a prototype of the computational profile...
+		this.previousTime = System.currentTimeMillis();
 		
 		dmasMW = DmasMW.getInstance(getContext().system(), self(), AgentType.factory());
 		dmasMW.addNeighbors(neighbors);
@@ -99,7 +108,11 @@ public class FactoryAgent extends UntypedActor {
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
-		
+
+		if (System.currentTimeMillis() - previousTime > 1000) {
+			log.info("FactoryAgentQueue=" + (new DateTime()).getMillis() + "," + self().path().name() + "," + computationalProfile.queueSize() );
+			previousTime = System.currentTimeMillis();
+		}
 		// sends the messages to the DmasMW so that it can hadle messages etc.
 		dmasMW.onReceive(message, sender());
 		

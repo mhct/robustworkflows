@@ -32,10 +32,22 @@ public class ExplorationReplyWrapper implements Serializable {
 		return new ExplorationReplyWrapper(actor, reply);
 	}
 	
+
+	public static ExplorationReplyWrapper empty() {
+		return new ExplorationReplyWrapper(null, null);
+	}
+
 	@Override
 	public String toString() {
 		return "ExplorationReplyWrapper [reply=" + reply + ", actor=" + actor
 				+ "]";
 	}
 
+	public boolean isPossible() {
+		if (reply == null) {
+			return false;
+		} else {
+			return reply.isPossible();
+		}
+	}
 }

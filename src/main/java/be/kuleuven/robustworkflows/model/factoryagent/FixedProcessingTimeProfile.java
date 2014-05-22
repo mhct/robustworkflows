@@ -69,4 +69,9 @@ public class FixedProcessingTimeProfile extends ComputationalResourceProfile imp
 		serviceRequests = new LinkedList<ReceivedServiceRequest>();		
 	}
 
+	@Override
+	public int queueSize() {
+		return serviceRequests.size();
+	}
+
 }

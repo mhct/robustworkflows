@@ -130,7 +130,7 @@ public class RobustWorkflowsActor extends UntypedActor {
 
 					@Override
 					public void run() {
-						log.info("Enviando Compose Message: " + dtf.print(new DateTime()));
+						log.info("Enviando Compose Message: " + dtf.print(new DateTime()) + "to :" + ref);
 						getContext().system().actorFor(ref).tell(ClientAgentState.COMPOSE, self());
 					}
 			

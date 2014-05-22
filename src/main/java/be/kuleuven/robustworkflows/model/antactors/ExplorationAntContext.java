@@ -2,6 +2,7 @@ package be.kuleuven.robustworkflows.model.antactors;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorRef;
+import akka.event.LoggingAdapter;
 
 public interface ExplorationAntContext {
 
@@ -20,5 +21,7 @@ public interface ExplorationAntContext {
 	void setCurrentAgent(ActorRef actor);
 
 	void tellMaster(Object instance);
+	
+	LoggingAdapter getLoggingAdapter();
 
 }
