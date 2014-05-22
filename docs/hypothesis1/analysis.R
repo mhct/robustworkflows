@@ -89,7 +89,8 @@ nbServicesEngaged <- function(data) {
            y="Composition Time (s)")
       scale_color_hue("Tasks per\nComposite Service")
   
-  d250.delta_plot <- ggplot(d250_ordered, aes(x=d250_ordered$start_time_millis, y=d250_ordered$delta/(d250_ordered$REAL_TIME_TO_SERVE_COMPOSITION/1000), colour=factorNbServices), environment=environment()) + 
+  d250.delta_plot <- ggplot(d250_ordered, aes(x=d250_ordered$start_time_millis, 
+                                              y=d250_ordered$delta/(d250_ordered$REAL_TIME_TO_SERVE_COMPOSITION/1000), colour=factorNbServices)) + 
     geom_point() + 
     geom_smooth() + 
     labs(title=paste(d250.title, "\nEstimate difference, REAL and Expected composition times, by nbServices"), 

@@ -10,15 +10,43 @@ library(reshape)
 #                   eg: "data/250"
 # @param number_of_runs, Integer specifying how many experiments there are 
 #
-runexp <- function(experiment_name, number_of_runs) {
+runexp <- function(experiment_name) {
   
+  experiment_name <- "h1_1k"
   # assuming data in CSV format: time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT,SERVICES_ENGAGED, start_time
-  raw_data <- read.csv(file=experiment_name, as.is=TRUE)
-  raw_data <- data.frame(X=1, raw_data)
-  raw_data <- data.frame(raw_data, delta=(raw_data$REAL_TIME_TO_SERVE_COMPOSITION-raw_data$EXPECTED_TIME_TO_SERVE_COMPOSITION)/1000)
-  sorted_data <- raw_data[order(raw_data[,5]),]
+  executions_data <- data.frame()
+  experiment_executions <- list.files("data/", paste("^", experiment_name, "*", sep=""))
+  for (execution in experiment_executions) {
+    print(paste("Aggregating execution: ", execution))
+    raw_data <- read.csv(file=paste("data/", execution, sep=""), as.is=TRUE)
+    raw_data <- data.frame(X=execution, raw_data)
+    raw_data <- data.frame(raw_data, delta=(raw_data$REAL_TIME_TO_SERVE_COMPOSITION-raw_data$EXPECTED_TIME_TO_SERVE_COMPOSITION)/1000)
+    
+    factorNbServices <- factor(unlist(lapply(raw_data$SERVICES_ENGAGED, nbServicesEngaged)))
+    
+    raw_data_ordered <- relativeTime(raw_data[order(raw_data[,c("start_time_millis")]),])
+    raw_data_ordered <- cbind(raw_data_ordered, composition_size=factorNbServices, experiment=experiment_name)
+    d250_c2 <- raw_data_ordered[raw_data_ordered$composition_size == 2,]
+    d250_c3 <- raw_data_ordered[raw_data_ordered$composition_size == 3,]
+    
+    #normalizes the data
+    d250_c2 <- cbind(d250_c2, norm_real_time=scale(d250_c2$REAL_TIME_TO_SERVE_COMPOSITION))
+    d250_c3 <- cbind(d250_c3, norm_real_time=scale(d250_c3$REAL_TIME_TO_SERVE_COMPOSITION))
+    
+    executions_data <- rbind(executions_data, d250_c2)
+    executions_data <- rbind(executions_data, d250_c3)
+  }
+
+  #
+  # Calculates Error
+  #
+  agg_data_sd <- aggregate(data=executions_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION, delta, norm_real_time) ~ start_time_millis + composition_size, mean)
   
-  return(sorted_data)
+  error <- calculateError(agg_mean=agg_data_mean, agg_sd=agg_data_sd, number_of_runs=number_of_runs)
+  error <- error$data
+  agg_data <- data.frame(agg_data_mean, delta_ymin=error$ymin, delta_ymax=error$ymax)
+  
+  return(executions_data)
   #agg_data_mean <- aggregate(data=raw_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION, delta) ~ X, mean)
 }
 
