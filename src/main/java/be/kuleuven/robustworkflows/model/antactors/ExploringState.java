@@ -48,9 +48,9 @@ public class ExploringState implements State<Object, ExplorationAntContext>{
 			talker = context.getContext().actorOf(TalkerAntActor.props(msg.getServiceType(),
 					(long) Math.ceil(context.getExplorationTimeout()/10.0),
 					context.getSamplingProbability()));
-			context.addToVisitedNodes(context.getCurrentAgent());
+			context.addAgentToVisitedNodes(context.getCurrentAgent());
 			context.tellMaster(EventType.NeihgborListRequest);
-			System.out.println(name() + " handling: " + event);
+//			System.out.println(name() + " handling: " + event);
 	
 		} else if (Neighbors.class.isInstance(event)){
 //			log.debug("Received Neighbors list");

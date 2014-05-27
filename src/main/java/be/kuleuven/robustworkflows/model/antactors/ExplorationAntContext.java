@@ -14,7 +14,7 @@ public interface ExplorationAntContext {
 
 	ActorRef getCurrentAgent();
 
-	void addToVisitedNodes(ActorRef currentAgent);
+	void addAgentToVisitedNodes(ActorRef currentAgent);
 
 	ActorRef getSelf();
 

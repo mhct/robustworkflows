@@ -40,7 +40,7 @@ public class ServiceRequestSummaryEvent implements ModelEvent {
 
 	public static ServiceRequestSummaryEvent instance(RequestExecutionData data) {
 		return new ServiceRequestSummaryEvent(data.getExpectedTimeToExecuteTask(),
-				data.getRealTimeToServeRequest(),
+				data.getRealTimeToExecuteTask(),
 				data.getFactoryAgentName(),
 				data.getClientAgentName());
 	}

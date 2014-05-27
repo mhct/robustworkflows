@@ -24,7 +24,6 @@ import be.kuleuven.robustworkflows.model.messages.ServiceRequestCompleted;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBObject;
 
 /**

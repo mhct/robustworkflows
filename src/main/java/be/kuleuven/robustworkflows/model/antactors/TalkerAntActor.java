@@ -23,9 +23,9 @@ import be.kuleuven.robustworkflows.util.Utils;
  * The TalkerAntActor asks for QoS values for a given {@link ServiceType} to a group of agents, given 
  * by the message {@link Neighbors}.
  * 
- * It accumulates the replies and selects the best one, returning the best reply to its parent.
+ * It accumulates the replies and returns all replies to its parent.
  * 
- * @author marioct
+ * @author mario
  *
  * === Inbound messages ===
  * - ''' ExplorationReply '''
@@ -41,6 +41,7 @@ public class TalkerAntActor extends UntypedActor {
 	
 	private RandomDataGenerator randomSampling = new RandomDataGenerator(new MersenneTwister());
 	
+	private final String antName;
 	private final ServiceType serviceType;
 	private final long explorationTimeout;
 	private final double samplingProbability;
@@ -54,12 +55,14 @@ public class TalkerAntActor extends UntypedActor {
 	private boolean ignoreTimeout = false;
 
 	private ExplorationRepliesHolder repliesHolder;
+	
 
 	public TalkerAntActor(ServiceType serviceType, long explorationTimeout, double samplingProbability) {
 		this.serviceType = serviceType;
 		this.explorationTimeout = explorationTimeout;
 		this.samplingProbability = samplingProbability;
-		
+		this.antName = self().path().toString();
+				
 		repliesHolder = ExplorationRepliesHolder.getInstance();
 	}
 
@@ -75,6 +78,8 @@ public class TalkerAntActor extends UntypedActor {
 		} else if (ExplorationReply.class.isInstance(message)) {
 			log.debug("Got ExplorationReply: " + message.toString());
 			log.debug("context().parent(): " + context().parent().path());
+			
+			persistMessagingInfo();
 			receivedReplies++;
 			ExplorationReply explorationReply = (ExplorationReply) message;
 
@@ -101,6 +106,11 @@ public class TalkerAntActor extends UntypedActor {
 		}
 	}
 	
+	private void persistMessagingInfo() {
+		long currentTime = System.currentTimeMillis();
+		log.info("message=" + currentTime + "," + antName + ","  + 1);
+	}
+
 	/**
 	 * Sends a ServiceRequestExploration message to the agents given at the list
 	 * agentPaths
@@ -109,7 +119,7 @@ public class TalkerAntActor extends UntypedActor {
 	 * @param serviceType Desired ServiceType to be explored
 	 */
 	private void askQoS(List<ActorRef> agents) {
-
+		repliesHolder.clear();
 		askedQos = 0;
 		receivedReplies = 0;
 		for (ActorRef agent: agents) {

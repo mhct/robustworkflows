@@ -32,7 +32,7 @@ import com.google.common.collect.Sets;
  * - ''' ExploreService ''' 
  * - ''' ExploringStateTimeout '''
  * - ''' ExplorationFinished '''
- * - ''' Compose ''' tell the explorationAnt to mark all its events as bellonging to another RUN of the emulation
+ * - ''' Compose ''' tell the explorationAnt to mark all its events as belonging to another RUN of the emulation
  * 
  * === Outbound messages ===
  * - ''' SimpleExplorationResult '''
@@ -101,7 +101,7 @@ public class ExplorationAntActor extends UntypedActor implements ExplorationAntC
 	}
 
 	@Override
-	public void addToVisitedNodes(ActorRef currentAgent) {
+	public void addAgentToVisitedNodes(ActorRef currentAgent) {
 		pathFollowed.add(currentAgent);
 	}
 

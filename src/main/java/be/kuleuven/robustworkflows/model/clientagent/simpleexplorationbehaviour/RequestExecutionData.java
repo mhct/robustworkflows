@@ -8,7 +8,7 @@ public class RequestExecutionData implements Serializable {
 	private final String clientAgentName;
 	private final String factoryAgentName;
 	private final long expectedTimeToExecuteTask;
-	private final long realTimeToServeRequest;
+	private final long realTimeToExecuteTask;
 
 	
 	public String getClientAgentName() {
@@ -29,8 +29,8 @@ public class RequestExecutionData implements Serializable {
 
 
 
-	public long getRealTimeToServeRequest() {
-		return realTimeToServeRequest;
+	public long getRealTimeToExecuteTask() {
+		return realTimeToExecuteTask;
 	}
 
 	private RequestExecutionData(String clientAgentName,
@@ -39,7 +39,7 @@ public class RequestExecutionData implements Serializable {
 		this.clientAgentName = clientAgentName;
 		this.factoryAgentName = factoryAgentName;
 		this.expectedTimeToExecuteTask = expectedTimeToExecuteTask;
-		this.realTimeToServeRequest = realTimeToServeRequest;
+		this.realTimeToExecuteTask = realTimeToServeRequest;
 	}
 
 	public static RequestExecutionData getInstance(String clientAgentName,
