@@ -28,7 +28,7 @@ import be.kuleuven.robustworkflows.model.messages.Workflow;
  * defined by a {@link Workflow}.
  * 
  * A ClientAgent behavior is mainly defined by concrete implementations of {@link ClientAgentState}. The behaviors are instantiated
- * using factories of {@ ExplorationBehaviorFactory}, such as {@link SimpleExplorationFactory} and {@link ExplorationBehaviorFactory}. 
+ * using factories of {@ ExplorationBehaviorFactory}, such as {@link ReactiveExplorationFactory} and {@link ExplorationBehaviorFactory}. 
  * 
  * @author mario
  *

@@ -13,11 +13,6 @@
       <version>4.8.1</version>
       <scope>test</scope>
     </dependency>
-   	<dependency>
-         <groupId>com.typesafe.akka</groupId>
-         <artifactId>akka-actor_2.10</artifactId>
-         <version>2.1.0</version>
-     </dependency>
   	<dependency>
   		<groupId>commons-configuration</groupId>
   		<artifactId>commons-configuration</artifactId>
@@ -28,7 +23,7 @@
    		<artifactId>commons-math3</artifactId>
    		<version>3.1.1</version>
    	</dependency>
-   	<dependency>
+   	<!-- <dependency>
    		<groupId>com.typesafe.akka</groupId>
    		<artifactId>akka-remote_2.10</artifactId>
    		<version>2.1.0</version>
@@ -37,12 +32,13 @@
    		<groupId>com.typesafe.akka</groupId>
    		<artifactId>akka-kernel_2.10</artifactId>
    		<version>2.1.0</version>
-   	</dependency>
-   	<dependency>
+   	</dependency> -->
+   	
+<!--    	<dependency>
    		<groupId>se.scalablesolutions.akka</groupId>
    		<artifactId>akka-sbt-plugin</artifactId>
    		<version>1.0-RC3</version>
-   	</dependency>
+   	</dependency> -->
    	<dependency>
    		<groupId>org.mockito</groupId>
    		<artifactId>mockito-all</artifactId>
@@ -58,15 +54,15 @@
          <artifactId>gephi-toolkit</artifactId>
          <version>0.8.2</version>
       </dependency>
-   	<dependency>
+   	<!--  <dependency>
    		<groupId>org.scalatest</groupId>
    		<artifactId>scalatest_2.10</artifactId>
    		<version>2.0.M6-SNAP8</version>
-   	</dependency>
+   	</dependency> -->
    	<dependency>
    		<groupId>com.typesafe.akka</groupId>
    		<artifactId>akka-testkit_2.10</artifactId>
-   		<version>2.1.0</version>
+   		<version>2.3.3</version>
    	</dependency>
 
    	<dependency>
@@ -89,6 +85,41 @@
    		<artifactId>findbugs</artifactId>
    		<version>2.0.2</version>
    	</dependency>
+   	<dependency>
+   		<groupId>org.slf4j</groupId>
+   		<artifactId>integration</artifactId>
+   		<version>1.7.7</version>
+   	</dependency>
+   	<dependency>
+   		<groupId>org.slf4j</groupId>
+   		<artifactId>slf4j-log4j12</artifactId>
+   		<version>1.7.7</version>
+   	</dependency>
+   	<dependency>
+   		<groupId>com.typesafe.akka</groupId>
+   		<artifactId>akka-kernel_2.10</artifactId>
+   		<version>2.3.3</version>
+   	</dependency>
+   	<dependency>
+   		<groupId>com.typesafe.akka</groupId>
+   		<artifactId>akka-remote_2.10</artifactId>
+   		<version>2.3.3</version>
+   	</dependency>
+   	<dependency>
+   		<groupId>io.kamon</groupId>
+   		<artifactId>kamon-statsd</artifactId>
+   		<version>0.3.0</version>
+   	</dependency>
+   	<dependency>
+   		<groupId>io.kamon</groupId>
+   		<artifactId>kamon-core</artifactId>
+   		<version>0.3.0</version>
+   	</dependency>
+   	<dependency>
+   		<groupId>com.typesafe.akka</groupId>
+   		<artifactId>akka-actor_2.10</artifactId>
+   		<version>2.3.3</version>
+   	</dependency>
   </dependencies>
    <repositories>
         <repository>
@@ -96,16 +127,12 @@
          <name>Gephi Snapshots</name>
          <url>http://nexus.gephi.org/nexus/content/repositories/snapshots/</url>
       </repository>
-      <repository>
+       <repository>
          <id>gephi-releases</id>
          <name>Gephi Releases</name>
          <url>http://nexus.gephi.org/nexus/content/repositories/releases/</url>
       </repository>
-        <repository>
-            <id>typesafe</id>
-            <name>Typesafe Repository</name>
-            <url>http://repo.typesafe.com/typesafe/releases/</url>
-        </repository>
+        
     </repositories>
     <distributionManagement>
     <repository>

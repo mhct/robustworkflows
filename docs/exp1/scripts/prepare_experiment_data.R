@@ -3,6 +3,8 @@ library(ggplot2)
 library(reshape)
 
 #
+# Summarizes data for one ENTIRE experiment.
+# An experiment consists of multiple executions, each execution waits the system to execute at least 10 compositions per composite service, on average.
 # Gets an experiment name, checks for the experiments and create a data.frame
 # containing the information of such experiments and the aggregate form as well
 #
@@ -10,9 +12,72 @@ library(reshape)
 #                   eg: "data/250"
 # @param number_of_runs, Integer specifying how many experiments there are 
 #
-runexp <- function(experiment_name) {
+runexpSummary <- function(experiment_name) {
   
-  experiment_name <- "h1_1k"
+  #experiment_name <- "h1_250"
+  # assuming data in CSV format: time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT,SERVICES_ENGAGED, start_time
+  executions_data <- data.frame()
+  experiment_executions <- list.files("data/", paste("^", experiment_name, sep=""))
+  for (execution in experiment_executions) {
+    print(paste("Aggregating execution: ", execution))
+    raw_data <- read.csv(file=paste("data/", execution, sep=""), as.is=TRUE)
+    raw_data <- data.frame(X=execution, raw_data)
+    raw_data <- data.frame(raw_data, delta=(raw_data$REAL_TIME_TO_SERVE_COMPOSITION-raw_data$EXPECTED_TIME_TO_SERVE_COMPOSITION))
+    
+    factorNbServices <- factor(unlist(lapply(raw_data$SERVICES_ENGAGED, nbServicesEngaged)))
+    
+    temp <- cbind(raw_data, composition_size=factorNbServices, experiment=experiment_name)
+    #raw_data_ordered <- relativeTime(raw_data[order(raw_data[,c("start_time_millis")]),])
+    #raw_data_ordered <- cbind(raw_data_ordered, composition_size=factorNbServices, experiment=experiment_name)
+    #d250_c2 <- raw_data_ordered[raw_data$composition_size == 2,]
+    #d250_c3 <- raw_data_ordered[raw_data$composition_size == 3,]
+    
+    executions_data <- rbind(executions_data, temp)
+    #executions_data <- rbind(executions_data, d250_c3)
+  }
+
+
+  #
+  # Summarizing the data, from multiple executions (22 executions to a single data, with certain confidence interval)
+  # 
+  executions_data_summary <- aggregate(data=executions_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,
+                                                         REAL_TIME_TO_SERVE_COMPOSITION, 
+                                                         delta) ~ X + composition_size, mean)
+  
+  agg_data_mean <- aggregate(data=executions_data_summary, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,
+                                                    REAL_TIME_TO_SERVE_COMPOSITION, 
+                                                    delta) ~ composition_size, mean)
+  
+  agg_data_sd <- aggregate(data=executions_data_summary, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,
+                                                       REAL_TIME_TO_SERVE_COMPOSITION, 
+                                                       delta) ~ composition_size, sd)
+  
+
+  number_of_runs <- length(levels(factor(executions_data$X)))
+  
+  error <- qt(0.975, df=number_of_runs-1) * agg_data_sd$REAL_TIME_TO_SERVE_COMPOSITION / sqrt(number_of_runs)
+  ymin <- agg_data_mean$REAL_TIME_TO_SERVE_COMPOSITION - error
+  ymax <- agg_data_mean$REAL_TIME_TO_SERVE_COMPOSITION + error
+  
+  agg_data <- data.frame(experiment=experiment_name, agg_data_mean, real_composition_ymin=ymin, real_composition_ymax=ymax)
+  
+  return(list(raw=executions_data, executions_data_summary=executions_data_summary, agg=agg_data))
+  #agg_data_mean <- aggregate(data=raw_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION, delta) ~ X, mean)
+}
+
+
+#
+# Summarizes data for one ENTIRE experiment.
+# Gets an experiment name, checks for the experiments and create a data.frame
+# containing the information of such experiments and the aggregate form as well
+#
+# @param experiment_name, String containing the path and name of basic experiment,
+#                   eg: "data/250"
+# @param number_of_runs, Integer specifying how many experiments there are 
+#
+runexpORDERED <- function(experiment_name) {
+  
+  #experiment_name <- "h1_250"
   # assuming data in CSV format: time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT,SERVICES_ENGAGED, start_time
   executions_data <- data.frame()
   experiment_executions <- list.files("data/", paste("^", experiment_name, "*", sep=""))
@@ -40,14 +105,55 @@ runexp <- function(experiment_name) {
   #
   # Calculates Error
   #
-  agg_data_sd <- aggregate(data=executions_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION, delta, norm_real_time) ~ start_time_millis + composition_size, mean)
+  agg_data_mean <- aggregate(data=executions_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,
+                                                       REAL_TIME_TO_SERVE_COMPOSITION, 
+                                                       delta, 
+                                                       norm_real_time) ~ X + composition_size, mean)
+  agg_data_sd <- aggregate(data=executions_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,
+                                                       REAL_TIME_TO_SERVE_COMPOSITION, 
+                                                       delta, 
+                                                       norm_real_time) ~ X + composition_size, sd)
   
-  error <- calculateError(agg_mean=agg_data_mean, agg_sd=agg_data_sd, number_of_runs=number_of_runs)
-  error <- error$data
-  agg_data <- data.frame(agg_data_mean, delta_ymin=error$ymin, delta_ymax=error$ymax)
+  number_of_runs <- length(levels(factor(executions_data$X)))
   
-  return(executions_data)
+  error <- qt(0.975, df=number_of_runs-1) * agg_data_sd$REAL_TIME_TO_SERVE_COMPOSITION / sqrt(number_of_runs)
+  ymin <- agg_data_mean$REAL_TIME_TO_SERVE_COMPOSITION - error
+  ymax <- agg_data_mean$REAL_TIME_TO_SERVE_COMPOSITION + error
+  
+  agg_data <- data.frame(agg_data_mean, real_composition_ymin=ymin, real_composition_ymax=ymax)
+  
+  return(list(raw=executions_data, agg=agg_data))
   #agg_data_mean <- aggregate(data=raw_data, cbind(EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION, delta) ~ X, mean)
+}
+
+runexpFailures <- function() {
+  
+  # assuming data in CSV format: time_block,EXPECTED_TIME_TO_SERVE_COMPOSITION,REAL_TIME_TO_SERVE_COMPOSITION,CLIENT_AGENT,SERVICES_ENGAGED, start_time
+  executions_data <- data.frame()
+  filename_failures <- list.files("data/", "failure*")
+  for (execution in filename_failures) {
+    print(paste("Aggregating execution: ", execution))
+    raw_data <- read.csv(file=paste("data/", execution, sep=""), as.is=TRUE)
+    
+    executions_data <- rbind(executions_data, raw_data)
+  }
+  
+  #
+  # Calculates Error
+  #
+  agg_data_mean <- aggregate(data=executions_data, cbind(number_failures) ~ experiment_name, mean)
+  agg_data_sd <- aggregate(data=executions_data, cbind(number_failures) ~ experiment_name, sd)
+
+  # per experiment
+  number_of_runs <- nrow(executions_data)/length(levels(factor(executions_data$experiment_name)))
+
+  error <- qt(0.975, df=number_of_runs-1) * agg_data_sd$number_failures / sqrt(number_of_runs)
+  ymin <- agg_data_mean$number_failures - error
+  ymax <- agg_data_mean$number_failures + error
+  
+  agg_data <- data.frame(agg_data_mean, failures_ymin=ymin, failures_ymax=ymax)
+  
+  return(agg_data)
 }
 
 #

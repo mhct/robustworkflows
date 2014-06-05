@@ -5,11 +5,9 @@ import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 import scala.concurrent.duration.Duration;
-import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import akka.actor.UntypedActorFactory;
 import akka.kernel.Bootable;
 import be.kuleuven.robustworkflows.infrastructure.GraphLoaderApplication;
 import be.kuleuven.robustworkflows.infrastructure.SorcererApplication;
@@ -59,16 +57,7 @@ public class RobustWorkflowsLauncher implements Bootable {
 				throw new RuntimeException("Couldn't authenticate to the Mongodb server");
 			}
 
-			final ActorRef loader = system.actorOf(
-					new Props(
-						new UntypedActorFactory() {
-							private static final long serialVersionUID = 20130926L;
-
-							@Override
-							public Actor create() throws Exception {
-								return new RobustWorkflowsActor(db, config.getConfig("actor"));
-							}
-						}));
+			final ActorRef loader = system.actorOf(Props.create(RobustWorkflowsActor.class, db, config.getConfig("actor")));
 			
 			system.scheduler().scheduleOnce(Duration.Zero(),
 					new Runnable() {

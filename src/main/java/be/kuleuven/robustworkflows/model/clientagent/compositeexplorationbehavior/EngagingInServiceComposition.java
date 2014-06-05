@@ -46,7 +46,7 @@
 //	@Override
 //	public void onReceive(Object message, ActorRef actorRef) throws Exception {
 //		if (RUN.equals(message)) {
-////			persistEvent("Engaging in Service Composition: " + selectedComposition.toString()); // + t.getAgent().path().name()); //FIXME add ClientAgent name
+////			persistEvent("Engaging in Service Composition: " + selectedComposition.toString()); // + t.getAgent().path().name());
 //
 //			startTimeSelectedComposition = System.currentTimeMillis();
 //			servicesEngaged = "";

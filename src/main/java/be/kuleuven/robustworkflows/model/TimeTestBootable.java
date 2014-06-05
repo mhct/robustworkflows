@@ -27,9 +27,10 @@ public class TimeTestBootable implements Bootable {
 	}
 
 	@Override
+	//FIXME
 	public void startup() {
 		final ActorRef mySimpleActor = system.actorOf(
-				new Props(
+				Props.create(
 					new UntypedActorFactory() {
 						private static final long serialVersionUID = 20130926L;
 

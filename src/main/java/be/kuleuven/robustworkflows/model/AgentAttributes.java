@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 import org.gephi.graph.api.Attributes;
 
-import be.kuleuven.robustworkflows.model.clientagent.CompositeExplorationFactory;
+import be.kuleuven.robustworkflows.model.clientagent.DMASExplorationFactory;
 import be.kuleuven.robustworkflows.model.clientagent.ExplorationBehaviorFactory;
-import be.kuleuven.robustworkflows.model.clientagent.SimpleExplorationFactory;
+import be.kuleuven.robustworkflows.model.clientagent.ReactiveExplorationFactory;
 import be.kuleuven.robustworkflows.model.factoryagent.ComputationalResourceProfile;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 
@@ -122,10 +122,10 @@ public class AgentAttributes implements Serializable {
 			antExplorationSamplingProbability =  (Double) attributes.getValue(NodeAttributes.AntExplorationSamplingProbability);
 			
 			//ant behavior
-			if (SimpleExplorationFactory.class.getName().equals(attributes.getValue(NodeAttributes.ExplorationBehaviorFactory))) {
-				behaviorFactory = new SimpleExplorationFactory();
+			if (ReactiveExplorationFactory.class.getName().equals(attributes.getValue(NodeAttributes.ExplorationBehaviorFactory))) {
+				behaviorFactory = new ReactiveExplorationFactory();
 			} else {
-				behaviorFactory = new CompositeExplorationFactory();
+				behaviorFactory = new DMASExplorationFactory();
 			}
 			
 			//workflows to be used by ClientAgents

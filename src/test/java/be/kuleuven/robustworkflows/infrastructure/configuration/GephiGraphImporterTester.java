@@ -85,7 +85,7 @@ public class GephiGraphImporterTester {
 	
 	@Test
 	public void checkClientAgentAttributes() {
-		//FIXME this is testing the cloudcreator.. in reality 
+		//TODO this is testing the cloudcreator.. in reality 
 		DirectedGraph graph = GephiGraphImporter.loadDirectedGraphFrom(loadFileFromPath("1c-2f.gexf"));
 		Node n = graph.getNode("3");
 

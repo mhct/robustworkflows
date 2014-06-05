@@ -35,6 +35,7 @@ nbServicesEngaged <- function(data) {
 }
 
 #################################################################
+#
 # Start Analysis experiment
 #
 #################################################################
@@ -208,6 +209,67 @@ ggsave(filename="plots/h1_composition_time_boxplot.pdf",
 
 
 ############################################################
+# Composition quality over time
+# This analysis is done using only 
+############################################################
+h1 <- experiment_results_raw[experiment_results_raw$X == "h1_16k_1",]
+h1_ordered <- relativeTime(h1[order(h1[,c("start_time_millis")]),])
+
+seconds_breaks <- seq(from=1000,to=max_time, by=10000)
+previous_break <- 0
+real_composition_times <- data.frame()
+index <- 0
+
+for (current_break in seconds_breaks) {
+  #real_composition_times[[length(real_composition_times) + 1]] <- h1_ordered[ h1_ordered$start_time_millis >= previous_break & h1_ordered$start_time_millis <= current_break, c("REAL_TIME_TO_SERVE_COMPOSITION")]
+  selected_measurements <- h1_ordered[ h1_ordered$start_time_millis >= previous_break & h1_ordered$start_time_millis <= current_break, c("REAL_TIME_TO_SERVE_COMPOSITION", "composition_size")]
+  if (nrow(selected_measurements) > 0 ) {
+    real_tempdf <- cbind(id=index,  selected_measurements)
+    real_composition_times <- rbind(real_composition_times, real_tempdf)
+    previous_break <- current_break
+  }
+  index <- index + 1
+}
+
+overtime_plot  <- ggplot(real_composition_times) + 
+  geom_boxplot(aes(x=factor(id), y=REAL_TIME_TO_SERVE_COMPOSITION)) + 
+  facet_grid(. ~ composition_size) +
+  labs(title="Evolution of averages, time interval 10s, 16k nodes", x="Experiment time", y="Average Composition Time (ms)")
+
+ggsave(filename="plots/h1_16k_overtime.pdf",
+       plot=overtime_plot,
+       height=13,
+       units="cm")
+
+############################################################
+# Time series analysis
+############################################################
+
+
+
+avg_real_time_comp <- lapply(real_composition_times[real_composition_times$composition_size==2,c("REAL_TIME_TO_SERVE_COMPOSITION")], mean)
+myts <- ts(unlist(avg_real_time_comp), start=1, end=161, frequency=2)
+
+############################################################
+#
+# Description of the scenarios
+#
+############################################################
+fac <- read.csv(file="/tmp/factories-trial3.csv")
+component_16k_plot <- ggplot(fac) + geom_histogram(aes(x=time/1000, y=..density..), binwidth=2) + 
+  facet_grid(. ~ ServiceType) +
+  labs(x="Average Execution Time (s)")
+
+component_16k_plot
+
+ggsave(filename="plots/h1_16k_components.pdf",
+       plot=component_16k_plot,
+       height=13,
+       units="cm")
+
+
+
+############################################################
 #
 # Failures per experiment
 #
@@ -244,3 +306,27 @@ ggplot() + geom_smooth(data=d250_2.c40, aes(x=1:10, REAL_TIME_TO_SERVE_COMPOSITI
   geom_smooth(data=c40, aes(x=1:10, REAL_TIME_TO_SERVE_COMPOSITION)) +
   geom_smooth(data=d250_3.c40, aes(x=1:10, REAL_TIME_TO_SERVE_COMPOSITION)) 
 
+
+#################################################################
+#
+# Analysis of communication costs
+#
+#################################################################
+
+#for 1...
+msgs_raw <- read.csv(file="temp/messages_t1_16k_1", head=FALSE)
+max_time <- max(a_ordered$V1)
+
+seconds_breaks <- seq(from=1000,to=max_time, by=1000)
+previous_break <- 0
+nb_messages_per_second <- list()
+
+for (current_break in seconds_breaks) {
+  nb_messages_per_second[[length(nb_messages_per_second) + 1]] <- nrow(a_ordered[ a_ordered$V1 >= previous_break & a_ordered$V1 <= current_break, ])
+  previous_break <- current_break
+}
+
+nb_messages_per_second <- data.frame(x=1:length(nb_messages_per_second), msg_second=unlist(nb_messages_per_second))
+
+msg_second_plot <- ggplot(nb_messages_per_second) + geom_line(aes(x=x, y=msg_second))
+msg_second_plot

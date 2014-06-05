@@ -61,14 +61,14 @@ public class RobustWorkflowsActor extends UntypedActor {
 		
 		if ("Start".equals(message)) {
 			startNewExperimentRun();
-		} else if ("CheckExecution".equals(message)) {
-			log.debug("CheckExecution received");
-			if (modelStorage.finishedAllCompositions(String.valueOf(previousRun()))) {
-				log.info("FINISHED ALL COMP");
-				startNewExperimentRun();
-			} else {
-				//do nothing
-			}
+//		} else if ("CheckExecution".equals(message)) {
+//			log.debug("CheckExecution received");
+//			if (modelStorage.finishedAllCompositions(String.valueOf(previousRun()))) {
+//				log.info("FINISHED ALL COMP");
+//				startNewExperimentRun();
+//			} else {
+//				//do nothing
+//			}
 		} else {
 			unhandled(message);
 		}
@@ -99,11 +99,19 @@ public class RobustWorkflowsActor extends UntypedActor {
 	private void sendStartExperimentRun() {
 		DBCursor cursor = infrastructureStorage.getActors().find();
 		
+		int i = 0;
 		while (cursor.hasNext()) {	
 			String actorAddress = (String) cursor.next().get("actorAddress");
 			ActorRef ref = getContext().system().actorFor(actorAddress);
 			ref.tell(StartExperimentRun.getInstance(String.valueOf(currentRun)), self());
+			
+			if (i%1000 == 0) {
+				log.info("sent StartExperimentRun msg to more 1000 agents");
+			}
+			i++;
 		}
+		
+		cursor.close();
 	}
 	
 	private void sendComposeToAllClientAgents() {
@@ -112,6 +120,7 @@ public class RobustWorkflowsActor extends UntypedActor {
 		
 		long startingTime = startTimeInterval;
 		int batch = 0;
+		int i = 0;
 		while (cursor.hasNext()) {
 			
 			if (batch % concurrentClients == 0) {
@@ -121,7 +130,13 @@ public class RobustWorkflowsActor extends UntypedActor {
 			batch++;
 			String ref = (String) cursor.next().get("actorAddress");
 			scheduleComposeMessage(ref, startingTime, String.valueOf(currentRun));
+			if (i%1000 == 0) {
+				log.info("Scheduled ComposeMsg to more 1000 agents");
+			}
+			i++;
 		}
+		
+		cursor.close();
 	}
 	
 	public void scheduleComposeMessage(final String ref, final long time, final String run) {

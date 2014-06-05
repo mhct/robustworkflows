@@ -4,9 +4,9 @@ import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import akka.actor.UntypedActorFactory;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import akka.japi.Creator;
 import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 import be.kuleuven.robustworkflows.infrastructure.messages.AgentDeployed;
 import be.kuleuven.robustworkflows.infrastructure.messages.DeployAgent;
@@ -45,7 +45,9 @@ public class SorcererActor extends UntypedActor {
 		} else if (DeployAgent.class.isInstance(message)) {
 			log.debug("DeployActorMsg received" + message);
 			final DeployAgent msg = DeployAgent.valueOf(message);
-			ActorRef childActor = getContext().system().actorOf(new Props(new UntypedActorFactory() {
+
+			//TODO Improve this.. the type of Actor use the real type
+			ActorRef childActor = getContext().system().actorOf(Props.create(new Creator<Actor>() {
 				
 				private static final long serialVersionUID = 2013021401L;
 

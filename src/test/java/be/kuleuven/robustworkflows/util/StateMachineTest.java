@@ -6,7 +6,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import be.kuleuven.robustworkflows.model.antactors.ExplorationAntActor;
+import be.kuleuven.robustworkflows.model.antactors.reactive.ReactiveExplorationAntActor;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
 import be.kuleuven.robustworkflows.util.StateMachine.StateMachineBuilder;
 

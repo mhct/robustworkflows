@@ -6,11 +6,9 @@ import java.net.UnknownHostException;
 
 import org.gephi.graph.api.DirectedGraph;
 
-import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import akka.actor.UntypedActorFactory;
 import akka.kernel.Bootable;
 import be.kuleuven.robustworkflows.infrastructure.configuration.AgentFactory;
 import be.kuleuven.robustworkflows.infrastructure.configuration.GephiGraphImporter;
@@ -62,15 +60,7 @@ public class GraphLoaderApplication implements Bootable {
 			
 			final AgentFactory agentFactory = AgentFactory.getInstance();
 			
-			graphLoaderActor = system.actorOf(new Props(new UntypedActorFactory() {
-				
-				private static final long serialVersionUID = 2013020501L;
-				
-				@Override
-				public Actor create() throws Exception {
-					return new GraphLoaderActor(storage, networkModel, agentFactory);
-				}
-			}), "Gandalf");
+			graphLoaderActor = system.actorOf(Props.create(GraphLoaderActor.class, storage, networkModel, agentFactory), "Gandalf");
 			
 			graphLoaderActor.tell("start", system.deadLetters());
 		

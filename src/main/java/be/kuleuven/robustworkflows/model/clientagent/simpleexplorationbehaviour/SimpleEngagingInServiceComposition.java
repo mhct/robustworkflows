@@ -12,7 +12,7 @@ import be.kuleuven.robustworkflows.model.messages.ServiceRequestCompleted;
 /**
  * Engages with a simple service
  * 
- * FIXME when an agent is engaging in a composition, it has to maintain information and engage with different providers... 
+ * TODO when an agent is engaging in a composition, it has to maintain information and engage with different providers... 
  * better to create a more evolved set of abstractions to deal with that
  * 
  * TODO check ExplorationResult

@@ -2,11 +2,11 @@ package be.kuleuven.robustworkflows.model.ant;
 
 import java.util.List;
 
-import akka.actor.Actor;
 import akka.actor.ActorContext;
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import akka.actor.UntypedActorFactory;
+import akka.actor.UntypedActor;
+import akka.japi.Creator;
 import be.kuleuven.robustworkflows.model.clientagent.ExplorationAntParameter;
 import be.kuleuven.robustworkflows.model.clientagent.ExplorationBehaviorFactory;
 
@@ -33,12 +33,13 @@ public class AntAPI {
 	
 	public void createExplorationAnt(final ExplorationAntParameter explorationAntParameters) {
 		
-		explorationAnts.add(context.actorOf(new Props(new UntypedActorFactory() {
+		//TODO the creation is not right here
+		explorationAnts.add(context.actorOf(Props.create(new Creator<UntypedActor>() {
 			
 			private static final long serialVersionUID = 2013021401L;
 
 			@Override
-			public Actor create() throws Exception {
+			public UntypedActor create() throws Exception {
 				return behaviorFactory.createExplorationAnt(explorationAntParameters);
 			}
 

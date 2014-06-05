@@ -43,11 +43,11 @@ public class SorcererApplication implements Bootable {
 	
 	private static final String SORCERER_NAME = config.getString("sorcerer-name");
 	
-	private ActorSystem system;// = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
+	private static ActorSystem system;// = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
 	
 	private MongoClient mongoClient;
 	private DB db;
-	private ActorRef sorcererActor;
+	private static ActorRef sorcererActor;
 			
 	@Override
 	public void shutdown() {
@@ -72,16 +72,8 @@ public class SorcererApplication implements Bootable {
 		
 		final AgentFactory agentFactory = AgentFactory.getInstance();
 		
-		sorcererActor = system.actorOf(new Props(new UntypedActorFactory() {
-			
-			private static final long serialVersionUID = 2013020101L;
-
-			@Override
-			public Actor create() throws Exception {
-				return new SorcererActor(db, agentFactory);
-			}
-		}), SORCERER_NAME);
-		
+		sorcererActor = system.actorOf(Props.create(SorcererActor.class, db, agentFactory), SORCERER_NAME);
+		System.out.println("Sorcerer name: " + SORCERER_NAME);
 		sorcererActor.tell("start", system.deadLetters());
 	}
 	
@@ -89,11 +81,17 @@ public class SorcererApplication implements Bootable {
 		this.system = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
 	}
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		SorcererApplication app = new SorcererApplication();
 		app.startup();
+//		for (int i=0; i<10000; i++) {
+//			Thread.sleep(100);
+//			sorcererActor.tell("start", system.deadLetters());
+////			System.out.println("aqui vai " + i);
+//		}
 		System.in.read();
 		app.shutdown();
+		
 	}
 
 }
