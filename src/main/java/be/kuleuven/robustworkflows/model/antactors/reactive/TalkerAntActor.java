@@ -6,7 +6,6 @@ import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import akka.actor.ActorRef;
-import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
@@ -176,23 +175,30 @@ public class TalkerAntActor extends UntypedActor {
 	
 	
 	/**
-	 * Props Factory for a TalkerAntActor
+	 * Static Factory of TalkerAntActors
 	 * 
 	 * @param serviceType
 	 * @param explorationTimeout in milliseconds
 	 * @param samplingProbability probability to explore neighbors [0.0, 1.0]
 	 * @return a Props capable of creating a TalkerAntActor
 	 */
-	public static Props props(final ServiceType serviceType, final long explorationTimeout, final double samplingProbability) {
-		return Props.create(new Creator<TalkerAntActor>() {
-			
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public TalkerAntActor create() throws Exception {
-				return new TalkerAntActor(serviceType, explorationTimeout, samplingProbability);
-			}
-		});	
+	public static class TalkerAntActorCreator implements Creator<TalkerAntActor> {
+		
+		private static final long serialVersionUID = 20140623L;
+		
+		private final ServiceType serviceType;
+		private final long explorationTimeout;
+		private final double samplingProbability;
+		
+		public TalkerAntActorCreator(final ServiceType serviceType, final long explorationTimeout, final double samplingProbability) {
+			this.serviceType = serviceType;
+			this.explorationTimeout = explorationTimeout;
+			this.samplingProbability = samplingProbability;
+		}
+		
+		@Override
+		public TalkerAntActor create() throws Exception {
+			return new TalkerAntActor(serviceType, explorationTimeout, samplingProbability);
+		}
 	}
-
 }

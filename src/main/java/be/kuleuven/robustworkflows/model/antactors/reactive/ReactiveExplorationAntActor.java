@@ -53,7 +53,7 @@ public class ReactiveExplorationAntActor extends UntypedActor implements Explora
 	
 	public ReactiveExplorationAntActor(ActorRef master, long explorationTimeout, double samplingProbability) {
 //		this.master = master;
-		log.info("ReactiveExpAntActor created" + this.toString());
+		log.info("ReactiveExpAntActor created" + self().path().toString());
 		
 		this.currentAgent = master;
 		this.explorationTimeout = explorationTimeout;
@@ -61,7 +61,7 @@ public class ReactiveExplorationAntActor extends UntypedActor implements Explora
 		this.pathFollowed = Sets.newHashSet();
 		
 		IdleState idle = new IdleState();
-		ExploringState exploring = new ExploringState();
+		ReactiveAntExploringState exploring = new ReactiveAntExploringState();
 		StateMachineBuilder<Object, ExplorationAntContext> builder = StateMachine.create(idle);
 		builder.addTransition(idle, StartExperimentRun.class, idle);
 		builder.addTransition(idle, ExploreService.class, exploring);

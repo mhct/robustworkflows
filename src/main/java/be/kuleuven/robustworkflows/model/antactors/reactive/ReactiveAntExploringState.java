@@ -5,6 +5,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import akka.actor.ActorRef;
+import akka.actor.Props;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.ant.messages.ExplorationReplyWrapper;
 import be.kuleuven.robustworkflows.model.ant.messages.ExploreService;
@@ -20,7 +21,7 @@ import be.kuleuven.robustworkflows.util.Utils;
  * @author mario
  *
  */
-public class ExploringState implements State<Object, ExplorationAntContext>{
+public class ReactiveAntExploringState implements State<Object, ExplorationAntContext>{
 
 	private final static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH_mm_ss_SSS");
 	private static final int WAIT_FOR_NUMBER_REPLIES = 5;
@@ -29,7 +30,7 @@ public class ExploringState implements State<Object, ExplorationAntContext>{
 	private final ExplorationRepliesHolder repliesHolder;
 
 
-	public ExploringState() {
+	public ReactiveAntExploringState() {
 		repliesHolder = ExplorationRepliesHolder.getInstance();	
 	}
 	
@@ -42,20 +43,22 @@ public class ExploringState implements State<Object, ExplorationAntContext>{
 	@Override
 	public Object handle(Object event, ExplorationAntContext context) {
 		if (ExploreService.class.isInstance(event)) {
-			Utils.addExpirationTimer(context.getContext(), context.getExplorationTimeout(), EventType.ExploringStateTimeout);
 			final ExploreService msg = (ExploreService) event;
+			context.getLoggingAdapter().debug("Received ExploreService: " + msg.toString());
 			
-			talker = context.getContext().actorOf(TalkerAntActor.props(msg.getServiceType(),
+			Utils.addExpirationTimer(context.getContext(), context.getExplorationTimeout(), EventType.ExploringStateTimeout);
+			
+			talker = context.getContext().actorOf(Props.create(new TalkerAntActor.TalkerAntActorCreator(msg.getServiceType(),
 					(long) Math.ceil(context.getExplorationTimeout()/10.0),
-					context.getSamplingProbability()));
+					context.getSamplingProbability())));
+			
 			context.addAgentToVisitedNodes(context.getCurrentAgent());
 			context.tellMaster(EventType.NeihgborListRequest);
-//			System.out.println(name() + " handling: " + event);
 	
 		} else if (Neighbors.class.isInstance(event)){
-//			log.debug("Received Neighbors list");
+			context.getLoggingAdapter().debug("Received Neighbors list");
 			neighbors = (Neighbors) event;
-//			//asks talker to retrieve QoS of neighbors
+			//asks talker to retrieve QoS of neighbors
 			talker.tell(neighbors, context.getSelf());
 			
 		} else if (ImmutableExplorationRepliesHolder.class.isInstance(event)) {

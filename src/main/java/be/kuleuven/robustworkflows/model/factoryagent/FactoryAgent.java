@@ -111,6 +111,9 @@ public class FactoryAgent extends UntypedActor {
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
+		if (log.isDebugEnabled()) {
+			log.debug("Message: " + message);
+		}
 		
 		//treats failures
 		if (failure) {
@@ -133,7 +136,7 @@ public class FactoryAgent extends UntypedActor {
 			log.info("FactoryAgentQueue=" + (new DateTime()).getMillis() + "," + self().path().name() + "," + computationalProfile.queueSize() );
 			previousTime = System.currentTimeMillis();
 		}
-		// sends the messages to the DmasMW so that it can hadle messages etc.
+		// sends the messages to the DmasMW so that it can handle messages etc.
 		dmasMW.onReceive(message, sender());
 		
 		if (StartExperimentRun.class.isInstance(message)) {
