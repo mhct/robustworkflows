@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.RequestExecutionData;
 import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.SimpleExplorationResult;
 import be.kuleuven.robustworkflows.model.events.ServiceRequestSummaryEvent;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import be.kuleuven.robustworkflows.model.ModelStorageMap;
-import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.RequestExecutionData;
 
 /**
  * Stores the data relative to the execution of a Service Request

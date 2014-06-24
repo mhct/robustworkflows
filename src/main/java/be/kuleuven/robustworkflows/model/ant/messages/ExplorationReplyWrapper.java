@@ -50,4 +50,12 @@ public class ExplorationReplyWrapper implements Serializable {
 			return reply.isPossible();
 		}
 	}
+
+	public double getLevel() {
+		if (reply != null) {
+			return reply.getPheroLevel();
+		} else {
+			return 0.001; // FIXME throw exception? fix tests first
+		}
+	}
 }

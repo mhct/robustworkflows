@@ -11,6 +11,10 @@ public class ReactiveExplorationFactory extends
 
 	private static final long serialVersionUID = 24092013L;
 
+	public ReactiveExplorationFactory() {
+		System.out.println("ReactiveExplorationFactory Loaded");
+	}
+	
 	@Override
 	public ClientAgentState createWaitingState(ClientAgentProxy clientAgentProxy) {
 		return SimpleWaitingTaskState.getInstance(clientAgentProxy);

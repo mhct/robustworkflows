@@ -79,14 +79,34 @@ public class Workflow implements Iterable<WorkflowTask>, Serializable {
 		return activitiesGraph.DFS().iterator();
 	}
 
-	/**
-	 * Returns the RAW representation of this workflow
-	 * @return
-	 */
-	public Multimap<WorkflowTask, WorkflowTask> rawWorkflow() {
-		return activitiesGraph.raw();
+	public Workflow getMutableClone() {
+		
+		Multimap<WorkflowTask, WorkflowTask> workflowEntries = activitiesGraph.raw();
+		Graph<WorkflowTask> cloneActivitiesGraph = Graph.create();
+		for (Map.Entry<WorkflowTask, WorkflowTask> e: workflowEntries.entries()) {
+			 MutableWorkflowTask origin = MutableWorkflowTask.getInstance(e.getKey().getType(), e.getKey().getAgent(), e.getKey().getQoS());
+			 MutableWorkflowTask target = MutableWorkflowTask.getInstance(e.getValue().getType(), e.getValue().getAgent(), e.getValue().getQoS());
+			
+			 cloneActivitiesGraph.put(origin, target);
+		}
+		
+		return new Workflow(cloneActivitiesGraph);
 	}
 
+	public Workflow getImmutableClone() {
+		
+		Multimap<WorkflowTask, WorkflowTask> workflowEntries = activitiesGraph.raw();
+		Graph<WorkflowTask> cloneActivitiesGraph = Graph.create();
+		for (Map.Entry<WorkflowTask, WorkflowTask> e: workflowEntries.entries()) {
+			WorkflowTask origin = e.getKey().getImmutableWorkflowTask();
+			WorkflowTask target = e.getValue().getImmutableWorkflowTask();
+			
+			cloneActivitiesGraph.put(origin, target);
+		}
+		
+		return new Workflow(cloneActivitiesGraph);
+	}
+	
 	/**
 	 * Factory Method to create a linear workflow having the types A -> B
 	 * 

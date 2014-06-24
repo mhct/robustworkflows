@@ -14,6 +14,7 @@ import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.infrastructure.InfrastructureStorage;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
 import be.kuleuven.robustworkflows.model.messages.StartExperimentRun;
+import be.kuleuven.robustworkflows.model.messages.StartFailureMsg;
 
 import com.mongodb.DB;
 import com.mongodb.DBCursor;
@@ -45,8 +46,10 @@ public class RobustWorkflowsActor extends UntypedActor {
 	private int currentRun;
 	private final ModelStorage modelStorage;
 	private final InfrastructureStorage infrastructureStorage;
+
+	private ActorRef failuresActor;
 	
-	public RobustWorkflowsActor(DB db, Config configAttributes) {
+	public RobustWorkflowsActor(DB db, Config configAttributes, ActorRef failuresActor) {
 		log.debug("RobustWork Actor. Current time: " + dtf.print(new DateTime()));
 		this.modelStorage = ModelStorage.getInstance(db);
 		this.infrastructureStorage = new InfrastructureStorage(db);
@@ -54,6 +57,7 @@ public class RobustWorkflowsActor extends UntypedActor {
 		
 		startTimeInterval = configAttributes.getInt("start-time-interval");
 		concurrentClients = configAttributes.getInt("concurrent-clients");
+		this.failuresActor = failuresActor;
 	}
 
 	@Override
@@ -102,7 +106,7 @@ public class RobustWorkflowsActor extends UntypedActor {
 		int i = 0;
 		while (cursor.hasNext()) {	
 			String actorAddress = (String) cursor.next().get("actorAddress");
-			ActorRef ref = getContext().system().actorFor(actorAddress);
+			ActorRef ref = getContext().system().actorFor(actorAddress); //FIXME using deprecated
 			ref.tell(StartExperimentRun.getInstance(String.valueOf(currentRun)), self());
 			
 			if (i%1000 == 0) {
@@ -137,6 +141,17 @@ public class RobustWorkflowsActor extends UntypedActor {
 		}
 		
 		cursor.close();
+		
+		log.info("Sendind Start to abaddon");
+		final StartFailureMsg msg = new StartFailureMsg(startingTime); 
+		getContext().system().scheduler().scheduleOnce(Duration.Zero(),
+				new Runnable() {
+					@Override
+					public void run() {
+						failuresActor.tell(msg, self());
+					}
+		}, getContext().system().dispatcher());
+
 	}
 	
 	public void scheduleComposeMessage(final String ref, final long time, final String run) {

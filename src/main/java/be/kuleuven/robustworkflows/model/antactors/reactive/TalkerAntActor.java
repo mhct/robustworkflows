@@ -61,6 +61,7 @@ public class TalkerAntActor extends UntypedActor {
 	private int nbMessages;
 
 	public TalkerAntActor(ServiceType serviceType, long explorationTimeout, double samplingProbability) {
+		log.debug("Talker created" + this.toString());
 		this.serviceType = serviceType;
 		this.explorationTimeout = explorationTimeout;
 		this.samplingProbability = samplingProbability;

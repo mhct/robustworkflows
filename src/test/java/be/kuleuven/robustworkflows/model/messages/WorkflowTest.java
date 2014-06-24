@@ -2,22 +2,12 @@ package be.kuleuven.robustworkflows.model.messages;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 
 import org.junit.Test;
-import org.scalatest.selenium.WebBrowser.MultiSel;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.LinkedHashMultiset;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
 
 import be.kuleuven.robustworkflows.model.ServiceType;
-import be.kuleuven.robustworkflows.model.collect.Graph;
 //import org.scalatest.matchers.MustMatchers.ArrayMustWrapper;
 
 public class WorkflowTest {

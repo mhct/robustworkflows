@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.joda.time.DateTime;
+
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ant.messages.ExploreService;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
@@ -56,7 +58,8 @@ public class SimpleExploringState extends ClientAgentState {
 				//FIXME should not use this persistEvent(String) method anymore...
 //				persistEvent("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
 				//TODO go back to RunningCompositionState
-				getClientAgentProxy().getLoggingAdapter().info("ClientAgent" + getClientAgentProxy().clientAgentName() + " .could not find suitable services...");
+				getClientAgentProxy().getLoggingAdapter().info("noSuitableServices=ClientAgent" + getClientAgentProxy().clientAgentName() + "," + new DateTime().getMillis());
+				run(); //logs and starts exploring again
 			}
 			
 		} else {

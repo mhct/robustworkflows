@@ -14,7 +14,7 @@ import com.mongodb.DB;
  */
 public class AgentFactory {
 	
-	private AgentHandlerChain chain = null;
+	private static AgentHandlerChain chain = null;
 
 	/**
 	 * Creates instances of classes given by rawType
@@ -24,6 +24,14 @@ public class AgentFactory {
 	 * @return
 	 */
 	public Actor handleInstance(AgentAttributes attributes) {
+		if (attributes == null) {
+			throw new RuntimeException("rawType can not be null");
+		}
+		
+		return chain.handle(attributes).createInstance(attributes);
+	}
+
+	public static Actor handleInstanceCreation(AgentAttributes attributes) {
 		if (attributes == null) {
 			throw new RuntimeException("rawType can not be null");
 		}
@@ -45,7 +53,7 @@ public class AgentFactory {
 		return chain.handle(attributes).factoryOf();
 	}
 	
-	private void addHandler(AgentHandlerChain handler) {
+	private static void addHandler(AgentHandlerChain handler) {
 		if (chain == null) {
 			chain = handler;
 		} else {
@@ -60,6 +68,11 @@ public class AgentFactory {
 		af.addHandler(new ClientAgentHandler());
 		
 		return af;
+	}
+
+	public static void initialize() {
+		AgentFactory.addHandler(new FactoryAgentHandler());
+		AgentFactory.addHandler(new ClientAgentHandler());
 	}
 }
 

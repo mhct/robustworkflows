@@ -2,6 +2,7 @@ package be.kuleuven.robustworkflows.model.ant;
 
 import java.util.List;
 
+import akka.actor.Actor;
 import akka.actor.ActorContext;
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -34,16 +35,7 @@ public class AntAPI {
 	public void createExplorationAnt(final ExplorationAntParameter explorationAntParameters) {
 		
 		//TODO the creation is not right here
-		explorationAnts.add(context.actorOf(Props.create(new Creator<UntypedActor>() {
-			
-			private static final long serialVersionUID = 2013021401L;
-
-			@Override
-			public UntypedActor create() throws Exception {
-				return behaviorFactory.createExplorationAnt(explorationAntParameters);
-			}
-
-		}), "explorationAnt" + explorationAnts.size()));
+		explorationAnts.add(context.actorOf(Props.create(new AntCreator(behaviorFactory, explorationAntParameters)), "explorationAnt" + explorationAnts.size()));
 		
 	}
 
@@ -65,5 +57,24 @@ public class AntAPI {
 		for (ActorRef ant: explorationAnts) {
 			ant.tell(message, master);
 		}
+	}
+	
+	// FIXME this is a quick hack to conform to akka 2.3 actors instantiation
+	private static class AntCreator implements Creator<Actor> {
+
+		private static final long serialVersionUID = 1L;
+		private final ExplorationAntParameter explorationParameters;
+		private final ExplorationBehaviorFactory factory;
+
+		public AntCreator(final ExplorationBehaviorFactory factory, final ExplorationAntParameter explorationParameters) {
+			this.factory = factory;
+			this.explorationParameters = explorationParameters;
+		}
+		
+		@Override
+		public Actor create() throws Exception {
+			return factory.createExplorationAnt(explorationParameters); 
+		}
+		
 	}
 }

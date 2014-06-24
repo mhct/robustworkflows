@@ -1,6 +1,9 @@
-package be.kuleuven.robustworkflows.model.antactors.dmas;
+package be.kuleuven.robustworkflows.model.antactors.dmas2;
 
 import java.util.List;
+
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomDataGenerator;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -30,29 +33,42 @@ import be.kuleuven.robustworkflows.util.Utils;
  * 
  * === Outbound messages ===
  * - ''' ExplorationRequest '''
- * - ''' DMASImmutableExplorationRepliesHolder '''
+ * - ''' ExplorationReplyWrapper '''
  */
-public class DMASTalkerAntActor extends UntypedActor {
+public class DMAS2TalkerAntActor extends UntypedActor {
 	private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 	
+	private RandomDataGenerator randomSampling = new RandomDataGenerator(new MersenneTwister());
+	
+	private final int MSG_LOG_TIME_INTERVAL = 10000;
 	private final String antName;
 	private final ServiceType serviceType;
 	private final long explorationTimeout;
+	private final double samplingProbability;
 	
 	private Neighbors neighbors;
+
 	private int receivedReplies = 0;
+
 	private int askedQos;
+
 	private boolean ignoreTimeout = false;
-	private DMASExplorationRepliesHolder repliesHolder;
+
+	private DMAS2ExplorationRepliesHolder repliesHolder;
+
+	private long previousTime;
+
 	private int nbMessages;
 
-	public DMASTalkerAntActor(ServiceType serviceType, long explorationTimeout) {
-		log.debug("DMASTalker created" + this.toString());
+	public DMAS2TalkerAntActor(ServiceType serviceType, long explorationTimeout, double samplingProbability) {
+		log.debug("DMAS2Talker created" + this.toString());
 		this.serviceType = serviceType;
 		this.explorationTimeout = explorationTimeout;
+		this.samplingProbability = samplingProbability;
 		this.antName = self().path().toString();
 				
-		repliesHolder = DMASExplorationRepliesHolder.getInstance();
+		previousTime = System.currentTimeMillis();
+		repliesHolder = DMAS2ExplorationRepliesHolder.getInstance();
 	}
 
 	@Override
@@ -69,6 +85,7 @@ public class DMASTalkerAntActor extends UntypedActor {
 			log.debug("Got ExplorationReply: " + message.toString());
 			log.debug("context().parent(): " + context().parent().path());
 			
+//			persistMessagingInfo();
 			receivedReplies++;
 			ExplorationReply explorationReply = (ExplorationReply) message;
 
@@ -102,8 +119,11 @@ public class DMASTalkerAntActor extends UntypedActor {
 	
 	private void persistMessagingInfo() {
 		final long currentTime = System.currentTimeMillis();
+//		if ((currentTime - previousTime) >= MSG_LOG_TIME_INTERVAL) {
 			log.info("message=" + currentTime + "," + antName + ","  + getNbMessages());
+//			previousTime = currentTime;
 			resetNbMessages();
+//		} 
 	}
 	
 	private void resetNbMessages() {
@@ -119,7 +139,7 @@ public class DMASTalkerAntActor extends UntypedActor {
 	}
 
 	/**
-	 * Sends a ExplorationRequest message to the agents given at the list
+	 * Sends a ServiceRequestExploration message to the agents given at the list
 	 * agentPaths
 	 * 
 	 * @param agentPaths Paths to agents to be contacted
@@ -130,14 +150,30 @@ public class DMASTalkerAntActor extends UntypedActor {
 		askedQos = 0;
 		receivedReplies = 0;
 		for (ActorRef agent: agents) {
-			if (agent != null) {
-				log.debug("Sending ExplorationRequest to: " + agent.path());
-				askedQos++;
-				agent.tell(ExplorationRequest.getInstance(1, serviceType, 10, self(), context().parent().path().name()), self());
+			if (sampling()) {
+				if (agent != null) {
+					log.debug("Sending ExplorationRequest to: " + agent.path());
+					askedQos++;
+					agent.tell(ExplorationRequest.getInstance(1, serviceType, 10, self(), context().parent().path().name()), self());
+				}
 			}
 		}
 		log.debug("AskQos to: " + askedQos);
 	}
+	
+	/**
+	 * Defines if a value should be used or not. returns true with a probability of samplingProbability.
+	 * Uniform sampling
+	 * @return
+	 */
+	private boolean sampling() {
+		if (randomSampling.nextUniform(0, 1) <= samplingProbability) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	
 	/**
 	 * Props Factory for a TalkerAntActor
@@ -147,14 +183,14 @@ public class DMASTalkerAntActor extends UntypedActor {
 	 * @param samplingProbability probability to explore neighbors [0.0, 1.0]
 	 * @return a Props capable of creating a TalkerAntActor
 	 */
-	public static Props props(final ServiceType serviceType, final long explorationTimeout) {
-		return Props.create(new Creator<DMASTalkerAntActor>() {
+	public static Props props(final ServiceType serviceType, final long explorationTimeout, final double samplingProbability) {
+		return Props.create(new Creator<DMAS2TalkerAntActor>() {
 			
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public DMASTalkerAntActor create() throws Exception {
-				return new DMASTalkerAntActor(serviceType, explorationTimeout);
+			public DMAS2TalkerAntActor create() throws Exception {
+				return new DMAS2TalkerAntActor(serviceType, explorationTimeout, samplingProbability);
 			}
 		});	
 	}

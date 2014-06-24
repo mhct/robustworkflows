@@ -47,15 +47,7 @@ public class SorcererActor extends UntypedActor {
 			final DeployAgent msg = DeployAgent.valueOf(message);
 
 			//TODO Improve this.. the type of Actor use the real type
-			ActorRef childActor = getContext().system().actorOf(Props.create(new Creator<Actor>() {
-				
-				private static final long serialVersionUID = 2013021401L;
-
-				@Override
-				public Actor create() throws Exception {
-					return agentFactory.handleInstance(msg.attributes()); 
-				}
-			}), msg.attributes().getAgentId());
+			ActorRef childActor = getContext().system().actorOf(Props.create(new AgentsCreator(msg)), msg.attributes().getAgentId());
 			
 			if(childActor == null) {
 				log.error("PROBLEM: childActor is null");
@@ -73,5 +65,19 @@ public class SorcererActor extends UntypedActor {
 			unhandled(message);
 		}
 		
+	}
+	
+	private static class AgentsCreator implements Creator<Actor> {
+
+		private static final long serialVersionUID = 1L;
+		private DeployAgent msg;
+		AgentsCreator(DeployAgent msg) {
+			this.msg = msg;
+		}
+		
+		@Override
+		public Actor create() throws Exception {
+			return AgentFactory.handleInstanceCreation(msg.attributes());
+		}
 	}
 }

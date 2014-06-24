@@ -8,6 +8,8 @@ import scala.concurrent.duration.Duration;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import akka.kernel.Bootable;
 import be.kuleuven.robustworkflows.infrastructure.GraphLoaderApplication;
 import be.kuleuven.robustworkflows.infrastructure.SorcererApplication;
@@ -19,7 +21,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 public class RobustWorkflowsLauncher implements Bootable {
-//	private LoggingAdapter log;
+	private LoggingAdapter log;
 	
 	private static final Config config = ConfigFactory.load().getConfig("robust-workflows-launcher");
 	private static final String SYSTEM_NAME = config.getString("system-name");
@@ -36,7 +38,7 @@ public class RobustWorkflowsLauncher implements Bootable {
 	
 	public RobustWorkflowsLauncher() {
 		system = ActorSystem.create(SYSTEM_NAME, config.withFallback(ConfigFactory.load()));
-//		log = Logging.getLogger(system, this);
+		log = Logging.getLogger(system, this);
 	}
 	
 	@Override
@@ -57,8 +59,10 @@ public class RobustWorkflowsLauncher implements Bootable {
 				throw new RuntimeException("Couldn't authenticate to the Mongodb server");
 			}
 
-			final ActorRef loader = system.actorOf(Props.create(RobustWorkflowsActor.class, db, config.getConfig("actor")));
+			final ActorRef abaddon = system.actorOf(Props.create(FailuresActor.class, db, config.getConfig("failures-actor")));
+			final ActorRef loader = system.actorOf(Props.create(RobustWorkflowsActor.class, db, config.getConfig("actor"), abaddon));
 			
+			log.info("Sendind Start to loader");
 			system.scheduler().scheduleOnce(Duration.Zero(),
 					new Runnable() {
 						@Override
@@ -66,6 +70,17 @@ public class RobustWorkflowsLauncher implements Bootable {
 							loader.tell("Start", system.deadLetters());
 						}
 			}, system.dispatcher());
+			
+			
+//			log.info("Sendind Start to abaddon");
+//			system.scheduler().scheduleOnce(Duration.Zero(),
+//					new Runnable() {
+//						@Override
+//						public void run() {
+//							abaddon.tell("Start", system.deadLetters());
+//						}
+//			}, system.dispatcher());
+			
 			
 			system.scheduler().schedule(Duration.Zero(), Duration.create(CHECK_COMPLETION_RUN_INTERVAL, TimeUnit.SECONDS),
 					new Runnable() {

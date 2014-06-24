@@ -53,6 +53,8 @@ public class ReactiveExplorationAntActor extends UntypedActor implements Explora
 	
 	public ReactiveExplorationAntActor(ActorRef master, long explorationTimeout, double samplingProbability) {
 //		this.master = master;
+		log.info("ReactiveExpAntActor created" + this.toString());
+		
 		this.currentAgent = master;
 		this.explorationTimeout = explorationTimeout;
 		this.samplingProbability = samplingProbability;

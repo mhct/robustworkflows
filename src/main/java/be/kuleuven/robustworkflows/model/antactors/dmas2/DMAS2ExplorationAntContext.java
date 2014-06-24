@@ -1,10 +1,10 @@
-package be.kuleuven.robustworkflows.model.antactors.dmas;
+package be.kuleuven.robustworkflows.model.antactors.dmas2;
 
 import akka.actor.ActorContext;
 import akka.actor.ActorRef;
 import akka.event.LoggingAdapter;
 
-public interface DMASExplorationAntContext {
+public interface DMAS2ExplorationAntContext {
 
 	ActorContext getContext();
 
@@ -12,9 +12,13 @@ public interface DMASExplorationAntContext {
 
 	double getSamplingProbability();
 
+	ActorRef getCurrentAgent();
+
 	void addAgentToVisitedNodes(ActorRef currentAgent);
 
 	ActorRef getSelf();
+
+	void setCurrentAgent(ActorRef actor);
 
 	void tellMaster(Object instance);
 	

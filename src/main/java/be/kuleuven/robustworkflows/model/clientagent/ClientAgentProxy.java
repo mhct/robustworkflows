@@ -8,7 +8,7 @@ import akka.actor.ActorRef;
 import akka.event.LoggingAdapter;
 import be.kuleuven.robustworkflows.model.AgentAttributes;
 import be.kuleuven.robustworkflows.model.ant.AntAPI;
-import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.RequestExecutionData;
 import be.kuleuven.robustworkflows.model.messages.ExplorationResult;
 import be.kuleuven.robustworkflows.model.messages.Workflow;
 

@@ -18,6 +18,7 @@ import be.kuleuven.robustworkflows.model.ModelStorageException;
 import be.kuleuven.robustworkflows.model.ModelStorageMap;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 import be.kuleuven.robustworkflows.model.messages.ExplorationRequest;
+import be.kuleuven.robustworkflows.model.messages.FailureMsg;
 import be.kuleuven.robustworkflows.model.messages.ReceivedServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequest;
 import be.kuleuven.robustworkflows.model.messages.ServiceRequestCompleted;
@@ -63,6 +64,9 @@ public class FactoryAgent extends UntypedActor {
 
 	private long previousTime;
 
+	private boolean failure = false;
+
+	private double pheroLevel = 0.0;
 
 	@Override
 	public void preStart() {
@@ -107,7 +111,24 @@ public class FactoryAgent extends UntypedActor {
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
-
+		
+		//treats failures
+		if (failure) {
+			return;
+		}
+		
+		if (FailureMsg.class.isInstance(message)) {
+			log.info("Failure message received");
+			FailureMsg msg = (FailureMsg) message;
+			
+			failure = true;
+			addExpirationTimer(msg.getDuration(), "RESUME");
+		} else if ("RESUME".equals(message)) {
+			log.info("Resuming operations");
+			failure = false;
+			pheroLevel = 0.001;
+		}
+		
 		if (System.currentTimeMillis() - previousTime > 1000) {
 			log.info("FactoryAgentQueue=" + (new DateTime()).getMillis() + "," + self().path().name() + "," + computationalProfile.queueSize() );
 			previousTime = System.currentTimeMillis();
@@ -129,7 +150,6 @@ public class FactoryAgent extends UntypedActor {
 			unhandled(message);
 		} else if (ExplorationRequest.class.isInstance(message)) {
 			log.debug("Factory received ExplorationRequest" + message.toString());
-			
 			ExplorationRequest msg = (ExplorationRequest) message;
 			//TODO QoSData should be created by computationalProfile, since it has all the needed data to create it.
 			if (msg.getServiceType().equals(computationalProfile.getServiceType())) {
@@ -137,7 +157,7 @@ public class FactoryAgent extends UntypedActor {
 				
 //					modelStorage.persistEvent(toDBObject(sr));
 				
-				sender().tell(ExplorationReply.getInstance(msg, computationalProfile.expectedTimeToServeRequest()), self());
+				sender().tell(ExplorationReply.getInstance(msg, computationalProfile.expectedTimeToServeRequest(), pheroLevel), self());
 			} else {
 				sender().tell(ExplorationReply.notPossible(msg), self());
 			}
@@ -156,6 +176,7 @@ public class FactoryAgent extends UntypedActor {
 			}
 			
 			if (sr.typeOf(computationalProfile.getServiceType())) {
+				incPheroLevel();
 				computationalProfile.add(ReceivedServiceRequest.getInstance((ServiceRequest) message, sender()));
 			} else {
 				//TODO reply saying this factory does not serve this type of service
@@ -185,6 +206,10 @@ public class FactoryAgent extends UntypedActor {
 			busy = true;
 			addExpirationTimer(computationalProfile.blockFor(), FactoryAgent.TIME_TO_WORK_FOR_REQUEST_FINISHED);
 		}
+	}
+	
+	private void incPheroLevel() {
+		pheroLevel += 0.001;
 	}
 	
 	public Object currentRun() {

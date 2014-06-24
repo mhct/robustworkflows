@@ -17,9 +17,12 @@ public class ExplorationReply implements Serializable {
 	private final long computationTime; //only quality being evaluated right now
 	private final ExplorationRequest requestExploration;
 
-	public ExplorationReply(ExplorationRequest requestExploration, long computationTime) {
+	private double pheroLevel;
+
+	public ExplorationReply(ExplorationRequest requestExploration, long computationTime, double pheroLevel) {
 		this.requestExploration = requestExploration;
 		this.computationTime = computationTime;
+		this.pheroLevel = pheroLevel;
 	}
 
 
@@ -39,14 +42,23 @@ public class ExplorationReply implements Serializable {
 	 * @return
 	 */
 	public static ExplorationReply getInstance(ExplorationRequest requestExploration, long computationTime) {
-		return new ExplorationReply(requestExploration, computationTime);
+		return new ExplorationReply(requestExploration, computationTime, 0.001);
+	}
+
+	public static ExplorationReply getInstance(ExplorationRequest requestExploration, long computationTime, double pheroLevel) {
+		return new ExplorationReply(requestExploration, computationTime, pheroLevel);
+	}
+
+
+	public double getPheroLevel() {
+		return pheroLevel;
 	}
 
 
 	@Override
 	public String toString() {
 		return "ExplorationReply [computationTime=" + computationTime
-				+ ", requestExploration=" + requestExploration + "]";
+				+ ", pheroLevel=" + pheroLevel + "]";
 	}
 
 
@@ -93,7 +105,7 @@ public class ExplorationReply implements Serializable {
 	}
 	
 	public static ExplorationReply notPossible(ExplorationRequest msg) {
-		return new ExplorationReply(msg, Long.MAX_VALUE);
+		return new ExplorationReply(msg, Long.MAX_VALUE, 0.001);
 	}
 	
 	

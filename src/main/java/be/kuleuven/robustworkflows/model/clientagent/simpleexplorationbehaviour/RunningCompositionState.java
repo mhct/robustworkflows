@@ -5,6 +5,7 @@ import java.util.Iterator;
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentProxy;
 import be.kuleuven.robustworkflows.model.clientagent.ClientAgentState;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.ServiceCompositionData;
 import be.kuleuven.robustworkflows.model.events.ServiceCompositionSummaryEvent;
 import be.kuleuven.robustworkflows.model.messages.WorkflowTask;
 

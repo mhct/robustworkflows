@@ -122,10 +122,13 @@ public class AgentAttributes implements Serializable {
 			antExplorationSamplingProbability =  (Double) attributes.getValue(NodeAttributes.AntExplorationSamplingProbability);
 			
 			//ant behavior
-			if (ReactiveExplorationFactory.class.getName().equals(attributes.getValue(NodeAttributes.ExplorationBehaviorFactory))) {
+			final String explorationConfig = (String) attributes.getValue(NodeAttributes.ExplorationBehaviorFactory);
+			if (ReactiveExplorationFactory.class.getName().equals(explorationConfig)) {
 				behaviorFactory = new ReactiveExplorationFactory();
-			} else {
+			} else if (DMASExplorationFactory.class.getName().equals(explorationConfig)) {
 				behaviorFactory = new DMASExplorationFactory();
+			} else {
+				throw new RuntimeException("Invalid configuration File");
 			}
 			
 			//workflows to be used by ClientAgents

@@ -42,6 +42,10 @@ public class InfrastructureStorage {
 		return db.getCollection("actors").find(new BasicDBObject("agentType", NodeAttributeValues.Client)).sort(new BasicDBObject("actorName", 1));
 	}
 
+	public DBCursor getFactoryAgents() {
+		return db.getCollection("actors").find(new BasicDBObject("agentType", NodeAttributeValues.Factory));
+	}
+
 //	public DBObject getClientAgent(String i) {
 //		DBCollection coll = db.getCollection("clientAgents");
 //		DBObject obj = new BasicDBObject();

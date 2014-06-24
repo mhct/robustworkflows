@@ -3,7 +3,7 @@ package be.kuleuven.robustworkflows.model.clientagent;
 import java.util.List;
 
 import akka.actor.ActorRef;
-import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.RequestExecutionData;
+import be.kuleuven.robustworkflows.model.clientagent.simpleexplorationbehaviour.messages.RequestExecutionData;
 import be.kuleuven.robustworkflows.model.events.ModelEvent;
 
 public abstract class ClientAgentState {
