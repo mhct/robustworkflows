@@ -1,11 +1,17 @@
-package be.kuleuven.robustworkflows.model.antactors.dmas2;
+package be.kuleuven.robustworkflows.util;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
+/**
+ * Selects a array member according to the Probability Distribution given by the double[] probabilities.
+ * 
+ * @author mario
+ *
+ */
 public class ProbabilisticSelector {
 	
-	private static RandomDataGenerator gen = new RandomDataGenerator(new MersenneTwister());
+	private final static RandomDataGenerator gen = new RandomDataGenerator(new MersenneTwister());
 	
 	/**
 	 * Selects a number within a list of possibilities, given by specific probabilities.

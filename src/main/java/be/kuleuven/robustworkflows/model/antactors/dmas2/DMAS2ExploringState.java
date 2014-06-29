@@ -5,6 +5,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import akka.actor.ActorRef;
+import akka.actor.PoisonPill;
+import akka.actor.Props;
 import be.kuleuven.robustworkflows.model.ServiceType;
 import be.kuleuven.robustworkflows.model.ant.messages.ExplorationReplyWrapper;
 import be.kuleuven.robustworkflows.model.ant.messages.ExploreService;
@@ -45,15 +47,18 @@ public class DMAS2ExploringState implements State<Object, DMAS2ExplorationAntCon
 			Utils.addExpirationTimer(context.getContext(), context.getExplorationTimeout(), EventType.ExploringStateTimeout);
 			final ExploreService msg = (ExploreService) event;
 			
-			talker = context.getContext().actorOf(DMAS2TalkerAntActor.props(msg.getServiceType(),
+			if (talker != null) {
+				talker.tell(PoisonPill.getInstance(), context.getSelf());
+			}
+			talker = context.getContext().actorOf(Props.create(new DMAS2TalkerAntActor.TalkerAntActorCreator(msg.getServiceType(),
 					(long) Math.ceil(context.getExplorationTimeout()/10.0),
-					context.getSamplingProbability()));
+					context.getSamplingProbability())));
+			
 			context.addAgentToVisitedNodes(context.getCurrentAgent());
 			context.tellMaster(EventType.NeihgborListRequest);
-//			System.out.println(name() + " handling: " + event);
 	
 		} else if (Neighbors.class.isInstance(event)){
-//			log.debug("Received Neighbors list");
+			context.getLoggingAdapter().debug("Received Neighbors list");
 			neighbors = (Neighbors) event;
 //			//asks talker to retrieve QoS of neighbors
 			talker.tell(neighbors, context.getSelf());
@@ -67,13 +72,17 @@ public class DMAS2ExploringState implements State<Object, DMAS2ExplorationAntCon
 			}
 			
 			if (repliesHolder.atLeastNbReplies(WAIT_FOR_NUMBER_REPLIES)) {
-				
-				context.tellMaster(SimpleExplorationResult.getInstance(repliesHolder.acoSelection()));
+				ExplorationReplyWrapper ref = null;
+				try {
+					ref = repliesHolder.acoSelection();
+				}
+				catch (RuntimeException e) {
+					context.getLoggingAdapter().error("Error in ACOSelection, " + repliesHolder.toString());
+				}
+				context.tellMaster(SimpleExplorationResult.getInstance(ref));
 				return "Idle";
 			} else {
-				//Searches again. The exploration strategy could be made here. Either cloning, ACO, etc.
-				// Initial strategy, randomly select one neighbor as jump to it.
-				// searches using the best pheromone
+				//Searches again. Here we could define another search strategy as well
 				ActorRef next = neighbors.getRandomNeighbor();
 				
 				if (next != null) {
@@ -99,12 +108,6 @@ public class DMAS2ExploringState implements State<Object, DMAS2ExplorationAntCon
 		return null;
 	}
 
-	// Uses ACO to decide which FactoryAgent to engage next
-	private ActorRef acoPartnerEvaluation() {
-		
-		return null;
-	}
-	
 	@Override
 	public void onEntry(Object event, DMAS2ExplorationAntContext context) {
 		// TODO Auto-generated method stub
@@ -116,4 +119,11 @@ public class DMAS2ExploringState implements State<Object, DMAS2ExplorationAntCon
 		repliesHolder.clear();
 	}
 
+	@Override
+	public String toString() {
+		return "DMAS2ExploringState [talker=" + talker + ", neighbors="
+				+ neighbors + ", repliesHolder=" + repliesHolder + "]";
+	}
+
+	
 }

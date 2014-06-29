@@ -3,6 +3,7 @@ package be.kuleuven.robustworkflows.model.ant.messages;
 import java.io.Serializable;
 
 import akka.actor.ActorRef;
+import be.kuleuven.robustworkflows.model.antactors.dmas2.DMAS2ExplorationRepliesHolder;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
 
 public class ExplorationReplyWrapper implements Serializable {
@@ -52,10 +53,15 @@ public class ExplorationReplyWrapper implements Serializable {
 	}
 
 	public double getLevel() {
+		double pheromoneLevel = 0.0; 
 		if (reply != null) {
-			return reply.getPheroLevel();
+			pheromoneLevel = reply.getPheroLevel();
+		}
+		
+		if (pheromoneLevel < DMAS2ExplorationRepliesHolder.MINIMUM_PHEROMONE) {
+				return DMAS2ExplorationRepliesHolder.MINIMUM_PHEROMONE;
 		} else {
-			return 0.001; // FIXME throw exception? fix tests first
+			return pheromoneLevel;
 		}
 	}
 }

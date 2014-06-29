@@ -8,6 +8,7 @@ import java.util.List;
 import akka.actor.ActorRef;
 import be.kuleuven.robustworkflows.model.ant.messages.ExplorationReplyWrapper;
 import be.kuleuven.robustworkflows.model.messages.ExplorationReply;
+import be.kuleuven.robustworkflows.util.ProbabilisticSelector;
 
 import com.google.common.collect.Lists;
 
@@ -20,8 +21,9 @@ import com.google.common.collect.Lists;
 public class DMAS2ExplorationRepliesHolder {
 
 	private final List<ExplorationReplyWrapper> replies;
-	private double alpha = 0.5;
-	private double beta = 5.0;;
+	public static final double MINIMUM_PHEROMONE = 0.1;
+	private double alpha = 1.0;
+	private double beta = 1.0;
 	
 	private DMAS2ExplorationRepliesHolder() {
 		replies = Lists.newArrayList();
@@ -32,7 +34,6 @@ public class DMAS2ExplorationRepliesHolder {
 	}
 
 	public void add(ExplorationReplyWrapper explorationReplyWrapper) {
-		System.out.println("Adding ReplyWrapper");
 		replies.add(explorationReplyWrapper);
 	}
 	
@@ -51,7 +52,7 @@ public class DMAS2ExplorationRepliesHolder {
 	 * More specifically the ACS heuristic
 	 */
 	public ExplorationReplyWrapper acoSelection() {
-		ArrayList<ExplorationReplyWrapper> repliesCopy = new ArrayList<ExplorationReplyWrapper>(replies);
+		List<ExplorationReplyWrapper> repliesCopy = new ArrayList<ExplorationReplyWrapper>(replies);
 		if (repliesCopy.size() == 0) {
 			return ExplorationReplyWrapper.empty();
 		} else if (repliesCopy.size() == 1) {
@@ -60,7 +61,7 @@ public class DMAS2ExplorationRepliesHolder {
 			
 			sort(repliesCopy);
 			double[] probabilities = calculateProbabilities(repliesCopy);
-			
+			System.out.println(probabilities[0] + " - " + probabilities[1]);
 			return repliesCopy.get(ProbabilisticSelector.select(probabilities));
 		}
 	}
@@ -168,4 +169,12 @@ public class DMAS2ExplorationRepliesHolder {
 	public static DMAS2ExplorationRepliesHolder getInstance() {
 		return new DMAS2ExplorationRepliesHolder();
 	}
+
+	@Override
+	public String toString() {
+		return "DMAS2ExplorationRepliesHolder [replies=" + replies + ", alpha="
+				+ alpha + ", beta=" + beta + "]";
+	}
+	
+	
 }
